@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="yes" ?>
+<?rfc toc="yes"?>
+<?rfc tocdepth="4"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<rfc 
+	category="info" 
+        docName="draft-IW-0-RTT-00"
+	ipr="trust200902">
+  <!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     they will automatically be output with "(if approved)" -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+         full title is longer than 39 characters -->
+
+    <title abbrev="Transport for 0-RTT">Initialization of transport parameters for 0-RTT connections</title>
+   
+    <author role="editor" fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
+      <organization>CNES</organization>
+      <address>
+        <postal>
+          <street>18 Avenue Edouard Belin</street>
+          <city>Toulouse</city>
+          <region></region>
+          <code>31400</code>
+          <country>France</country>
+        </postal>
+        <phone></phone>
+        <email>nicolas.kuhn@cnes.fr</email>
+      </address>
+    </author>
+
+    <author role="editor" fullname="Emile Stephan" initials="E" surname="Stephan">
+      <organization>Orange</organization>
+      <address>
+        <postal>
+          <street>2, avenue Pierre Marzin</street>
+          <city>Lannion</city>
+          <region></region>
+          <code>22300</code>
+          <country>France</country>
+        </postal>
+        <phone></phone>
+        <email>emile.stephan@orange.com</email>
+      </address>
+    </author>
+  
+    <date month="Feb" year="2019" />
+
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+         in the current day for you. If only the current year is specified, xml2rfc will fill 
+	 in the current day and month for you. If the year is not the current one, it is 
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	 specify just the year. -->
+
+    <!-- Meta-data Declarations -->
+
+    <area>Transport</area>
+
+    <workgroup>Internet Engineering Task Force</workgroup>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.  
+	 If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+    <keyword>QUIC, high BDP, Initial Window</keyword>
+
+    <!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Head of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+    <abstract>
+    <t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time to service. This memo proposes a solution where an additional parameter is registered during the 1-RTT phase to improve the initial throughput during subsequent 0-RTT.</t>
+    </abstract>
+  </front>
+
+  <middle>
+
+	<section anchor="sec:introduction" title="Introduction">
+    <t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time to service.</t>
+
+	<section anchor="subsec:intro_requi" title="Requirements Language">
+	<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119">RFC&nbsp;2119</xref>.</t>
+	</section>
+	
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Body of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:rule-0-RTT" title="Rule of the 0-RTT">
+
+        <t>TODO: describe, recall and point to 1-RTT vs 0-RTT.</t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:solution" title="Adapt the transport initialization for the 0-RTT connections">
+
+        <t>This memo proposes a solution where an additional parameter is registered during the 1-RTT phase to improve the initial throughput of the 0-RTT.</t>
+	<t>The server measures the RTT during the 1-RTT handshake. When the server detects that the start of the connection is very slow, it stores in the session ticket a value of the IW which will increase the initial throughput when reconnecting.</t> 
+
+	<t>When the client re-establishes the session using a 0-RTT phase the server receives the session ticket and decides or not [ADD REF]. When the server re-establishes the session it resuses the IW parameter it computed during the 1-RTT phase.</t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:benefits" title="Benefits on adapting slow-start in high BDP networks">
+
+        <t>As an example, QUIC prevents the usage of PEP on the path to adapt the initial window of satellite communication.</t>
+	<t>TODO : add references justiying the usage of PEP - mention that QUIC and TCP CC are the same.</t>
+	<t>TODO : add advantages of the proposed solution.</t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Tail of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+	<section anchor="sec:acknowledgements" title="Acknowledgements">
+	<t>Many thanks to TBD.</t>
+	</section>
+
+	<section anchor="sec:contributors" title="Contributors">
+	<t>TBD</t>
+	</section>
+
+	<section anchor="sec:IANA" title="IANA Considerations">
+	<t>This memo includes no request to IANA.</t>
+	</section>
+
+	<section anchor="sec:ecurity" title="Security Considerations">
+	<t>The registration of the additional parameter is protected by the 1-RTT phase in the session ticket.</t>
+	</section>
+	</middle>
+
+	<!--  *****BACK MATTER ***** -->
+	<back>
+	<!-- References split into informative and normative -->
+	<!-- There are 2 ways to insert reference entries from the citation libraries:
+	1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+	2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+	(for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+	Both are cited textually in the same manner: by using xref elements.
+	If you use the PI option, xml2rfc will, by default, try to find included files in the same
+	directory as the including file. You can also define the XML_LIBRARY environment variable
+	with a value containing a set of directories to search.  These can be either in the local
+	filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+	<references title="Normative References">
+		&RFC2119;
+	</references>
+
+	<references title="Informative References">
+		<?rfc include="reference.RFC.3135.xml"?>             
+       	</references>
+	</back>
+</rfc>

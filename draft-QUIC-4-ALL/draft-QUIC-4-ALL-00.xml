@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="yes" ?>
+<?rfc toc="yes"?>
+<?rfc tocdepth="4"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<rfc 
+	category="info" 
+        docName="draft-XXX-XXX-00"
+	ipr="trust200902">
+  <!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     they will automatically be output with "(if approved)" -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+         full title is longer than 39 characters -->
+
+    <title abbrev="High BDP networks: getting safely up to speed">High BDP networks: getting safely up to speed</title>
+   
+    <author role="editor" fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
+      <organization>CNES</organization>
+      <address>
+        <postal>
+          <street>18 Avenue Edouard Belin</street>
+          <city>Toulouse</city>
+          <region></region>
+          <code>31400</code>
+          <country>France</country>
+        </postal>
+        <phone></phone>
+        <email>nicolas.kuhn@cnes.fr</email>
+      </address>
+    </author>
+
+    <author role="editor" fullname="Godred Fairhurst" initials="G" surname="Fairhurst">
+      <organization>University of Aberdeen</organization>
+      <address>
+        <postal>
+          <street>Department of Engineering, Fraser Noble Building</street>
+          <city>Aberdeen</city>
+          <region></region>
+          <code>AB24 3UE</code>
+          <country>Scotland</country>
+        </postal>
+        <phone></phone>
+        <email>gorry@erg.abdn.ac.uk</email>
+      </address>
+    </author>
+   
+    <date month="Feb" year="2019" />
+
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+         in the current day for you. If only the current year is specified, xml2rfc will fill 
+	 in the current day and month for you. If the year is not the current one, it is 
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	 specify just the year. -->
+
+    <!-- Meta-data Declarations -->
+
+    <area>Transport</area>
+
+    <workgroup>Internet Engineering Task Force</workgroup>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.  
+	 If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+    <keyword>QUIC</keyword>
+
+    <!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Head of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+    <abstract>
+    <t>Abstract goes here.</t>
+    </abstract>
+  </front>
+
+  <middle>
+
+	<section anchor="sec:introduction" title="Introduction">
+        <t>The internet is very varied. Examples of weird and wonderful paths that support real applications and people. Understanding unwanted side effects from design choices in QUIC. Any ID focuses on the diversity of network paths.</t>
+
+	<section anchor="subsec:intro_requi" title="Requirements Language">
+	<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119">RFC&nbsp;2119</xref>.</t>
+	</section>
+	
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Body of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:issues" title="Issues that need consideration">
+
+        <t>The rationale of this section is to list issues that need consideration when designing a transport protocol that is meant to be used by most Internet users: <list style="symbols">
+        <t>Limited rate;</t>
+        <t>Varying capacity (L2 mechanisms where path varies with time);</t>
+        <t>(significant) Asymmetry in rate;</t>
+        <t>Appreciate loss (impact of Transmission Loss/Recovery - unrecovered loss);</t>
+        <t>Higher RTT (GEO - and effect of BoD);</t>
+        <t>Varying RTT (RACK instead of FR, but could work strangely with L2 mechanisms on the last hop - 1/8 RTT is an ad hoc choice that could cause issues. Satellite constellations with low earth orbit and large variations.);</t>
+        <t>Multiple very different paths (e.g. satellite and 5g);</t>
+        <t>Limited PMTU - effects of multiple encapsulations;</t>
+        <t>Manageability;</t>
+        <t>Explicit proxies (shared certificates, etc);</t>
+        </list></t>
+        <t>These don't exist in isolation, many users see several issues: (How about WiFi in tries with satellite, and there are combinations of L2 technologies.);</t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:solutions" title="Potential generic mechanisms">
+
+        <t>Potential mechanisms (a small starter list): <list style="symbols">
+	<t>Effect of delay on setup exchanges;</t>
+	<t>Inadequate slow-start;</t>
+	<t>Dynamic Ack Ratio (faster growth, high asymmetry);</t>
+	<t>Larger initial window (with safety for larger RTT);</t>
+	<t>IW limited by a window per second (as a function of a minimal pacing</t>
+	</list></t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Tail of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+	<section anchor="sec:acknowledgements" title="Acknowledgements">
+	<t>Many thanks to TBD.</t>
+	</section>
+
+	<section anchor="sec:contributors" title="Contributors">
+	<t>TBD</t>
+	</section>
+
+	<section anchor="sec:IANA" title="IANA Considerations">
+	<t>This memo includes no request to IANA.</t>
+	</section>
+
+	<section anchor="sec:ecurity" title="Security Considerations">
+	<t>Security section goes here.</t>
+	</section>
+	</middle>
+
+	<!--  *****BACK MATTER ***** -->
+	<back>
+	<!-- References split into informative and normative -->
+	<!-- There are 2 ways to insert reference entries from the citation libraries:
+	1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+	2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+	(for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+	Both are cited textually in the same manner: by using xref elements.
+	If you use the PI option, xml2rfc will, by default, try to find included files in the same
+	directory as the including file. You can also define the XML_LIBRARY environment variable
+	with a value containing a set of directories to search.  These can be either in the local
+	filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+	<references title="Normative References">
+		&RFC2119;
+	</references>
+
+	<references title="Informative References">
+		<?rfc include="reference.RFC.3135.xml"?>             
+       	</references>
+	</back>
+</rfc>
