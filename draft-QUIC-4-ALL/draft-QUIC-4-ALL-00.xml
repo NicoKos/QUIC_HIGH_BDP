@@ -12,7 +12,7 @@
 <?rfc subcompact="no" ?>
 <rfc 
 	category="info" 
-        docName="draft-XXX-XXX-00"
+        docName="draft-quic-4-all-00"
 	ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -25,7 +25,7 @@
     <!-- The abbreviated title is used in the page header - it is only necessary if the 
          full title is longer than 39 characters -->
 
-    <title abbrev="High BDP networks: getting safely up to speed">High BDP networks: getting safely up to speed</title>
+    <title abbrev="Up to speed in high BDP">High BDP networks: getting safely up to speed</title>
    
     <author role="editor" fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
       <organization>CNES</organization>
@@ -91,7 +91,7 @@
         <!-- ######################################################--> 
 
     <abstract>
-    <t>Abstract goes here.</t>
+    <t>This document provides a list of some unwanted transport-side effects of the various Abstract goes here.</t>
     </abstract>
   </front>
 
@@ -116,7 +116,7 @@
         <!-- New section -->
         <!-- ######################################################-->
         
-        <section anchor="sec:issues" title="Issues that need consideration">
+        <section anchor="sec:issues" title="Unwanted transport side effects">
 
         <t>The rationale of this section is to list issues that need consideration when designing a transport protocol that is meant to be used by most Internet users: <list style="symbols">
         <t>Limited rate;</t>
