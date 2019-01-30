@@ -202,7 +202,7 @@
 		<?rfc include="reference.I-D.ietf-quic-tls.xml"?> 
 		<?rfc include="reference.I-D.ietf-quic-transport.xml"?> 
 		<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
-		<?rfc include="reference.I-D.draft-irtf-iccrg-sallantin-initial-spreading.xml"?>
+		<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
                 <reference anchor="QOE_PEP">
                     <front>
                     <title>MPTCP and BBR performance over Internet satellite paths</title>
@@ -223,7 +223,7 @@
                     </author>
                     <date year="2015" />
                     </front>
-                    <seriesInfo name="ACM CoNEXT" />
+                    <seriesInfo name="ACM CoNEXT" value="" />
                 </reference>
                 <reference anchor="ICC16">
                     <front>
@@ -242,7 +242,7 @@
                     </author>
                     <date year="2016" />
                     </front>
-                    <seriesInfo name="IEEE ICC" />
+                    <seriesInfo name="IEEE ICC" value=""/>
                 </reference>
        	</references>
 	</back>
