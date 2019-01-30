@@ -12,7 +12,7 @@
 <?rfc subcompact="no" ?>
 <rfc 
 	category="info" 
-        docName="draft-IW-0-RTT-00"
+        docName="draft-transport-init-0-RTT-00"
 	ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -89,16 +89,17 @@
         <!-- Head of the document -->
         <!-- ######################################################--> 
         <!-- ######################################################--> 
-
-    <abstract>
-    <t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time to service. This memo proposes a solution where an additional parameter is registered during the 1-RTT phase to improve the initial throughput during subsequent 0-RTT.</t>
-    </abstract>
+	<abstract>
+	<t>0-RTT is designed to reduce the time needed to re-establish a connection. There are cases where 0-RTT alone does not improve the time to service. Moreover, additionnal information could be forwarded to the server to adapt the initial transport parameters.</t>
+	<t> This memo proposes a solution where an additional parameter is registered during the 1-RTT phase to improve the initial throughput during subsequent 0-RTT.</t>
+	</abstract>
   </front>
 
   <middle>
 
 	<section anchor="sec:introduction" title="Introduction">
-    <t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time to service.</t>
+	<t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time to service. Moreover, additionnal information could be forwarded to the server to adapt the initial transport parameters.</t>
+	<t> This memo proposes a solution where an additional parameter is registered during the 1-RTT phase to improve the initial throughput during subsequent 0-RTT.</t>
 
 	<section anchor="subsec:intro_requi" title="Requirements Language">
 	<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119">RFC&nbsp;2119</xref>.</t>
@@ -118,7 +119,15 @@
         
         <section anchor="sec:rule-0-RTT" title="Rule of the 0-RTT">
 
-        <t>TODO: describe, recall and point to 1-RTT vs 0-RTT.</t>
+        <t>The goal of this section is to recall how 0-RTT connections differ from 1-RTT connections.</t>
+
+	<t>QUIC connection establishment is covered in:<list style="symbols">
+	<t><xref target="I-D.ietf-quic-tls"></xref> describes how TLS is used to secure QUIC;</t>
+	<t><xref target="I-D.ietf-quic-transport"></xref> describes how QUIC's connection establishment combines version negotiation with the cryptographic and transport handshakes to reduce connection establishment latency;</t>
+	</list></t>
+	<t>Moreover, QUIC connection establishment relies on TLS ticket management discussed in <xref target="I-D.ietf-tls-ticketrequests"></xref> and <xref target="RFC8446"></xref>.</t> 
+
+	<t>0-RTT connections are initiated by QUIC clients. Prior to that, the server MUST have provided a NewSessionTicket <xref target="I-D.ietf-quic-tls"></xref>. The server may provide different values for transport parameters for use in the new connection and MUST NOT change transport parameters that are smaller that the initial values <xref target="I-D.ietf-quic-transport"></xref>. Transport parameters that are exploited in the 0-RTT are related to the flow control of the streams but do not precise congestion control values that could be recommended.</t>
 
 	</section>
 
@@ -128,10 +137,11 @@
         
         <section anchor="sec:solution" title="Adapt the transport initialization for the 0-RTT connections">
 
-        <t>This memo proposes a solution where an additional parameter is registered during the 1-RTT phase to improve the initial throughput of the 0-RTT.</t>
-	<t>The server measures the RTT during the 1-RTT handshake. When the server detects that the start of the connection is very slow, it stores in the session ticket a value of the IW which will increase the initial throughput when reconnecting.</t> 
+	<t>Transport parameters that are exploited in the 0-RTT are related to the flow control of the streams but do not precise congestion control values that could be recommended. This memo proposes a solution where an additional parameters are registered during the 1-RTT phase to improve the initial throughput of the 0-RTT.</t>
 
-	<t>When the client re-establishes the session using a 0-RTT phase the server receives the session ticket and decides or not [ADD REF]. When the server re-establishes the session it resuses the IW parameter it computed during the 1-RTT phase.</t>
+	<t>The server measures the RTT and the bottleneck bandwidth during the 1-RTT connection. Based on heuristics, the server can detect that the client is on a high BDP link. The server stores in the session ticket a value of the IW which will increase the initial throughput when reconnecting. In this case, packets MUST be paced out to avoid important bursts of data in the network.</t> 
+
+	<t>When the client re-establishes the session using a 0-RTT phase the server receives the session ticket and decides or not <xref target="I-D.ietf-quic-tls"></xref>. When the server re-establishes the session it resuses the IW parameter it computed during the 1-RTT phase.</t>
 
 	</section>
 
@@ -141,9 +151,8 @@
         
         <section anchor="sec:benefits" title="Benefits on adapting slow-start in high BDP networks">
 
-        <t>As an example, QUIC prevents the usage of PEP on the path to adapt the initial window of satellite communication.</t>
-	<t>TODO : add references justiying the usage of PEP - mention that QUIC and TCP CC are the same.</t>
-	<t>TODO : add advantages of the proposed solution.</t>
+        <t>QUIC connections can hardly be split as TCP connections can be to adapt the inadequate slow-start to high BDP use-cases. As one example, PEP <xref target="RFC3135">RFC&nbsp;3135</xref> are commonly deployed in SATCOM infrastructure for that purpose. This results in an improved quality-of-experience for web browsing users <xref target="QOE_PEP"></xref>. As of today, we can expect the congestion control is QUIC to exhibit the same performance trends than those of TCP versions deployed today.</t>
+	<t>The approched follows somehow the proposal of <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which performance has been shown to be interesting for both high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t>
 
 	</section>
 
@@ -188,7 +197,53 @@
 	</references>
 
 	<references title="Informative References">
-		<?rfc include="reference.RFC.3135.xml"?>             
+		<?rfc include="reference.RFC.3135.xml"?>
+		<?rfc include="reference.RFC.8446.xml"?>
+		<?rfc include="reference.I-D.ietf-quic-tls.xml"?> 
+		<?rfc include="reference.I-D.ietf-quic-transport.xml"?> 
+		<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
+		<?rfc include="reference.I-D.draft-irtf-iccrg-sallantin-initial-spreading.xml"?>
+                <reference anchor="QOE_PEP">
+                    <front>
+                    <title>MPTCP and BBR performance over Internet satellite paths</title>
+                    <author initials="N" surname="Kuhn">
+                    </author>
+                    <date year="2017" />
+                    </front>
+                    <seriesInfo name="IETF ICCRG" value="100" />
+                </reference>
+                <reference anchor="CONEXT15">
+                    <front>
+                    <title>Halfback: Running Short Flows Quickly and Safely</title>
+		    <author initials="Q" surname="Li">
+                    </author>
+		    <author initials="M" surname="Dong">
+                    </author>
+		    <author initials="P B" surname="Godfrey">
+                    </author>
+                    <date year="2015" />
+                    </front>
+                    <seriesInfo name="ACM CoNEXT" />
+                </reference>
+                <reference anchor="ICC16">
+                    <front>
+                    <title>Reducing web latency through TCP IW: Be smart</title>
+                    <author initials="R" surname="Sallantin">
+                    </author>
+                    <author initials="C" surname="Baudoin">
+                    </author>
+                    <author initials="E" surname="Chaput">
+                    </author>
+                    <author initials="F" surname="Arnal">
+                    </author>
+                    <author initials="E" surname="Dubois">
+                    </author>
+                    <author initials="A-L" surname="Beylot">
+                    </author>
+                    <date year="2016" />
+                    </front>
+                    <seriesInfo name="IEEE ICC" />
+                </reference>
        	</references>
 	</back>
 </rfc>
