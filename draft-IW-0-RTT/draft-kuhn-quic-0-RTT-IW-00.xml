@@ -130,7 +130,7 @@
         
         <section anchor="sec:solution" title="0-RTT for large BDP connections">
 	<t>To obtain an QoE acceptable for end-users applications a TCP PEP forces the IW to a higher value. The value depends directly on the BDP.</t>
-	<t>This section discusses a replacement with an end-to-end approach. It consists in recalling the BDP previously measured by the server in the 0-RTT handshake. The approached follows somehow the proposal of <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which performance has been shown to improve both high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>. 
+	<t>This section discusses a replacement with an end-to-end approach. It consists in recalling the BDP previously measured by the server in the 0-RTT handshake. The approached follows somehow the proposal of <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which performance has been shown to improve both high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t> 
 
 	<t>A server which measures a connection BDP far larger than usual sends the value to the client in a NewSessionTicket message. The client stores the information. When the client reconnects, it adds the BDP information to the ClientHello. The server receives the BDP information and adapts the initial window to get a throughput closer to the capacity of the path.</t>
 
@@ -139,21 +139,10 @@
 	<t>The specification of the carrying of the BDP in the 'ticket' field is far more simple. The server adds the BDP value to the opaque 'ticket' field. It does not require any interoperability with the client as the opaque value is encoded by the server and decoded from the ClientHello only by the server. The drawback is that it does not inform the client of the presence of a high BDP value.</t>
 	</list></t>
 
-	<t>A proposal consists in mixing both:  <list style="symbols">
-	<t>A new extension named "BDP_data" is defined for NewSessionTicket.  It contains the following value: BDP_value:  The value in unit [TBD]</t>
-  
-BDP_data indicates to the client receiving the NewSessionTicket record firstly that that the session path has a large BDP and secondly that the server added the same indication in the 'ticket' field.
-It indicates to the server that the client is informed of the path characteristic and that it will receive back the BDP information in 'ticket' field when the client will reconnect.</t>
+	<t>A proposal consists in mixing both:</t>
+	<t>A new extension named "BDP_data" is defined for NewSessionTicket. It contains the following value: BDP_value:  The value in unit [TBD]</t>
 
-	</section>
-
-        <!-- ######################################################-->
-        <!-- New section -->
-        <!-- ######################################################-->
-        
-        <section anchor="sec:benefits" title="Benefits on adapting slow-start in high BDP networks">
-
-	<t>The approched follows somehow the proposal of <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which performance has been shown to be interesting for both high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t>
+	<t>BDP_data indicates to the client receiving the NewSessionTicket record firstly that that the session path has a large BDP and secondly that the server added the same indication in the 'ticket' field. It indicates to the server that the client is informed of the path characteristic and that it will receive back the BDP information in 'ticket' field when the client will reconnect.</t>
 
 	</section>
 
