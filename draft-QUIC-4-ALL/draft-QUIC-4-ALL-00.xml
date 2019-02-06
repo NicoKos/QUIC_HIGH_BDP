@@ -91,19 +91,18 @@
         <!-- ######################################################--> 
 
     <abstract>
-    <t>This document provides a list of some unwanted transport-side effects of the various Abstract goes here.</t>
+    <t>This document provides a list of some unwanted transport-side effects induced by the various networks in the wild. Potential generic solutions is also provided.</t>
     </abstract>
   </front>
 
   <middle>
 
 	<section anchor="sec:introduction" title="Introduction">
-        <t>The internet is very varied. Examples of weird and wonderful paths that support real applications and people. Understanding unwanted side effects from design choices in QUIC. Any ID focuses on the diversity of network paths.</t>
+       
+	<t>The Internet is very varied. RTT goes from miliseconds to hundreds of miliseconds. Paths can be considered as error-free while others exhibit around 5% packet losses. Data-rates goes from kbps to Gbps. Moreover, some networks can be chained to provide a whole Internet access.</t>
+	<t>Design choices in transport protocols usually considers the majority of end users but may generate unwanted side effects for corner case scenarios. To avoid middleboxes adapting the end-to-end connections and thus ossifying the networks, considering the diversity of network paths could result in transport protocols providing relevant performance for many use-cases without impacting the majority of end users.</t>
+	<t>This memo provides a list of some unwanted transport side effects and potential generic mechanims that could overcome from these issues.</t>
 
-	<section anchor="subsec:intro_requi" title="Requirements Language">
-	<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119">RFC&nbsp;2119</xref>.</t>
-	</section>
-	
 	</section>
 
         <!-- ######################################################-->
@@ -122,7 +121,6 @@
         <t>Limited rate;</t>
         <t>Varying capacity (L2 mechanisms where path varies with time);</t>
         <t>(significant) Asymmetry in rate;</t>
-        <t>Appreciate loss (impact of Transmission Loss/Recovery - unrecovered loss);</t>
         <t>Higher RTT (GEO - and effect of BoD);</t>
         <t>Varying RTT (RACK instead of FR, but could work strangely with L2 mechanisms on the last hop - 1/8 RTT is an ad hoc choice that could cause issues. Satellite constellations with low earth orbit and large variations.);</t>
         <t>Multiple very different paths (e.g. satellite and 5g);</t>
@@ -130,7 +128,21 @@
         <t>Manageability;</t>
         <t>Explicit proxies (shared certificates, etc);</t>
         </list></t>
-        <t>These don't exist in isolation, many users see several issues: (How about WiFi in tries with satellite, and there are combinations of L2 technologies.);</t>
+        <t>These don't exist in isolation, many users see several issues: (How about WiFi in tries with satellite, and there are combinations of L2 technologies.).</t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:impact_transport" title="Impact on a transport">
+
+        <t>The transport is particularly impacted: <list style="symbols">
+	<t>Effect of delay on setup exchanges;</t>
+	<t>Inadequate slow-start;</t>
+        <t>Appreciate loss (impact of Transmission Loss/Recovery - unrecovered loss) in time-based reliability schemes.</t>
+	</list></t>
 
 	</section>
 
@@ -141,11 +153,9 @@
         <section anchor="sec:solutions" title="Potential generic mechanisms">
 
         <t>Potential mechanisms (a small starter list): <list style="symbols">
-	<t>Effect of delay on setup exchanges;</t>
-	<t>Inadequate slow-start;</t>
 	<t>Dynamic Ack Ratio (faster growth, high asymmetry);</t>
-	<t>Larger initial window (with safety for larger RTT);</t>
-	<t>IW limited by a window per second (as a function of a minimal pacing</t>
+	<t>Larger initial window (with safety for larger RTT): IW limited by a window per second (as a function of a minimal pacing);</t>
+	<t>Harmonization of the transport reliability.</t>
 	</list></t>
 
 	</section>
