@@ -101,7 +101,7 @@
 	<section anchor="sec:introduction" title="Introduction">
 	<t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time-to-service.</t>
 
-	<t>As shown in <xref target="IJSCN19"></xref>, the usage of a congestion control and transport initialization not adapted to satellite communication results in higher page loading time for heavy pages in a SATCOM context. QUIC's congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>.</t>
+	<t>As shown in <xref target="IJSCN19"></xref>, the usage of a congestion control and transport initialization not adapted to satellite communication results in higher page loading time for heavy pages in a SATCOM context. QUIC's congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>. This may not be suitable for good quality of experience for users in high Bandwidth Delay-Product (BDP) networks.</t>
 
 	<t>This memo discusses a solution where a fundamental characteristic of the path is learned during the 1-RTT phase and shared with the 0-RTT phase to accelerate the initial throughput during subsequent 0-RTT connections.</t>
 
@@ -156,7 +156,7 @@
 
 	<t>High BDP networks commonly break the TCP end-to-end paradigm to adapt the transport protocol. Splitting TCP allows adaptations to this specific use-case and assessing the issues discussed in section <xref target="sec:large_bdp_connection"></xref>. PEP <xref target ="RFC3135"></xref> are commonly deployed in SATCOM infrastructure for that purpose and their deployment results in lower page load times <xref target="ICCRG100"></xref> in a SATCOM use-case.</t>
 
-	<t><xref target="NCT13"></xref>[PEP_DESC] and <xref target="RFC3135"></xref> describe the main functionalities of SATCOM TCP split solutions. Shortly, for traffic going from a gateway to an end user behind a terminal, the TCP split intercepts TCP SYN to act as the end user and adapt the data rate transmission to the SATCOM scenario. The TCP split specifically tune the TCP parameters to the context (latency, available capacity) that is measured.</t>
+	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functionalities of SATCOM TCP split solutions. Shortly, for traffic going from a gateway to an end user behind a terminal, the TCP split intercepts TCP SYN to act as the end user and adapt the data rate transmission to the SATCOM scenario. The TCP split specifically tune the TCP parameters to the context (latency, available capacity) that is measured.</t>
 
 	<t>One important advantage of a TCP split solution is that it does not require any end-to-end modifications and is independent for both client and server sides. That being said, this comes with a drawback: TCP splitters can hardly embed the most recent end-to-end improvements (e.g. ECN or TCP Fast Open support).</t> 
 
