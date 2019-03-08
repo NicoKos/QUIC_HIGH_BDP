@@ -212,7 +212,7 @@
               |&lt;-------------NewSessionTicket+
  Client aware |           +ticket_lifetime   |  
  of high BDP  |           +'opaque' field    | 
- value        |            + PMTU            |
+ path         |            + PMTU            |
               |            + connection RTT  |
               |           +'extension' field |
               |            + early_data      |
@@ -225,10 +225,10 @@
               +ClientHello------------------>|
               |+'opaque' field               | +-------------------+
               | + ...                        | |param adaptation   |
-              | + PMTU                       | |adaptation         |
-              | + connection RTT             | |e.g.               |
-              |                              | |paced and IW tuning|
+              | + PMTU                       | |e.g.               |
+              | + connection RTT             | |tuned and paced IW |
               |                              | +-------------------+
+              |                              |                      
               +&lt;----+data transmission+----->+
               |                              |
               +                              +
