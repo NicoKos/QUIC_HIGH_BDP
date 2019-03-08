@@ -90,7 +90,7 @@
         <!-- ######################################################--> 
         <!-- ######################################################--> 
 	<abstract>
-	<t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time-to-service.</t>
+	<t>0-RTT is designed to accelerate the egress throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time-to-service.</t>
 
 	<t>This memo discusses a solution where a fundamental characteristic of the path is learned during the 1-RTT phase and shared with the 0-RTT phase to accelerate the initial throughput during subsequent 0-RTT connections.</t>
 	</abstract>
@@ -191,47 +191,45 @@
         <!-- ######################################################-->
         
         <section anchor="sec:best-current-practice" title="Best current practice">
-	<t>The content of an opaque ticket does not need to be standardized for interoperability between QUIC clients and servers. This section provides examples of data that could be added in the opaque 'ticket' field by the server. The information that would be carried out in the opaque ticket are not visible by the client. The client is informed of the high BDP value with the "BDP_data" extension.</t>
-	<t>Examples of what the server could add in the opaque ticket 'field' are showed in Figure <xref target="fig:bcp_example"></xref> and detailed in the following:<list style="symbols">
-		<t>PMTU: knowing the MTU of the path would prevent the server from repeating the path validation process descrived in section 8.2 of <xref target="I-D.ietf-quic-transport"></xref> and start the 0-RTT connection with an adequate MTU;</t>
-		<t>ticket session timestamp: such as described in section <xref target="sec:e2e_sol:usage"></xref>, the age of the ticket could be provided to avoid a server that would be using obsoleted path characteristics;</t>
-		<t>connection RTT: knowing the connection RTT would help the server to safely increase the slow start of a connection following the pacing ideas of <xref target="CONEXT15"></xref><xref target="ICC16"></xref><xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref>;</t>
+	<t>This section provides examples of data that could be added in the opaque ticket field by the server. The details added by the server in the session ticket do not need to be standardized for interoperability between QUIC clients and servers because it is opaque to the client. The presence of the "BDP_data" extension field in the NewSessionTicket informs the client that the server will actively take action to improve its throughput when the session will restart.</t>
+	<t>Here are examples of information elements set by the server in the session ticket to accompany the signaling of field. These examples are illustrated in Figure <xref target="fig:bcp_example"></xref> and their purpose is detailed in the following:<list style="symbols">
+		<t>PMTU: knowing the MTU of the path would prevent the server from repeating the path validation process described in section 8.2 of <xref target="I-D.ietf-quic-transport"></xref> and start the 0-RTT connection with an adequate MTU;</t>
+		<t>ticket_lifetime: the server sets a shorter validity duration to avoid receiving obsolete path characteristics later;</t>
+		<t>connection RTT: knowing the connection RTT would help the server to safely increase the slow start of a connection following the pacing ideas of <xref target="CONEXT15"></xref><xref target="ICC16"></xref><xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref>.</t>
 	</list></t>
 	<figure anchor="fig:bcp_example" title="Example of opaque ticket content">
 		<artwork>
-           SERVER                         CLIENT
+           CLIENT                         SERVER
            +-----------------------------------+
            |          1 RTT connection         |
            +--+------------------------------+-+
               |                              |
-              +{--+1-RTT TLS1.3 HANDSHAKE+--}+
-+-----------+ |                              |
-|path charac| +{-----data-transmission------}+
-|record     | |                              |
-+-----------+ |                              |
-              |NewSessionTicket+------------}+
-              |  +'opaque' field             | Client aware of
-              |    X ...                     | high BDP value
-              |    X PMTU                    |
-              |    X ticket timestamp        |
-              |    X connection RTT          |
-              |  +'extension' field          |
-              |    X early_data              |
-              |    X BDP_data                |
+              +&lt;---1-RTT TLS1.3 HANDSHAKE--->+
+              |                              | +------------+
+              +&lt;-----data transmission------>+ |path charact|
+              |                              | |record      |
+              |                              | +------------+
+              |&lt;-------------NewSessionTicket+
+ Client aware |           +ticket_lifetime   |  
+ of high BDP  |           +'opaque' field    | 
+ value        |            + PMTU            |
+              |            + connection RTT  |
+              |           +'extension' field |
+              |            + early_data      |
+              |            + BDP_data        |
               |                              |
            +-----------------------------------+
            |          0 RTT connection         |
            +-----------------------------------+
               |                              |
-              +{-----------------+ClientHello|
- +----------+ |          +'opaque' field     |
- |param     | |            X ...             |
- |adaptation| |            X PMTU            |
- +----------+ |            X ticket timestamp|
-              |            X connection RTT  |
-              |                              |
-              |      'improved'              |
-              +{----+data transmission+-----}+
+              +ClientHello------------------>|
+              |+'opaque' field               | +-------------------+
+              | + ...                        | |param adaptation   |
+              | + PMTU                       | |adaptation         |
+              | + connection RTT             | |e.g.               |
+              |                              | |paced and IW tuning|
+              |                              | +-------------------+
+              +&lt;----+data transmission+----->+
               |                              |
               +                              +
 		</artwork>
