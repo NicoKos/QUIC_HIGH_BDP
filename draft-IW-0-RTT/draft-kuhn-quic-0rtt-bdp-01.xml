@@ -191,8 +191,8 @@
         <!-- ######################################################-->
         
         <section anchor="sec:best-current-practice" title="Best current practice">
-	<t>The content of an opaque ticket does not need to be standardized for an inter-operability of QUIC client and server. This section provides examples of how the 'BDP_data' field could be used.</t>
-	<t>Examples of what the server could add in the opaque ticket field are the following:<list>
+	<t>The content of an opaque ticket does not need to be standardized for an inter-operability of QUIC client and server. This section provides examples of data that could be added in the opaque 'ticket' field by the server.</t>
+	<t>Examples of what the server could add in the opaque ticket 'field' are the following:<list>
 		<t>PMTU;</t>
 		<t>ticket session timestamp;</t>
 		<t>connection RTT.</t>
