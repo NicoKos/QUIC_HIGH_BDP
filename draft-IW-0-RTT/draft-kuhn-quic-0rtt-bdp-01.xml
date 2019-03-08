@@ -136,7 +136,7 @@
 	<t>GEO-satellite based systems characteristics differ from terrestrial networks with:<list style="symbols">
 		<t>A large propagation delay of at least 250ms one-way delay;</t>
 		<t>A high bit-rate in case of mobile users or when a user connects behind a box using Wi-Fi;</t>
-		<t>Highl asymmetric links.</t>
+		<t>Highly asymmetric links.</t>
 	</list></t>
 
 	<t>These characteristics have an impact on end-to-end congestion controls:<list style="symbols">
@@ -171,7 +171,7 @@
 	<t>This section proposes an improvement of the initialization of 0-RTT connections over satellite communication where the client recalls the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t>
 
 	<section anchor="sec:e2e_sol:description" title="Description of the extension in the NewSessionTicket">
-	<t>A new extension named "BDP_data" is defined for NewSessionTicket. It contains the following value: BDP_value, that is the value in in bits (same unit as <xref target="RFC6349"></xref>). The reception of the field BDP_data provides the client with 3 indications:<list style="symbols">
+	<t>A new extension named "BDP_data" is defined for NewSessionTicket. It contains the following value: BDP_value, that is the value in bits (same unit as <xref target="RFC6349"></xref>). The reception of the field BDP_data provides the client with 3 indications:<list style="symbols">
 		<t>The path with this server has a large BDP;</t>
 		<t>The server added the path characteristics in the opaque 'ticket' field;</t>
 		<t>The server will optimize the reopening of the session upon reception of this opaque ticket.</t>
@@ -191,13 +191,52 @@
         <!-- ######################################################-->
         
         <section anchor="sec:best-current-practice" title="Best current practice">
-	<t>The content of an opaque ticket does not need to be standardized for an inter-operability of QUIC client and server. This section provides examples of data that could be added in the opaque 'ticket' field by the server.</t>
-	<t>Examples of what the server could add in the opaque ticket 'field' are the following:<list>
-		<t>PMTU;</t>
-		<t>ticket session timestamp;</t>
-		<t>connection RTT.</t>
+	<t>The content of an opaque ticket does not need to be standardized for interoperability between QUIC clients and servers. This section provides examples of data that could be added in the opaque 'ticket' field by the server. The information that would be carried out in the opaque ticket are not visible by the client. The client is informed of the high BDP value with the "BDP_data" extension.</t>
+	<t>Examples of what the server could add in the opaque ticket 'field' are showed in Figure <xref target="fig:bcp_example"></xref> and detailed in the following:<list style="symbols">
+		<t>PMTU: knowing the MTU of the path would prevent the server from repeating the path validation process descrived in section 8.2 of <xref target="I-D.ietf-quic-transport"></xref> and start the 0-RTT connection with an adequate MTU;</t>
+		<t>ticket session timestamp: such as described in section <xref target="sec:e2e_sol:usage"></xref>, the age of the ticket could be provided to avoid a server that would be using obsoleted path characteristics;</t>
+		<t>connection RTT: knowing the connection RTT would help the server to safely increase the slow start of a connection following the pacing ideas of <xref target="CONEXT15"></xref><xref target="ICC16"></xref><xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref>;</t>
 	</list></t>
-	<t>The information that would be carried out in the opaque ticket are not visible by the client.</t>
+	<figure anchor="fig:bcp_example" title="Example of opaque ticket content">
+		<artwork>
+           SERVER                         CLIENT
+           +-----------------------------------+
+           |          1 RTT connection         |
+           +--+------------------------------+-+
+              |                              |
+              +{--+1-RTT TLS1.3 HANDSHAKE+--}+
++-----------+ |                              |
+|path charac| +{-----data-transmission------}+
+|record     | |                              |
++-----------+ |                              |
+              |NewSessionTicket+------------}+
+              |  +'opaque' field             | Client aware of
+              |    X ...                     | high BDP value
+              |    X PMTU                    |
+              |    X ticket timestamp        |
+              |    X connection RTT          |
+              |  +'extension' field          |
+              |    X early_data              |
+              |    X BDP_data                |
+              |                              |
+           +-----------------------------------+
+           |          0 RTT connection         |
+           +-----------------------------------+
+              |                              |
+              +{-----------------+ClientHello|
+ +----------+ |          +'opaque' field     |
+ |param     | |            X ...             |
+ |adaptation| |            X PMTU            |
+ +----------+ |            X ticket timestamp|
+              |            X connection RTT  |
+              |                              |
+              |      'improved'              |
+              +{----+data transmission+-----}+
+              |                              |
+              +                              +
+		</artwork>
+	</figure>
+
 	</section>
 
         <!-- ######################################################-->
