@@ -192,10 +192,10 @@
         
         <section anchor="sec:best-current-practice" title="Best current practice">
 	<t>This section provides examples of data that could be added in the opaque ticket field by the server. The details added by the server in the session ticket do not need to be standardized for interoperability between QUIC clients and servers because it is opaque to the client. The presence of the "BDP_data" extension field in the NewSessionTicket informs the client that the server will actively take action to improve its throughput when the session will restart.</t>
-	<t>Here are examples of information elements set by the server in the session ticket to accompany the signaling of field. These examples are illustrated in Figure <xref target="fig:bcp_example"></xref> and their purpose is detailed in the following:<list style="symbols">
-		<t>PMTU: knowing the MTU of the path would prevent the server from repeating the path validation process described in section 8.2 of <xref target="I-D.ietf-quic-transport"></xref> and start the 0-RTT connection with an adequate MTU;</t>
-		<t>ticket_lifetime: the server sets a shorter validity duration to avoid receiving obsolete path characteristics later;</t>
-		<t>connection RTT: knowing the connection RTT would help the server to safely increase the slow start of a connection following the pacing ideas of <xref target="CONEXT15"></xref><xref target="ICC16"></xref><xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref>.</t>
+	<t>Here are examples of information elements set by the server in the session ticket to accompany the signaling of field. These examples are illustrated in <xref target="fig:bcp_example"></xref> and their purpose is detailed in the following:<list style="symbols">
+		<t>PMTU: The knowledge of the MTU of the previous path improves the time to service because it reduces the duration of the path validation process described in section 8.2 of <xref target="I-D.ietf-quic-transport"></xref>;</t>
+		<t>connection RTT: The knowledge of the characteristics of the previous connection RTT improves the throughput because the server can safely improve the slow start: e.g. using pacing models of <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> can result in high IW for high RTT paths and a common IW for paths with smaller RTT;</t>
+		<t>ticket_lifetime: The server sets a shorter validity duration to avoid receiving obsolete path characteristics later; as an example it reduces the validity to one day.</t>
 	</list></t>
 	<figure anchor="fig:bcp_example" title="Example of opaque ticket content">
 		<artwork>
@@ -212,7 +212,8 @@
               |&lt;-------------NewSessionTicket+
  Client aware |           +ticket_lifetime   |  
  of high BDP  |           +'opaque' field    | 
- path         |            + PMTU            |
+ path         |            + ...             |
+              |            + PMTU            |
               |            + connection RTT  |
               |           +'extension' field |
               |            + early_data      |
