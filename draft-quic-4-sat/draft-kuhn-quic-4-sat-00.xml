@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="yes" ?>
+<?rfc toc="yes"?>
+<?rfc tocdepth="4"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<rfc 
+	category="info" 
+        docName="draft-kuhn-quic-0rtt-bdp-02"
+	ipr="trust200902">
+  <!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     they will automatically be output with "(if approved)" -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+         full title is longer than 39 characters -->
+
+    <title abbrev="Transport for 0-RTT">Transport parameters for 0-RTT connections</title>
+   
+    <author role="editor" fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
+      <organization>CNES</organization>
+      <address>
+        <postal>
+          <street>18 Avenue Edouard Belin</street>
+          <city>Toulouse</city>
+          <region></region>
+          <code>31400</code>
+          <country>France</country>
+        </postal>
+        <phone></phone>
+        <email>nicolas.kuhn@cnes.fr</email>
+      </address>
+    </author>
+
+    <author role="editor" fullname="Emile Stephan" initials="E" surname="Stephan">
+      <organization>Orange</organization>
+      <address>
+        <postal>
+          <street>2, avenue Pierre Marzin</street>
+          <city>Lannion</city>
+          <region></region>
+          <code>22300</code>
+          <country>France</country>
+        </postal>
+        <phone></phone>
+        <email>emile.stephan@orange.com</email>
+      </address>
+    </author>
+  
+    <date month="March" year="2019" />
+
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+         in the current day for you. If only the current year is specified, xml2rfc will fill 
+	 in the current day and month for you. If the year is not the current one, it is 
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	 specify just the year. -->
+
+    <!-- Meta-data Declarations -->
+
+    <area>Transport</area>
+
+    <workgroup>Internet Engineering Task Force</workgroup>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.  
+	 If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+    <keyword>QUIC, high BDP, Transport, 0-RTT</keyword>
+
+    <!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Head of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+	<abstract>
+	<t>0-RTT is designed to accelerate the egress throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time-to-service.</t>
+
+	<t>This memo discusses a solution where:<list style="numbers">
+		<t>the server learns a fundamental characteristic of the path during the 1-RTT phase;</t>
+		<t>the server sends that information to the client at the end of the 1-RTT phase;</t>
+		<t>the server and the client exploit that information to improve the time-to-service during subsequent 0-RTT connections.</t>
+		</list></t>
+	</abstract>
+  </front>
+
+  <middle>
+
+	<section anchor="sec:introduction" title="Introduction">
+	<t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time-to-service.</t>
+
+	<t>As shown in <xref target="IJSCN19"></xref>, the usage of a congestion control and transport initialization not adapted to satellite communication results in higher page loading time for heavy pages in a SATCOM context. QUIC's congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>. This may not be suitable for good quality of experience for users in high Bandwidth Delay-Product (BDP) networks.</t>
+
+	<t>This memo discusses a solution where:<list style="numbers">
+	<t>the server learns a fundamental characteristic of the path during the 1-RTT phase;</t>
+	<t>the server sends that information to the client at the end of the 1-RTT phase;</t>
+	<t>the server and the client exploit that information to improve the time-to-service during subsequent 0-RTT connections.</t>
+	</list></t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Body of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:quic-connec-est" title="QUIC connection establishment: differences between 1-RTT and 0-RTT connections">
+
+	<t>This section recalls how 1-RTT and 0-RTT work.</t>
+
+        <t>QUIC leverages the 2 handshakes of TLS1.3 <xref target ="I-D.ietf-quic-tls"></xref>. The 1-RTT handshake initiates a first set of credentials. When a handshake achieves successfully, the server pushes information learned about the session to the client in an opaque session ticket (see section 4.6.1 of <xref target="RFC8446"></xref>). The pieces of information of the opaque ticket are meaningless to the client. A client willing to establish a fast re-opening of the session pushes back this opaque 'ticket' in a 0-RTT handshake and sends early application data.</t>
+
+	<t>In practice, the server sends the 'ticket' in a NewSessionTicket record <xref target="I-D.ietf-quic-tls"></xref>. The structure of the NewSessionTicket includes the opaque 'ticket' and an 'extensions' field. The NewSessionTicket carries an additional field named 'early_data' which indicates to the client the maximal size of application data to insert in the 0-RTT message.</t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:large_bdp_connection" title="Large BDP connections">
+
+	<t>GEO-satellite based systems characteristics differ from terrestrial networks with:<list style="symbols">
+		<t>A large propagation delay of at least 250ms one-way delay;</t>
+		<t>A high loss-rate (e.g. mobile users or users behind a Wi-Fi link);</t>
+		<t>Highly asymmetric links.</t>
+	</list></t>
+	<t>More information on satellite links characteristics can be found in <xref target="RFC2488"></xref>.</t>
+
+	<t>These characteristics have an impact on end-to-end congestion controls:<list style="symbols">
+		<t>Transport initialization: the 3-way handshake takes a long time reducing the time at which actual data can be transmitted;</t>
+		<t>Maximum windows sizing: to fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets;</t>
+		<t>Reliability: packet losses detection and correction is slow and the time needed for the end server to react to a congestion event may not be relevant;</t>
+		<t>Getting up to speed: the exponential increase of the data rate transmission for a channel capacity probing is slowed down when the RTT is high.</t>
+	</list></t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:tcp_split_solution" title="TCP split solution">
+
+	<t>High BDP networks commonly break the TCP end-to-end paradigm to adapt the transport protocol. Splitting TCP allows adaptations to this specific use-case and assessing the issues discussed in section <xref target="sec:large_bdp_connection"></xref>. PEP <xref target ="RFC3135"></xref> are commonly deployed in SATCOM infrastructure for that purpose and their deployment can result in 50% page load time reduction in a SATCOM use-case <xref target="ICCRG100"></xref>.</t>
+
+	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functionalities of SATCOM TCP split solutions. Shortly, for traffic going from a gateway to an end user behind a terminal, the TCP split intercepts TCP SYN to act as the end user and adapt the data rate transmission to the SATCOM scenario. The TCP split specifically tune the TCP parameters to the context (latency, available capacity) that is measured.</t>
+
+	<t>One important advantage of a TCP split solution is that it does not require any end-to-end modifications and is independent for both client and server sides. That being said, this comes with a drawback: TCP splitters can hardly embed the most recent end-to-end improvements (e.g. ECN or TCP Fast Open support).</t> 
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:e2e_sol" title="End-to-end solution">
+
+	<t>This section proposes an improvement of the initialization of 0-RTT connections over satellite communication where the client recalls the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t>
+
+	<section anchor="sec:e2e_sol:description" title="Description of the extension in the NewSessionTicket">
+	<t>A new extension named "BDP_data" is defined for NewSessionTicket. It contains the following value: BDP_value, that is the value in bits (same unit as <xref target="RFC6349"></xref>). The reception of the field BDP_data provides the client with 3 indications:<list style="symbols">
+		<t>The path with this server has a large BDP;</t>
+		<t>The server added the path characteristics in the opaque 'ticket' field;</t>
+		<t>The server will optimize the reopening of the session upon reception of this opaque ticket.</t>
+	</list></t> 
+	</section>	
+	
+	<section anchor="sec:e2e_sol:usage" title="Usage of the extension in the NewSessionTicket">
+	<t>A server measures a connection BDP far larger than usual. It includes the path characteristics in the opaque ticket it sends to the client in a NewSessionTicket message. The message includes an additional 'extensions' field named 'BDP_data'. The client stores the session ticket and the 'BDP_data' field.</t>
+	<t>When the client reconnects to this server in 0-RTT mode, it pushes back this session ticket in the ClientHello and prepares itself to receive data in the context given by the 'BDP_data' field (The client does not send the 'BDP_data' field back to the server). The server receives the session ticket and extracts the BDP context. It uses this information to provide a throughput closer to the capacity of the path.</t>
+	<t>As the validity of the path characteristics may change over the time the server sets the age of the ticket (see section 4.2.11.1 of <xref target="RFC8446"></xref>) to a short duration or updates the ticket when the path characteristics of the current connection changes.</t>
+	</section>
+	
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:best-current-practice" title="Best current practice">
+	<t>This section provides examples of data that could be added in the opaque ticket field by the server. The details added by the server in the session ticket do not need to be standardized for interoperability between QUIC clients and servers because it is opaque to the client. The presence of the "BDP_data" extension field in the NewSessionTicket informs the client that the server will actively take action to improve its throughput when the session will restart.</t>
+	<t>Here are examples of information elements set by the server in the session ticket to accompany the signaling of field. These examples are illustrated in <xref target="fig:bcp_example"></xref> and their purpose is detailed in this section.<list style="symbols">
+		<t>client aware of the high BDP: The section 7.3.1 of <xref target="I-D.ietf-quic-transport"></xref> indicates that the "A client that attempts to send 0-RTT data MUST remember the transport parameters used by the server". On top of other transport parameters used by the server, knowing that the BDP is high let the client adapt parameters specifically. As example, the client could adapt the ACK ratio following the discussion in Issue 1978 of the GITHUB repository.</t>
+		<t>PMTU: The knowledge of the MTU of the previous path improves the time to service because it reduces the duration of the path validation process described in section 8.2 of <xref target="I-D.ietf-quic-transport"></xref>.</t>
+		<t>connection RTT: The knowledge of the characteristics of the previous connection RTT improves the throughput because the server can safely improve the slow start: e.g. using pacing models of <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> can result in high IW for high RTT paths and a common IW for paths with smaller RTT. The results presented in <xref target="ICC16"></xref> show that for both files of 15 kB and 750 kB, the proposed solution reduces the time to download by approximatively 2 seconds whether the RTT is 50ms or 500ms.</t>
+		<t>ticket_lifetime: The server sets a shorter validity duration to avoid receiving obsolete path characteristics later; as an example it reduces the validity to one day.</t>
+	</list></t>
+	<figure anchor="fig:bcp_example" title="Example of opaque ticket content">
+		<artwork>
+           CLIENT                         SERVER
+           +-----------------------------------+
+           |          1 RTT connection         |
+           +--+------------------------------+-+
+              |                              |
+              +&lt;---1-RTT TLS1.3 HANDSHAKE--->+
+              |                              | +------------+
+              +&lt;-----data transmission------>+ |path charact|
+              |                              | |record      |
+              |                              | +------------+
+              |&lt;-------------NewSessionTicket+
+ Client aware |           +ticket_lifetime   |  
+ of high BDP  |           +'opaque' field    | 
+ path         |            + ...             |
+              |            + PMTU            |
+              |            + connection RTT  |
+              |           +'extension' field |
+              |            + early_data      |
+              |            + BDP_data        |
+              |                              |
+           +-----------------------------------+
+           |          0 RTT connection         |
+           +-----------------------------------+
+              |                              |
+              +ClientHello------------------>|
+              |+'opaque' field               | +-------------------+
+              | + ...                        | |param adaptation   |
+              | + PMTU                       | |e.g.               |
+              | + connection RTT             | |tuned and paced IW |
+              |                              | +-------------------+
+              |                              |                      
+              +&lt;----+data transmission+----->+
+              |                              |
+              +                              +
+		</artwork>
+	</figure>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:discussion" title="Discussion">
+
+	<t>The proposal made in this draft follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_data' proposal aims at improving its ingress traffic. Improving the ingress traffic of an end user can result in drastic quality-of-experience improvements. As example, this contribution enables the exploitation of the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection to halve the page load time of a web page download.</t>
+	<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but the maintenance is complexed since web browsers' versions often change.</t> -->
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Tail of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+	<section anchor="sec:acknowledgements" title="Acknowledgements">
+	<t>None.</t>
+	</section>
+
+	<section anchor="sec:contributors" title="Contributors">
+	<t>None.</t>
+	</section>
+
+	<section anchor="sec:IANA" title="IANA Considerations">
+	<t>TBD: text is required to register the extension BDP_data field.</t>
+	</section>
+
+	<section anchor="sec:ecurity" title="Security Considerations">
+	<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection. The exchange and the information are protected both by the TLS encryption and the NewSessionTicket (see section 4.6.1 of <xref target="RFC8446"></xref>).</t>
+	<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_data' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_data' field.</t>
+	</section>
+	</middle>
+
+	<!--  *****BACK MATTER ***** -->
+	<back>
+	<!-- References split into informative and normative -->
+	<!-- There are 2 ways to insert reference entries from the citation libraries:
+	1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+	2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+	(for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+	Both are cited textually in the same manner: by using xref elements.
+	If you use the PI option, xml2rfc will, by default, try to find included files in the same
+	directory as the including file. You can also define the XML_LIBRARY environment variable
+	with a value containing a set of directories to search.  These can be either in the local
+	filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+	<references title="Normative References">
+		&RFC2119;
+	</references>
+
+	<references title="Informative References">
+		<?rfc include="reference.RFC.2488.xml"?>
+		<?rfc include="reference.RFC.3135.xml"?>
+		<?rfc include="reference.RFC.6349.xml"?>
+		<?rfc include="reference.RFC.6928.xml"?>
+		<?rfc include="reference.RFC.8446.xml"?>
+		<?rfc include="reference.I-D.ietf-quic-tls.xml"?> 
+		<?rfc include="reference.I-D.ietf-quic-transport.xml"?> 
+		<?rfc include="reference.I-D.ietf-quic-recovery.xml"?> 
+		<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
+		<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
+                <reference anchor="ICCRG100">
+                    <front>
+                    <title>MPTCP and BBR performance over Internet satellite paths</title>
+                    <author initials="N" surname="Kuhn">
+                    </author>
+                    <date year="2017" />
+                    </front>
+                    <seriesInfo name="IETF ICCRG" value="100" />
+                </reference>
+		 <reference anchor="IJSCN19">
+                    <front>
+                    <title>Google QUIC performance over a public SATCOM access</title>
+                    <author initials="L" surname="Thomas">
+                    </author>
+                    <author initials="E" surname="Dubois">
+                    </author>
+                    <author initials="N" surname="Kuhn">
+                    </author>
+                    <author initials="E" surname="Lochin">
+                    </author>
+                    <date year="2019" />
+                    </front>
+                    <seriesInfo name="International Journal of Satellite Communications and Networking" value="" />
+                </reference>
+                <reference anchor="CONEXT15">
+                    <front>
+                    <title>Halfback: Running Short Flows Quickly and Safely</title>
+		    <author initials="Q" surname="Li">
+                    </author>
+		    <author initials="M" surname="Dong">
+                    </author>
+		    <author initials="P B" surname="Godfrey">
+                    </author>
+                    <date year="2015" />
+                    </front>
+                    <seriesInfo name="ACM CoNEXT" value="" />
+                </reference>
+                <reference anchor="NCT13">
+                    <front>
+                    <title>A new survey on improving TCP performances over geostationary satellite link</title>
+                    <author initials="A" surname="Pirovano">
+                    </author>
+                    <author initials="F" surname="Garcia">
+                    </author>
+                    <date year="2013" />
+                    </front>
+                    <seriesInfo name="Network and Communication Technologies" value=""/>
+                </reference>
+                <reference anchor="ICC16">
+                    <front>
+                    <title>Reducing web latency through TCP IW: Be smart</title>
+                    <author initials="R" surname="Sallantin">
+                    </author>
+                    <author initials="C" surname="Baudoin">
+                    </author>
+                    <author initials="E" surname="Chaput">
+                    </author>
+                    <author initials="F" surname="Arnal">
+                    </author>
+                    <author initials="E" surname="Dubois">
+                    </author>
+                    <author initials="A-L" surname="Beylot">
+                    </author>
+                    <date year="2016" />
+                    </front>
+                    <seriesInfo name="IEEE ICC" value=""/>
+                </reference>
+       	</references>
+	</back>
+</rfc>
