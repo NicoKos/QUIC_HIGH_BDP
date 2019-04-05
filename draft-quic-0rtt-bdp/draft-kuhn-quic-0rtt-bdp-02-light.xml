@@ -105,8 +105,6 @@
 	<section anchor="sec:introduction" title="Introduction">
 	<t>0-RTT is designed to accelerate the throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time-to-service.</t>
 
-	<t>As shown in <xref target="IJSCN19"></xref>, the usage of a congestion control and transport initialization not adapted to satellite communication results in higher page loading time for heavy pages in a SATCOM context. QUIC's congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>. This may not be suitable for good quality of experience for users in high Bandwidth Delay-Product (BDP) networks.</t>
-
 	<t>This memo discusses a solution where:<list style="numbers">
 	<t>the server learns a fundamental characteristic of the path during the 1-RTT phase;</t>
 	<t>the server sends that information to the client at the end of the 1-RTT phase;</t>
@@ -139,45 +137,7 @@
         <!-- New section -->
         <!-- ######################################################-->
         
-        <section anchor="sec:large_bdp_connection" title="Large BDP connections">
-
-	<t>GEO-satellite based systems characteristics differ from terrestrial networks with:<list style="symbols">
-		<t>A large propagation delay of at least 250ms one-way delay;</t>
-		<t>A high loss-rate (e.g. mobile users or users behind a Wi-Fi link);</t>
-		<t>Highly asymmetric links.</t>
-	</list></t>
-	<t>More information on satellite links characteristics can be found in <xref target="RFC2488"></xref>.</t>
-
-	<t>These characteristics have an impact on end-to-end congestion controls:<list style="symbols">
-		<t>Transport initialization: the 3-way handshake takes a long time reducing the time at which actual data can be transmitted;</t>
-		<t>Maximum windows sizing: to fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets;</t>
-		<t>Reliability: packet losses detection and correction is slow and the time needed for the end server to react to a congestion event may not be relevant;</t>
-		<t>Getting up to speed: the exponential increase of the data rate transmission for a channel capacity probing is slowed down when the RTT is high.</t>
-	</list></t>
-
-	</section>
-
-        <!-- ######################################################-->
-        <!-- New section -->
-        <!-- ######################################################-->
-        
-        <section anchor="sec:tcp_split_solution" title="TCP split solution">
-
-	<t>High BDP networks commonly break the TCP end-to-end paradigm to adapt the transport protocol. Splitting TCP allows adaptations to this specific use-case and assessing the issues discussed in section <xref target="sec:large_bdp_connection"></xref>. PEP <xref target ="RFC3135"></xref> are commonly deployed in SATCOM infrastructure for that purpose and their deployment can result in 50% page load time reduction in a SATCOM use-case <xref target="ICCRG100"></xref>.</t>
-
-	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functionalities of SATCOM TCP split solutions. Shortly, for traffic going from a gateway to an end user behind a terminal, the TCP split intercepts TCP SYN to act as the end user and adapt the data rate transmission to the SATCOM scenario. The TCP split specifically tune the TCP parameters to the context (latency, available capacity) that is measured.</t>
-
-	<t>One important advantage of a TCP split solution is that it does not require any end-to-end modifications and is independent for both client and server sides. That being said, this comes with a drawback: TCP splitters can hardly embed the most recent end-to-end improvements (e.g. ECN or TCP Fast Open support).</t> 
-
-	</section>
-
-        <!-- ######################################################-->
-        <!-- New section -->
-        <!-- ######################################################-->
-        
         <section anchor="sec:e2e_sol" title="End-to-end solution">
-
-	<t>This section proposes an improvement of the initialization of 0-RTT connections over satellite communication where the client recalls the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t>
 
 	<section anchor="sec:e2e_sol:description" title="Description of the extension in the NewSessionTicket">
 	<t>A new extension named "BDP_data" is defined for NewSessionTicket. It contains the following value: BDP_value, that is the value in bits (same unit as <xref target="RFC6349"></xref>). The reception of the field BDP_data provides the client with 3 indications:<list style="symbols">
