@@ -90,13 +90,9 @@
         <!-- ######################################################--> 
         <!-- ######################################################--> 
 	<abstract>
-	<t>0-RTT is designed to accelerate the egress throughput at the establishment of a connection. There are cases where 0-RTT alone does not improve the time-to-service.</t>
-
-	<t>This memo discusses a solution where:<list style="numbers">
-		<t>the server learns a fundamental characteristic of the path during the 1-RTT phase;</t>
-		<t>the server sends that information to the client at the end of the 1-RTT phase;</t>
-		<t>the server and the client exploit that information to improve the time-to-service during subsequent 0-RTT connections.</t>
-		</list></t>
+	<t>The NewSessionTicket record carries a field which tells the client the volume of early data it can include in the 0-RTT message when re connecting to that peer. There are cases where this is not sufficient to improve the time-to-service. 
+This memo discusses a solution where path adaptation parameters are shared between the peers to accelerate the throughput in both direction in subsequent 0-RTT connections.
+</t>
 	</abstract>
   </front>
 
