@@ -10,23 +10,23 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc 
-	category="info" 
+<rfc
+	category="info"
         docName="draft-kuhn-quic-0rtt-bdp-02"
 	ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
-     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     you can add the attributes updates="NNNN" and obsoletes="NNNN"
      they will automatically be output with "(if approved)" -->
 
   <!-- ***** FRONT MATTER ***** -->
 
   <front>
-    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+    <!-- The abbreviated title is used in the page header - it is only necessary if the
          full title is longer than 39 characters -->
 
     <title abbrev="Transport for 0-RTT">Transport parameters for 0-RTT connections</title>
-   
+
     <author role="editor" fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
       <organization>CNES</organization>
       <address>
@@ -56,14 +56,14 @@
         <email>emile.stephan@orange.com</email>
       </address>
     </author>
-  
+
     <date month="April" year="2019" />
 
-    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
-         in the current day for you. If only the current year is specified, xml2rfc will fill 
-	 in the current day and month for you. If the year is not the current one, it is 
-	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
-	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill
+         in the current day for you. If only the current year is specified, xml2rfc will fill
+	 in the current day and month for you. If the year is not the current one, it is
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to
 	 specify just the year. -->
 
     <!-- Meta-data Declarations -->
@@ -73,11 +73,11 @@
     <workgroup>Internet Engineering Task Force</workgroup>
 
     <!-- WG name at the upperleft corner of the doc,
-         IETF is fine for individual submissions.  
+         IETF is fine for individual submissions.
 	 If this element is not present, the default is "Network Working Group",
          which is used by the RFC Editor as a nod to the history of the IETF. -->
 
-    <keyword>QUIC, high BDP, Transport, 0-RTT</keyword>
+    <keyword>QUIC, high BDP, Transport, 0-RTT, eearly_data</keyword>
 
     <!-- Keywords will be incorporated into HTML output
          files in a meta tag but they have no effect on text or nroff
@@ -87,10 +87,10 @@
         <!-- ######################################################-->
         <!-- ######################################################-->
         <!-- Head of the document -->
-        <!-- ######################################################--> 
-        <!-- ######################################################--> 
+        <!-- ######################################################-->
+        <!-- ######################################################-->
 	<abstract>
-	<t>The NewSessionTicket record carries a field which tells the client the volume of early data it can include in the 0-RTT message when re connecting to that peer. There are cases where this is not sufficient to improve the time-to-service. 
+	<t>The NewSessionTicket record carries a field which tells the client the volume of early data it can include in the 0-RTT message when re connecting to that peer. There are cases where this is not sufficient to improve the time-to-service.
 This memo discusses a solution where path adaptation parameters are shared between the peers to accelerate the throughput in both direction in subsequent 0-RTT connections.
 </t>
 	</abstract>
@@ -114,13 +114,13 @@ This memo discusses a solution where path adaptation parameters are shared betwe
         <!-- ######################################################-->
         <!-- ######################################################-->
         <!-- Body of the document -->
-        <!-- ######################################################--> 
-        <!-- ######################################################--> 
+        <!-- ######################################################-->
+        <!-- ######################################################-->
 
         <!-- ######################################################-->
         <!-- New section -->
         <!-- ######################################################-->
-        
+
         <section anchor="sec:quic-connec-est" title="QUIC connection establishment: differences between 1-RTT and 0-RTT connections">
 
 	<t>This section recalls how 1-RTT and 0-RTT work.</t>
@@ -134,7 +134,7 @@ This memo discusses a solution where path adaptation parameters are shared betwe
         <!-- ######################################################-->
         <!-- New section -->
         <!-- ######################################################-->
-        
+
         <section anchor="sec:e2e_sol" title="End-to-end solution">
 
 	<t>This section proposes an improvement of the initialization of 0-RTT connections over satellite communication where the client recalls the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t>
@@ -144,21 +144,21 @@ This memo discusses a solution where path adaptation parameters are shared betwe
 		<t>The path with this server has a large BDP;</t>
 		<t>The server added the path characteristics in the opaque 'ticket' field;</t>
 		<t>The server will optimize the reopening of the session upon reception of this opaque ticket.</t>
-	</list></t> 
-	</section>	
-	
+	</list></t>
+	</section>
+
 	<section anchor="sec:e2e_sol:usage" title="Usage of the extension in the NewSessionTicket">
 	<t>A server measures a connection BDP far larger than usual. It includes the path characteristics in the opaque ticket it sends to the client in a NewSessionTicket message. The message includes an additional 'extensions' field named 'BDP_data'. The client stores the session ticket and the 'BDP_data' field.</t>
 	<t>When the client reconnects to this server in 0-RTT mode, it pushes back this session ticket in the ClientHello and prepares itself to receive data in the context given by the 'BDP_data' field (The client does not send the 'BDP_data' field back to the server). The server receives the session ticket and extracts the BDP context. It uses this information to provide a throughput closer to the capacity of the path.</t>
 	<t>As the validity of the path characteristics may change over the time the server sets the age of the ticket (see section 4.2.11.1 of <xref target="RFC8446"></xref>) to a short duration or updates the ticket when the path characteristics of the current connection changes.</t>
 	</section>
-	
+
 	</section>
 
         <!-- ######################################################-->
         <!-- New section -->
         <!-- ######################################################-->
-        
+
         <section anchor="sec:best-current-practice" title="Best current practice">
 	<t>This section provides examples of data that could be added in the opaque ticket field by the server. The details added by the server in the session ticket do not need to be standardized for interoperability between QUIC clients and servers because it is opaque to the client. The presence of the "BDP_data" extension field in the NewSessionTicket informs the client that the server will actively take action to improve its throughput when the session will restart.</t>
 	<t>Here are examples of information elements set by the server in the session ticket to accompany the signaling of field. These examples are illustrated in <xref target="fig:bcp_example"></xref> and their purpose is detailed in this section.<list style="symbols">
@@ -180,8 +180,8 @@ This memo discusses a solution where path adaptation parameters are shared betwe
               |                              | |record      |
               |                              | +------------+
               |&lt;-------------NewSessionTicket+
- Client aware |           +ticket_lifetime   |  
- of high BDP  |           +'opaque' field    | 
+ Client aware |           +ticket_lifetime   |
+ of high BDP  |           +'opaque' field    |
  path         |            + ...             |
               |            + PMTU            |
               |            + connection RTT  |
@@ -199,7 +199,7 @@ This memo discusses a solution where path adaptation parameters are shared betwe
               | + PMTU                       | |e.g.               |
               | + connection RTT             | |tuned and paced IW |
               |                              | +-------------------+
-              |                              |                      
+              |                              |
               +&lt;----+data transmission+----->+
               |                              |
               +                              +
@@ -211,7 +211,7 @@ This memo discusses a solution where path adaptation parameters are shared betwe
         <!-- ######################################################-->
         <!-- New section -->
         <!-- ######################################################-->
-        
+
         <section anchor="sec:discussion" title="Discussion">
 
 	<t>The proposal made in this draft follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_data' proposal aims at improving its ingress traffic. Improving the ingress traffic of an end user can result in drastic quality-of-experience improvements. As example, this contribution enables the exploitation of the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection to halve the page load time of a web page download.</t>
@@ -222,8 +222,8 @@ This memo discusses a solution where path adaptation parameters are shared betwe
         <!-- ######################################################-->
         <!-- ######################################################-->
         <!-- Tail of the document -->
-        <!-- ######################################################--> 
-        <!-- ######################################################--> 
+        <!-- ######################################################-->
+        <!-- ######################################################-->
 
 	<section anchor="sec:acknowledgements" title="Acknowledgements">
 	<t>None.</t>
@@ -266,9 +266,9 @@ This memo discusses a solution where path adaptation parameters are shared betwe
 		<?rfc include="reference.RFC.6349.xml"?>
 		<?rfc include="reference.RFC.6928.xml"?>
 		<?rfc include="reference.RFC.8446.xml"?>
-		<?rfc include="reference.I-D.ietf-quic-tls.xml"?> 
-		<?rfc include="reference.I-D.ietf-quic-transport.xml"?> 
-		<?rfc include="reference.I-D.ietf-quic-recovery.xml"?> 
+		<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
+		<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
+		<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
 		<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
 		<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
                 <reference anchor="ICCRG100">
