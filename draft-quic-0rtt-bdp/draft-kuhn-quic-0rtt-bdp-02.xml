@@ -88,7 +88,7 @@
 		<!-- ######################################################-->
 		<abstract>
 			<t>The NewSessionTicket record carries a field which tells the client the volume of early data it can include in the 0-RTT messages when re connecting to that peer. There are cases where this is not sufficient to improve the time-to-service.
-This memo discusses a solution where path adaptation parameters are shared between the peers to accelerate the throughput of subsequent 0-RTT connections in both direction.
+				This memo discusses a solution where path adaptation parameters are shared between the peers to accelerate the throughput of subsequent 0-RTT connections in each direction.
 			</t>
 		</abstract>
 	</front>
@@ -170,84 +170,84 @@ This memo discusses a solution where path adaptation parameters are shared betwe
 			</t>
 			<figure anchor="fig:bcp_example" title="Example of opaque ticket content">
 				<artwork>
-           CLIENT                         SERVER
-           +-----------------------------------+
-           |          1 RTT connection         |
-           +--+------------------------------+-+
-              |                              |
-              +&lt;---1-RTT TLS1.3 HANDSHAKE---&gt;+
-              |                              | +------------+
-              +&lt;-----data transmission------&gt;+ |path charact|
-              |                              | |record      |
-              |                              | +------------+
-              |&lt;-------------NewSessionTicket+
- Client aware |           +ticket_lifetime   |
- of high BDP  |           +'opaque' field    |
- path         |            + ...             |
-              |            + PMTU            |
-              |            + connection RTT  |
-              |           +'extension' field |
-              |            + early_data      |
-              |            + BDP_data        |
-              |                              |
-           +-----------------------------------+
-           |          0 RTT connection         |
-           +-----------------------------------+
-              |                              |
-              +ClientHello------------------&gt;|
-              |+'opaque' field               | +-------------------+
-              | + ...                        | |param adaptation   |
-              | + PMTU                       | |e.g.               |
-              | + connection RTT             | |tuned and paced IW |
-              |                              | +-------------------+
-              |                              |
-              +&lt;----+data transmission+-----&gt;+
-              |                              |
-              +                              +
-		</artwork>
-	</figure>
+					CLIENT                         SERVER
+					+-----------------------------------+
+					|          1 RTT connection         |
+					+--+------------------------------+-+
+					|                              |
+					+&lt;---1-RTT TLS1.3 HANDSHAKE---&gt;+
+					|                              | +------------+
+					+&lt;-----data transmission------&gt;+ |path charact|
+					|                              | |record      |
+					|                              | +------------+
+					|&lt;-------------NewSessionTicket+
+					Client aware |           +ticket_lifetime   |
+					of high BDP  |           +'opaque' field    |
+					path         |            + ...             |
+					|            + PMTU            |
+					|            + connection RTT  |
+					|           +'extension' field |
+					|            + early_data      |
+					|            + BDP_data        |
+					|                              |
+					+-----------------------------------+
+					|          0 RTT connection         |
+					+-----------------------------------+
+					|                              |
+					+ClientHello------------------&gt;|
+					|+'opaque' field               | +-------------------+
+					| + ...                        | |param adaptation   |
+					| + PMTU                       | |e.g.               |
+					| + connection RTT             | |tuned and paced IW |
+					|                              | +-------------------+
+					|                              |
+					+&lt;----+data transmission+-----&gt;+
+					|                              |
+					+                              +
+				</artwork>
+			</figure>
 
-</section>
+		</section>
 
-<!-- ######################################################-->
-<!-- New section -->
-<!-- ######################################################-->
+		<!-- ######################################################-->
+		<!-- New section -->
+		<!-- ######################################################-->
 
-<section anchor="sec:discussion" title="Discussion">
+		<section anchor="sec:discussion" title="Discussion">
 
-	<t>The proposal made in this draft follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_data' proposal aims at improving its ingress traffic. Improving the ingress traffic of an end user can result in drastic quality-of-experience improvements. As example, this contribution enables the exploitation of the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection to halve the page load time of a web page download.</t>
-	<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but the maintenance is complexed since web browsers' versions often change.</t> -->
+			<t>The proposal made in this draft follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_data' proposal aims at improving its ingress traffic. Improving the ingress traffic of an end user can result in drastic quality-of-experience improvements. As example, this contribution enables the exploitation of the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection to halve the page load time of a web page download.</t>
+			<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but the maintenance is complexed since web browsers' versions often change.</t> -->
 
-</section>
+		</section>
 
-<!-- ######################################################-->
-<!-- ######################################################-->
-<!-- Tail of the document -->
-<!-- ######################################################-->
-<!-- ######################################################-->
+		<!-- ######################################################-->
+		<!-- ######################################################-->
+		<!-- Tail of the document -->
+		<!-- ######################################################-->
+		<!-- ######################################################-->
 
-<section anchor="sec:acknowledgements" title="Acknowledgements">
-	<t>None.</t>
-</section>
+		<section anchor="sec:acknowledgements" title="Acknowledgements">
+			<t>None.</t>
+		</section>
 
-<section anchor="sec:contributors" title="Contributors">
-	<t>None.</t>
-</section>
+		<section anchor="sec:contributors" title="Contributors">
+			<t>None.</t>
+		</section>
 
-<section anchor="sec:IANA" title="IANA Considerations">
-	<t>TBD: text is required to register the extension BDP_data field.</t>
-</section>
+		<section anchor="sec:IANA" title="IANA Considerations">
+			<t>TBD: text is required to register the extension BDP_data field.</t>
+		</section>
 
-<section anchor="sec:ecurity" title="Security Considerations">
-	<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection. The exchange and the information are protected both by the TLS encryption and the NewSessionTicket (see section 4.6.1 of <xref target="RFC8446"/>).</t>
-	<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_data' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_data' field.</t>
-</section>
-</middle>
+		<section anchor="sec:ecurity" title="Security Considerations">
+			<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection. The exchange and the information are protected both by the TLS encryption and the NewSessionTicket (see section 4.6.1 of <xref target="RFC8446"/>).</t>
+			<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_data' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_data' field.</t>
+		</section>
+	</middle>
 
-<!--  *****BACK MATTER ***** -->
-<back>
-	<!-- References split into informative and normative -->
-	<!-- There are 2 ways to insert reference entries from the citation libraries:
+	<!--  *****BACK MATTER ***** -->
+	<back>
+		<!-- References split into informative and normative -->
+		<!-- There are 2 ways to insert reference entries from the citation libraries:
 	1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
 	2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
 	(for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
@@ -257,88 +257,88 @@ This memo discusses a solution where path adaptation parameters are shared betwe
 	with a value containing a set of directories to search.  These can be either in the local
 	filing system or remote ones accessed by http (http://domain/dir/... ).-->
 
-	<references title="Normative References">
-		&RFC2119;
-	</references>
+		<references title="Normative References">
+			&RFC2119;
+		</references>
 
-	<references title="Informative References">
-		<?rfc include="reference.RFC.2488.xml"?>
-		<?rfc include="reference.RFC.3135.xml"?>
-		<?rfc include="reference.RFC.6349.xml"?>
-		<?rfc include="reference.RFC.6928.xml"?>
-		<?rfc include="reference.RFC.8446.xml"?>
-		<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
-		<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
-		<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
-		<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
-		<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
-		<reference anchor="ICCRG100">
-			<front>
-				<title>MPTCP and BBR performance over Internet satellite paths</title>
-				<author initials="N" surname="Kuhn">
-				</author>
-				<date year="2017"/>
-			</front>
-			<seriesInfo name="IETF ICCRG" value="100"/>
-		</reference>
-		<reference anchor="IJSCN19">
-			<front>
-				<title>Google QUIC performance over a public SATCOM access</title>
-				<author initials="L" surname="Thomas">
-				</author>
-				<author initials="E" surname="Dubois">
-				</author>
-				<author initials="N" surname="Kuhn">
-				</author>
-				<author initials="E" surname="Lochin">
-				</author>
-				<date year="2019"/>
-			</front>
-			<seriesInfo name="International Journal of Satellite Communications and Networking" value=""/>
-		</reference>
-		<reference anchor="CONEXT15">
-			<front>
-				<title>Halfback: Running Short Flows Quickly and Safely</title>
-				<author initials="Q" surname="Li">
-				</author>
-				<author initials="M" surname="Dong">
-				</author>
-				<author initials="P B" surname="Godfrey">
-				</author>
-				<date year="2015"/>
-			</front>
-			<seriesInfo name="ACM CoNEXT" value=""/>
-		</reference>
-		<reference anchor="NCT13">
-			<front>
-				<title>A new survey on improving TCP performances over geostationary satellite link</title>
-				<author initials="A" surname="Pirovano">
-				</author>
-				<author initials="F" surname="Garcia">
-				</author>
-				<date year="2013"/>
-			</front>
-			<seriesInfo name="Network and Communication Technologies" value=""/>
-		</reference>
-		<reference anchor="ICC16">
-			<front>
-				<title>Reducing web latency through TCP IW: Be smart</title>
-				<author initials="R" surname="Sallantin">
-				</author>
-				<author initials="C" surname="Baudoin">
-				</author>
-				<author initials="E" surname="Chaput">
-				</author>
-				<author initials="F" surname="Arnal">
-				</author>
-				<author initials="E" surname="Dubois">
-				</author>
-				<author initials="A-L" surname="Beylot">
-				</author>
-				<date year="2016"/>
-			</front>
-			<seriesInfo name="IEEE ICC" value=""/>
-		</reference>
-	</references>
-</back>
+		<references title="Informative References">
+			<?rfc include="reference.RFC.2488.xml"?>
+			<?rfc include="reference.RFC.3135.xml"?>
+			<?rfc include="reference.RFC.6349.xml"?>
+			<?rfc include="reference.RFC.6928.xml"?>
+			<?rfc include="reference.RFC.8446.xml"?>
+			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
+			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
+			<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
+			<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
+			<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
+			<reference anchor="ICCRG100">
+				<front>
+					<title>MPTCP and BBR performance over Internet satellite paths</title>
+					<author initials="N" surname="Kuhn">
+					</author>
+					<date year="2017"/>
+				</front>
+				<seriesInfo name="IETF ICCRG" value="100"/>
+			</reference>
+			<reference anchor="IJSCN19">
+				<front>
+					<title>Google QUIC performance over a public SATCOM access</title>
+					<author initials="L" surname="Thomas">
+					</author>
+					<author initials="E" surname="Dubois">
+					</author>
+					<author initials="N" surname="Kuhn">
+					</author>
+					<author initials="E" surname="Lochin">
+					</author>
+					<date year="2019"/>
+				</front>
+				<seriesInfo name="International Journal of Satellite Communications and Networking" value=""/>
+			</reference>
+			<reference anchor="CONEXT15">
+				<front>
+					<title>Halfback: Running Short Flows Quickly and Safely</title>
+					<author initials="Q" surname="Li">
+					</author>
+					<author initials="M" surname="Dong">
+					</author>
+					<author initials="P B" surname="Godfrey">
+					</author>
+					<date year="2015"/>
+				</front>
+				<seriesInfo name="ACM CoNEXT" value=""/>
+			</reference>
+			<reference anchor="NCT13">
+				<front>
+					<title>A new survey on improving TCP performances over geostationary satellite link</title>
+					<author initials="A" surname="Pirovano">
+					</author>
+					<author initials="F" surname="Garcia">
+					</author>
+					<date year="2013"/>
+				</front>
+				<seriesInfo name="Network and Communication Technologies" value=""/>
+			</reference>
+			<reference anchor="ICC16">
+				<front>
+					<title>Reducing web latency through TCP IW: Be smart</title>
+					<author initials="R" surname="Sallantin">
+					</author>
+					<author initials="C" surname="Baudoin">
+					</author>
+					<author initials="E" surname="Chaput">
+					</author>
+					<author initials="F" surname="Arnal">
+					</author>
+					<author initials="E" surname="Dubois">
+					</author>
+					<author initials="A-L" surname="Beylot">
+					</author>
+					<date year="2016"/>
+				</front>
+				<seriesInfo name="IEEE ICC" value=""/>
+			</reference>
+		</references>
+	</back>
 </rfc>
