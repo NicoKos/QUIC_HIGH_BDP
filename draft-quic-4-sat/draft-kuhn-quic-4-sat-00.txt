@@ -5,12 +5,12 @@
 Internet Engineering Task Force                                  N. Kuhn
 Internet-Draft                                                      CNES
 Intended status: Informational                              G. Fairhurst
-Expires: October 15, 2019                         University of Aberdeen
+Expires: October 27, 2019                         University of Aberdeen
                                                                J. Border
                                              Hughes Network Systems, LLC
                                                               E. Stephan
                                                                   Orange
-                                                          April 13, 2019
+                                                          April 25, 2019
 
 
                      QUIC for SATCOM communications
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 15, 2019.
+   This Internet-Draft will expire on October 27, 2019.
 
 
 
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Kuhn, et al.            Expires October 15, 2019                [Page 1]
+Kuhn, et al.            Expires October 27, 2019                [Page 1]
 
 Internet-Draft                 QUIC 4 SAT                     April 2019
 
@@ -82,9 +82,10 @@ Table of Contents
      4.1.  Getting up to speed . . . . . . . . . . . . . . . . . . .   4
      4.2.  Reliability . . . . . . . . . . . . . . . . . . . . . . .   4
      4.3.  Maximum window  . . . . . . . . . . . . . . . . . . . . .   4
+     4.4.  ACK ratio . . . . . . . . . . . . . . . . . . . . . . . .   4
    5.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   4
    6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   4
-   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   4
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   5
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
    9.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   5
@@ -108,8 +109,7 @@ Table of Contents
 
 
 
-
-Kuhn, et al.            Expires October 15, 2019                [Page 2]
+Kuhn, et al.            Expires October 27, 2019                [Page 2]
 
 Internet-Draft                 QUIC 4 SAT                     April 2019
 
@@ -165,7 +165,7 @@ Internet-Draft                 QUIC 4 SAT                     April 2019
 
 
 
-Kuhn, et al.            Expires October 15, 2019                [Page 3]
+Kuhn, et al.            Expires October 27, 2019                [Page 3]
 
 Internet-Draft                 QUIC 4 SAT                     April 2019
 
@@ -203,6 +203,10 @@ Internet-Draft                 QUIC 4 SAT                     April 2019
    To fully exploit the bottleneck capacity, the high BDP may induce an
    important number of in-flights packets.
 
+4.4.  ACK ratio
+
+   TBD
+
 5.  Discussion
 
    TBD
@@ -211,20 +215,20 @@ Internet-Draft                 QUIC 4 SAT                     April 2019
 
    None.
 
-7.  Contributors
-
-   None.
 
 
 
 
 
 
-
-Kuhn, et al.            Expires October 15, 2019                [Page 4]
+Kuhn, et al.            Expires October 27, 2019                [Page 4]
 
 Internet-Draft                 QUIC 4 SAT                     April 2019
 
+
+7.  Contributors
+
+   None.
 
 8.  IANA Considerations
 
@@ -259,25 +263,21 @@ Internet-Draft                 QUIC 4 SAT                     April 2019
 
    [I-D.ietf-quic-recovery]
               Iyengar, J. and I. Swett, "QUIC Loss Detection and
-              Congestion Control", draft-ietf-quic-recovery-19 (work in
-              progress), March 2019.
+              Congestion Control", draft-ietf-quic-recovery-20 (work in
+              progress), April 2019.
 
    [I-D.ietf-quic-tls]
               Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
-              draft-ietf-quic-tls-19 (work in progress), March 2019.
+              draft-ietf-quic-tls-20 (work in progress), April 2019.
 
    [I-D.ietf-quic-transport]
               Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", draft-ietf-quic-transport-19 (work
-              in progress), March 2019.
+              and Secure Transport", draft-ietf-quic-transport-20 (work
+              in progress), April 2019.
 
 
 
-
-
-
-
-Kuhn, et al.            Expires October 15, 2019                [Page 5]
+Kuhn, et al.            Expires October 27, 2019                [Page 5]
 
 Internet-Draft                 QUIC 4 SAT                     April 2019
 
@@ -333,7 +333,7 @@ Internet-Draft                 QUIC 4 SAT                     April 2019
 
 
 
-Kuhn, et al.            Expires October 15, 2019                [Page 6]
+Kuhn, et al.            Expires October 27, 2019                [Page 6]
 
 Internet-Draft                 QUIC 4 SAT                     April 2019
 
@@ -389,4 +389,4 @@ Authors' Addresses
 
 
 
-Kuhn, et al.            Expires October 15, 2019                [Page 7]
+Kuhn, et al.            Expires October 27, 2019                [Page 7]

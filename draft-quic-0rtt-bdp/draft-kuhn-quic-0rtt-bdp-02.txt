@@ -5,8 +5,8 @@
 Internet Engineering Task Force                             N. Kuhn, Ed.
 Internet-Draft                                                      CNES
 Intended status: Informational                           E. Stephan, Ed.
-Expires: October 15, 2019                                         Orange
-                                                          April 13, 2019
+Expires: October 27, 2019                                         Orange
+                                                          April 25, 2019
 
 
                Transport parameters for 0-RTT connections
@@ -15,12 +15,12 @@ Expires: October 15, 2019                                         Orange
 Abstract
 
    The NewSessionTicket record carries a field which tells the client
-   the volume of early data it can include in the 0-RTT message when re
+   the volume of early data it can include in the 0-RTT messages when re
    connecting to that peer.  There are cases where this is not
    sufficient to improve the time-to-service.  This memo discusses a
    solution where path adaptation parameters are shared between the
-   peers to accelerate the throughput in both direction in subsequent
-   0-RTT connections.
+   peers to accelerate the throughput of subsequent 0-RTT connections in
+   both direction.
 
 Status of This Memo
 
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 15, 2019.
+   This Internet-Draft will expire on October 27, 2019.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 1]
+Kuhn & Stephan          Expires October 27, 2019                [Page 1]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 2]
+Kuhn & Stephan          Expires October 27, 2019                [Page 2]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
@@ -142,8 +142,8 @@ Internet-Draft             Transport for 0-RTT                April 2019
    BDP previously measured by the server during the 1-RTT handshake.
    The approach follows the tuning of the initial window described in
    [I-D.irtf-iccrg-sallantin-initial-spreading] which has been shown to
-   improve performance both for high BDP and more common BDP
-   [CONEXT15][ICC16].
+   improve performance both for high BDP and more common BDP [CONEXT15]
+   [ICC16].
 
 3.1.  Description of the extension in the NewSessionTicket
 
@@ -165,7 +165,7 @@ Internet-Draft             Transport for 0-RTT                April 2019
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 3]
+Kuhn & Stephan          Expires October 27, 2019                [Page 3]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
@@ -221,7 +221,7 @@ Internet-Draft             Transport for 0-RTT                April 2019
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 4]
+Kuhn & Stephan          Expires October 27, 2019                [Page 4]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
@@ -277,45 +277,45 @@ Internet-Draft             Transport for 0-RTT                April 2019
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 5]
+Kuhn & Stephan          Expires October 27, 2019                [Page 5]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
 
-              CLIENT                         SERVER
-              +-----------------------------------+
-              |          1 RTT connection         |
-              +--+------------------------------+-+
-                 |                              |
-                 +<---1-RTT TLS1.3 HANDSHAKE--->+
-                 |                              | +------------+
-                 +<-----data transmission------>+ |path charact|
-                 |                              | |record      |
-                 |                              | +------------+
-                 |<-------------NewSessionTicket+
-    Client aware |           +ticket_lifetime   |
-    of high BDP  |           +'opaque' field    |
-    path         |            + ...             |
-                 |            + PMTU            |
-                 |            + connection RTT  |
-                 |           +'extension' field |
-                 |            + early_data      |
-                 |            + BDP_data        |
-                 |                              |
-              +-----------------------------------+
-              |          0 RTT connection         |
-              +-----------------------------------+
-                 |                              |
-                 +ClientHello------------------>|
-                 |+'opaque' field               | +-------------------+
-                 | + ...                        | |param adaptation   |
-                 | + PMTU                       | |e.g.               |
-                 | + connection RTT             | |tuned and paced IW |
-                 |                              | +-------------------+
-                 |                              |
-                 +<----+data transmission+----->+
-                 |                              |
-                 +                              +
+                                        CLIENT                         SERVER
+                                        +-----------------------------------+
+                                        |          1 RTT connection         |
+                                        +--+------------------------------+-+
+                                        |                              |
+                                        +<---1-RTT TLS1.3 HANDSHAKE--->+
+                                        |                              | +------------+
+                                        +<-----data transmission------>+ |path charact|
+                                        |                              | |record      |
+                                        |                              | +------------+
+                                        |<-------------NewSessionTicket+
+                                        Client aware |           +ticket_lifetime   |
+                                        of high BDP  |           +'opaque' field    |
+                                        path         |            + ...             |
+                                        |            + PMTU            |
+                                        |            + connection RTT  |
+                                        |           +'extension' field |
+                                        |            + early_data      |
+                                        |            + BDP_data        |
+                                        |                              |
+                                        +-----------------------------------+
+                                        |          0 RTT connection         |
+                                        +-----------------------------------+
+                                        |                              |
+                                        +ClientHello------------------>|
+                                        |+'opaque' field               | +-------------------+
+                                        | + ...                        | |param adaptation   |
+                                        | + PMTU                       | |e.g.               |
+                                        | + connection RTT             | |tuned and paced IW |
+                                        |                              | +-------------------+
+                                        |                              |
+                                        +<----+data transmission+----->+
+                                        |                              |
+                                        +                              +
 
                 Figure 1: Example of opaque ticket content
 
@@ -333,7 +333,7 @@ Internet-Draft             Transport for 0-RTT                April 2019
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 6]
+Kuhn & Stephan          Expires October 27, 2019                [Page 6]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
@@ -379,25 +379,25 @@ Internet-Draft             Transport for 0-RTT                April 2019
 
    [I-D.ietf-quic-recovery]
               Iyengar, J. and I. Swett, "QUIC Loss Detection and
-              Congestion Control", draft-ietf-quic-recovery-19 (work in
-              progress), March 2019.
+              Congestion Control", draft-ietf-quic-recovery-20 (work in
+              progress), April 2019.
 
    [I-D.ietf-quic-tls]
               Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
-              draft-ietf-quic-tls-19 (work in progress), March 2019.
+              draft-ietf-quic-tls-20 (work in progress), April 2019.
 
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 7]
+Kuhn & Stephan          Expires October 27, 2019                [Page 7]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
 
    [I-D.ietf-quic-transport]
               Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", draft-ietf-quic-transport-19 (work
-              in progress), March 2019.
+              and Secure Transport", draft-ietf-quic-transport-20 (work
+              in progress), April 2019.
 
    [I-D.ietf-tls-ticketrequests]
               Pauly, T., Schinazi, D., and C. Wood, "TLS Ticket
@@ -445,7 +445,7 @@ Internet-Draft             Transport for 0-RTT                April 2019
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 8]
+Kuhn & Stephan          Expires October 27, 2019                [Page 8]
 
 Internet-Draft             Transport for 0-RTT                April 2019
 
@@ -501,4 +501,4 @@ Authors' Addresses
 
 
 
-Kuhn & Stephan          Expires October 15, 2019                [Page 9]
+Kuhn & Stephan          Expires October 27, 2019                [Page 9]
