@@ -164,6 +164,10 @@
 		<t>To fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets.</t>
 		</section>
 
+		<section anchor="sec:quic-4-sat-ack-ratio" title="ACK ratio">
+		<t>TBD</t>
+		</section>
+
 	</section>
 
 	<!-- ######################################################-->
