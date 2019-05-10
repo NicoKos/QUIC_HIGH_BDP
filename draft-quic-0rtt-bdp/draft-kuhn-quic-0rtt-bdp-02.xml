@@ -105,7 +105,7 @@
 				and the recommended initial window is defined by <xref target="RFC6928"/>. 
 				A path with a large bandwidth delay product can therefore significantly increase the time-to-service 
 				(e.g. a path using satellite communication <xref target="IJSCN19"/> could observe 
-				a much longer page load time for complex pages).
+				a much longer page load time for complex pages).</t>
 
 			<t>This memo describes a solution where:<list style="numbers">
 					<t>the server learns a fundamental characteristic of the path during the 1-RTT phase;</t>
@@ -250,8 +250,8 @@
 
 		<section anchor="sec:discussion" title="Discussion">
 
-			<t>The proposal made in this draft follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_data' proposal aims at improving its ingress traffic. Improving the ingress traffic of an end user can result in drastic quality-of-experience improvements. As example, this contribution enables the exploitation of the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection to halve the page load time of a web page download.</t>
-			<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but the maintenance is complexed since web browsers' versions often change.</t> -->
+			<t>This mechanism follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_data' proposal aims at improving ingress traffic to the client. Improving the ingress traffic can result in significant improvement to the quality-of-experience. For example, this enables the use of transport parameters, such as the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection. This can halve the page load time of a web page download.</t>
+			<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but maintenance is mre complex because there can often be a change to the version of the web browsers' version.</t> -->
 
 		</section>
 
@@ -273,7 +273,7 @@
 			<t>TBD: text is required to register the extension BDP_data field.</t>
 		</section>
 
-		<section anchor="sec:ecurity" title="Security Considerations">
+		<section anchor="sec:security" title="Security Considerations">
 			<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection. The exchange and the information are protected both by the TLS encryption and the NewSessionTicket (see section 4.6.1 of <xref target="RFC8446"/>).</t>
 			<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_data' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_data' field.</t>
 		</section>
