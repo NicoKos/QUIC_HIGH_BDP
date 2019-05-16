@@ -205,40 +205,40 @@
 			</t>
 			<figure anchor="fig:bcp_example" title="Example of opaque ticket content">
 				<artwork>
-					CLIENT                         SERVER
-					+-----------------------------------+
-					|          1 RTT connection         |
-					+--+------------------------------+-+
-					|                              |
-					+&lt;---1-RTT TLS1.3 HANDSHAKE---&gt;+
-					|                              | +------------+
-					+&lt;-----data transmission------&gt;+ |path charact|
-					|                              | |record      |
-					|                              | +------------+
-					|&lt;-------------NewSessionTicket+
-					Client aware |           +ticket_lifetime   |
-					of high BDP  |           +'opaque' field    |
-					path         |            + ...             |
-					|            + PMTU            |
-					|            + connection RTT  |
-					|           +'extension' field |
-					|            + early_data      |
-					|            + BDP_data        |
-					|                              |
-					+-----------------------------------+
-					|          0 RTT connection         |
-					+-----------------------------------+
-					|                              |
-					+ClientHello------------------&gt;|
-					|+'opaque' field               | +-------------------+
-					| + ...                        | |param adaptation   |
-					| + PMTU                       | |e.g.               |
-					| + connection RTT             | |tuned and paced IW |
-					|                              | +-------------------+
-					|                              |
-					+&lt;----+data transmission+-----&gt;+
-					|                              |
-					+                              +
+           CLIENT                         SERVER
+           +-----------------------------------+
+           |          1 RTT connection         |
+           +-----------------------------------+
+             |                              |
+             +&lt;---1-RTT TLS1.3 HANDSHAKE---&gt;+
+             |                              | +------------+
+             +&lt;-----data transmission------&gt;+ |path charact|
+             |                              | |record      |
+             |                              | +------------+
+             |&lt;-------------NewSessionTicket+
+Client aware |           +ticket_lifetime   |
+of high BDP  |           +'opaque' field    |
+path         |            + ...             |
+             |            + PMTU            |
+             |            + connection RTT  |
+             |           +'extension' field |
+             |            + early_data      |
+             |            + BDP_data        |
+             |                              |
+           +-----------------------------------+
+           |          0 RTT connection         |
+           +-----------------------------------+
+             |                              |
+             +ClientHello------------------&gt;|
+             |+'opaque' field               | +-------------------+
+             | + ...                        | |param adaptation   |
+             | + PMTU                       | |e.g.               |
+             | + connection RTT             | |tuned and paced IW |
+             |                              | +-------------------+
+             |                              |
+             +&lt;----+data transmission+-----&gt;+
+             |                              |
+             +                              +
 				</artwork>
 			</figure>
 
