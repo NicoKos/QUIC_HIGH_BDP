@@ -159,14 +159,14 @@
 					The reception of the field BDP_data provides the client with 3 indications:<list style="symbols">
 						<t>This path to this server has a large BDP;</t>
 						<t>The server added the path characteristics in the opaque 'ticket' field;</t>
-						<t>The server will optimize the reopening of the session upon reception of this opaque ticket.</t>
+						<t>The server SHOULD optimize the reopening of the session upon reception of this opaque ticket.</t>
 					</list>
 				</t>
 			</section>
 
 			<section anchor="sec:e2e_sol:usage" title="Usage of the extension in the NewSessionTicket">
 				<t>When a server measures a connection BDP that is larger than usual, it includes 
-					the path characteristics in the opaque ticket. Thi is sent to the client 
+					the path characteristics in the opaque ticket. This is sent to the client 
 					in a NewSessionTicket message. The message includes an additional 'extensions' 
 					field named 'BDP_data'. The client stores this session ticket and the 'BDP_data' field.</t>
 				<t>When the client reconnects to the same server in 0-RTT mode, it pushes back this session 
@@ -174,7 +174,7 @@
 					given by the 'BDP_data' field. 
 					(The client does not send the 'BDP_data' field back to the server). 
 					The server receives the session ticket and extracts the BDP context. 
-					It uses this information to provide a throughput closer to the capacity of the path.</t>
+					It can use this information to provide a throughput closer to the capacity of the path.</t>
 				<t>Because the path characteristics can change over time, and may hence become invalid for use in a subsequent connection,
 					the server sets the age 
 					of the ticket (see section 4.2.11.1 of <xref target="RFC8446"/>) to a short duration.
@@ -192,7 +192,7 @@
 				The details added by the server in the session ticket do not need to be standardized for 
 				interoperability between QUIC clients and servers because this information is opaque to the client. 
 				The presence of the "BDP_data" extension field in the NewSessionTicket informs the client that the 
-				server will actively take action to improve its throughput when the session will restart.</t>
+				server can actively take action to improve its throughput when the session will restart.</t>
 			<t>The following list describes information elements set by the server in the session ticket to accompany the signaling of field. 
 				These examples are illustrated in <xref target="fig:bcp_example"/> and their purpose is detailed in this section.<list style="symbols">
 					<t>A client aware of a high BDP path: Section 7.3.1 of <xref target="I-D.ietf-quic-transport"/> indicates that the "A client that attempts to send 0-RTT data MUST remember the transport parameters used by the server". 
