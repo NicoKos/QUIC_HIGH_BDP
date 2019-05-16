@@ -196,8 +196,7 @@
 			<t>The following list describes information elements set by the server in the session ticket to accompany the signaling of field. 
 				These examples are illustrated in <xref target="fig:bcp_example"/> and their purpose is detailed in this section.<list style="symbols">
 					<t>A client aware of a high BDP path: Section 7.3.1 of <xref target="I-D.ietf-quic-transport"/> indicates that the "A client that attempts to send 0-RTT data MUST remember the transport parameters used by the server". 
-					In addition to the default transport parameters used by the server, a server that knows that the path has a large BDP can let the client adapt its parameters. 
-					(As example, the client could adapt the ACK ratio following the discussion in Issue 1978 of the GITHUB repository.)</t>
+					In addition to the default transport parameters used by the server, a server that knows that the path has a large BDP can let the client adapt its parameters.</t>
 					<t>PMTU: Knowledge of the PMTU of a previous path improves the time to service because it reduces the duration of the path validation process described in section 8.2 of <xref target="I-D.ietf-quic-transport"/>.</t>
 					<t>Connection RTT: The knowledge of the characteristics of a previous connection RTT can improve the throughput because a server can safely improve the slow start: e.g. using the pacing models of <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"/> can result in high IW for high RTT paths and a common IW for paths with smaller RTT. The results presented in <xref target="ICC16"/> show that for both files of 15 kB and 750 kB, the proposed solution reduces the time to download by approximatively 2 seconds whether the RTT is 50ms or 500ms.</t>
 					<t>Ticket_lifetime: The server sets a shorter validity duration to avoid receiving obsolete path characteristics; (e.g., this could reduce the validity to one day).</t>
