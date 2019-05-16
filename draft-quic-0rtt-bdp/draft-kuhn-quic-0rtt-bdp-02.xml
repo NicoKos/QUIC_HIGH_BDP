@@ -262,11 +262,7 @@ path         |            + ...             |
 		<!-- ######################################################-->
 
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
-			<t>None.</t>
-		</section>
-
-		<section anchor="sec:contributors" title="Contributors">
-			<t>None.</t>
+			<t>We thank Gorry Fairhurst for his comments on this document.</t>
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
