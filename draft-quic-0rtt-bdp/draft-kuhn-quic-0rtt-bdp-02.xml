@@ -271,6 +271,7 @@ path         |            + ...             |
 		<section anchor="sec:security" title="Security Considerations">
 			<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection. The exchange and the information are protected both by the TLS encryption and the NewSessionTicket (see section 4.6.1 of <xref target="RFC8446"/>).</t>
 			<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_data' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_data' field.</t>
+			<t>The server does not have to honour all the received requests (e.g. when it is resource-limited).</t>
 		</section>
 	</middle>
 
