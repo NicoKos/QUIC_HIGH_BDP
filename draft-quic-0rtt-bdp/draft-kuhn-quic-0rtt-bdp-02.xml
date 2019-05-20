@@ -27,14 +27,6 @@
 		<author role="editor" fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
 			<organization>CNES</organization>
 			<address>
-				<postal>
-					<street>18 Avenue Edouard Belin</street>
-					<city>Toulouse</city>
-					<region/>
-					<code>31400</code>
-					<country>France</country>
-				</postal>
-				<phone/>
 				<email>nicolas.kuhn@cnes.fr</email>
 			</address>
 		</author>
@@ -42,18 +34,17 @@
 		<author role="editor" fullname="Emile Stephan" initials="E" surname="Stephan">
 			<organization>Orange</organization>
 			<address>
-				<postal>
-					<street>2, avenue Pierre Marzin</street>
-					<city>Lannion</city>
-					<region/>
-					<code>22300</code>
-					<country>France</country>
-				</postal>
-				<phone/>
 				<email>emile.stephan@orange.com</email>
 			</address>
 		</author>
 
+		<author role="editor" fullname="Gorry Fairhurst" initials="G" surname="Fairhurst">
+			<organization>University of Aberdeen</organization>
+			<address>
+				<email>gorry@erg.abdn.ac.uk</email>
+			</address>
+		</author>
+		
 		<date month="April" year="2019"/>
 
 		<!-- If the month and year are both specified and are the current ones, xml2rfc will fill
