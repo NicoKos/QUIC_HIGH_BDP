@@ -152,7 +152,6 @@
 						<t>The server added the path characteristics in the opaque 'ticket' field;</t>
 						<t>The server SHOULD optimize the reopening of the session upon reception of this opaque ticket.</t>
 					</list> -->
-				</t>
 			</section>
 
 			<section anchor="sec:e2e_sol:usage" title="Usage of the extension in the NewSessionTicket">
