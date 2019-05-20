@@ -145,27 +145,26 @@
 				<xref target="ICC16"/>.</t>
 
 			<section anchor="sec:e2e_sol:description" title="Description of the extension in the NewSessionTicket">
-				<t>This document defines an extension named "BDP_data" for the NewSessionTicket. 
-					This contains the following value: BDP_value. This is the value in bits (using the same units defined by <xref target="RFC6349"/>). 
-					The reception of the field BDP_data provides the client with 3 indications:<list style="symbols">
+				<t>This document defines an extension named "BDP_metadata" for the NewSessionTicket. 
+					This structure contains the following parameters: BDP, MTU, RTT, loss-rate.</t> <!-- This is the value in bits (using the same units defined by <xref target="RFC6349"/>). -->
+					<!-- The reception of the field BDP_metadata provides the client with 3 indications:<list style="symbols">
 						<t>This path to this server has a large BDP;</t>
 						<t>The server added the path characteristics in the opaque 'ticket' field;</t>
 						<t>The server SHOULD optimize the reopening of the session upon reception of this opaque ticket.</t>
-					</list>
+					</list> -->
 				</t>
 			</section>
 
 			<section anchor="sec:e2e_sol:usage" title="Usage of the extension in the NewSessionTicket">
-				<t>When a server measures a connection BDP that is larger than usual, it includes 
-					the path characteristics in the opaque ticket. This is sent to the client 
+				<t>At the end of a 1-RTT connection, a server can send information on the path to the client 
 					in a NewSessionTicket message. The message includes an additional 'extensions' 
-					field named 'BDP_data'. The client stores this session ticket and the 'BDP_data' field.</t>
+					field named 'BDP_metadata'. The client stores this session ticket and the 'BDP_metadata' field.</t>
 				<t>When the client reconnects to the same server in 0-RTT mode, it pushes back this session 
 					ticket in the ClientHello and prepares itself to receive data in the context 
-					given by the 'BDP_data' field. 
-					(The client does not send the 'BDP_data' field back to the server). 
+					given by the 'BDP_metadata' field. 
+					(The client does not send the 'BDP_metadata' field back to the server). 
 					The server receives the session ticket and extracts the BDP context. 
-					It can use this information to provide a throughput closer to the capacity of the path.</t>
+					As example, it can use this information to provide a throughput closer to the capacity of the path.</t>
 				<t>Because the path characteristics can change over time, and may hence become invalid for use in a subsequent connection,
 					the server sets the age 
 					of the ticket (see section 4.2.11.1 of <xref target="RFC8446"/>) to a short duration.
@@ -182,7 +181,7 @@
 			<t>This section provides examples of data that could be added in the opaque ticket field by the server. 
 				The details added by the server in the session ticket do not need to be standardized for 
 				interoperability between QUIC clients and servers because this information is opaque to the client. 
-				The presence of the "BDP_data" extension field in the NewSessionTicket informs the client that the 
+				The presence of the "BDP_metadata" extension field in the NewSessionTicket informs the client that the 
 				server can actively take action to improve its throughput when the session will restart.</t>
 			<t>The following list describes information elements set by the server in the session ticket to accompany the signaling of field. 
 				These examples are illustrated in <xref target="fig:bcp_example"/> and their purpose is detailed in this section.<list style="symbols">
@@ -208,22 +207,22 @@
              |&lt;-------------NewSessionTicket+
 Client aware |           +ticket_lifetime   |
 of high BDP  |           +'opaque' field    |
-path         |            + ...             |
-             |            + PMTU            |
-             |            + connection RTT  |
-             |           +'extension' field |
+path         |           +'extension' field |
              |            + early_data      |
-             |            + BDP_data        |
-             |                              |
+             |            + BDP_metadata    |
+             |              + BDP           |
+             |              + RTT           |
+             |              + loss-rate     |
+             |              + MTU           |
            +-----------------------------------+
            |          0 RTT connection         |
            +-----------------------------------+
              |                              |
              +ClientHello------------------&gt;|
              |+'opaque' field               | +-------------------+
-             | + ...                        | |param adaptation   |
-             | + PMTU                       | |e.g.               |
-             | + connection RTT             | |tuned and paced IW |
+             |                              | |param adaptation   |
+             |                              | |e.g.               |
+             |                              | |tuned and paced IW |
              |                              | +-------------------+
              |                              |
              +&lt;----+data transmission+-----&gt;+
@@ -252,7 +251,7 @@ path         |            + ...             |
 			</section> -->
 						
 			<!-- <section title="Network with small BDP - server activating BDP_data"> -->
-				<t>This section discusses the impact of a server activating the 'BDP_data' field when the network underneath actually has a small BDP. This could happen when the server BDP estimate was incorrect, client has multiple paths to choose from and uses the ticket on a different path to which it was requested, or when the path characteristics change significantly.</t>
+				<t>This section discusses the impact of a server activating the 'BDP_metadata' field when the network underneath actually has a small BDP. This could happen when the server BDP estimate was incorrect, client has multiple paths to choose from and uses the ticket on a different path to which it was requested, or when the path characteristics change significantly.</t>
 				<t>Depending on how the extension is exploited, this could result in assigning additional resources (e.g. buffer space) that later is not used. This could also motivate the requirement to pace the initial window to avoid transmitting data at a too high a rate.</t>				
 			<!-- </section> -->
 		</section>
@@ -263,7 +262,7 @@ path         |            + ...             |
 
 		<section anchor="sec:discussion" title="Discussion">
 
-			<t>This mechanism follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_data' proposal aims at improving ingress traffic to the client. Improving the ingress traffic can result in significant improvement to the quality-of-experience. For example, this enables the use of transport parameters, such as the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection. This can halve the page load time of a web page download.</t>
+			<t>This mechanism follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_metadata' proposal aims at improving ingress traffic to the client. Improving the ingress traffic can result in significant improvement to the quality-of-experience. For example, this enables the use of transport parameters, such as the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection. This can halve the page load time of a web page download.</t>
 			<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but maintenance is mre complex because there can often be a change to the version of the web browsers' version.</t> -->
 
 		</section>
