@@ -78,7 +78,7 @@
 		<!-- ######################################################-->
 		<!-- ######################################################-->
 		<abstract>
-			<t>The NewSessionTicket record carries a field, which tells a client the volume of early data that it can include in the 0-RTT messages when reconnecting to the same peer. There are cases where additional infromation can significantly improve the time-to-service.
+			<t>The NewSessionTicket record carries a field that tells a client the volume of early data that it can include in the 0-RTT messages when reconnecting to the same peer. There are cases where additional infromation can significantly improve the time-to-service.
 				This memo discusses a solution where path adaptation parameters are also shared between the peers. This can accelerate the throughput of subsequent 0-RTT connections in both direction.
 			</t>
 		</abstract>
@@ -141,7 +141,7 @@
 
 		<section anchor="sec:e2e_sol" title="End-to-end solution">
 
-			<t>This section proposes an improvement of the initialization of 0-RTT connections over satellite communication where the client recalls the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"/> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"/>
+			<t>This section proposes an improvement of the initialization of 0-RTT connections over satellite communication where the client recalls the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"/> that has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"/>
 				<xref target="ICC16"/>.</t>
 
 			<section anchor="sec:e2e_sol:description" title="Description of the extension in the NewSessionTicket">
