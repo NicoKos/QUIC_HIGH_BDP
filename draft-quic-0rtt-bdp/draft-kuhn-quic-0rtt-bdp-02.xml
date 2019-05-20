@@ -240,7 +240,7 @@ path         |            + ...             |
 
 		<section anchor="sec:issue-bad-BDP" title="What happens when BDP is used incorrectly">
 
-			<t>This section discusses what happens when the NewSessionTicket extension 'BDP_data' is used incorrectly.</t>
+			<!-- <t>This section discusses what happens when the NewSessionTicket extension 'BDP_data' is used incorrectly.</t>
 
 			<section title="On the high BDP estimation">
 				<t>There are multiple cases where accurately measuring the BDP is complexed. As one example, this is particularly challenging when the files to transmit are small.</t>
@@ -249,12 +249,12 @@ path         |            + ...             |
 					<t>to have an accurate bandwidth estimation, the server could then exploit the way BBR estimates the available bandwidth.</t>			
 				</list>
 				<t>The server could have an estimation of both the RTT and the bandwidth of the network underneath. If the RTT is high, the server could activate the 'BDP_data' extension field even if the bandwidth measurement is not accurate.</t>
-			</section> 
+			</section> -->
 						
-			<section title="Network with small BDP - server activating BDP_data">
-				<t>This section discusses the impact of a server activating the 'BDP_data' field when the network underneath has a small BDP. This could happen when the client has multiple paths to choose from and uses the ticket on a different path to which it was requested. This could also happen when the file transmitted is small making it hard for the server to have an accurate BDP estimation.</t>
-				<t>Depending on how the extension is exploited, this could mean assigning additional resources to the client (e.g. buffer space) that later is not used. This could also mean that pacing the initial window is mandatory to avoid transmitting data at a too high throughput.</t>				
-			</section>
+			<!-- <section title="Network with small BDP - server activating BDP_data"> -->
+				<t>This section discusses the impact of a server activating the 'BDP_data' field when the network underneath actually has a small BDP. This could happen when the server BDP estimate was incorrect, client has multiple paths to choose from and uses the ticket on a different path to which it was requested, or when the path characteristics change significantly.</t>
+				<t>Depending on how the extension is exploited, this could result in assigning additional resources (e.g. buffer space) that later is not used. This could also motivate the requirement to pace the initial window to avoid transmitting data at a too high a rate.</t>				
+			<!-- </section> -->
 		</section>
 		
 		<!-- ######################################################-->
