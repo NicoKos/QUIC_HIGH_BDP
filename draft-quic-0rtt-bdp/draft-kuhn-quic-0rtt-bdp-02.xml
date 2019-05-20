@@ -78,7 +78,7 @@
 		<!-- ######################################################-->
 		<!-- ######################################################-->
 		<abstract>
-			<t>The NewSessionTicket record carries a field that tells a client the volume of early data that it can include in the 0-RTT messages when reconnecting to the same peer. There are cases where additional infromation can significantly improve the time-to-service.
+			<t>The NewSessionTicket record carries a field that tells a client the volume of early data that it can include in the 0-RTT messages when reconnecting to the same peer. There are cases where additional information can significantly improve the time-to-service.
 				This memo discusses a solution where path adaptation parameters are also shared between the peers. This can accelerate the throughput of subsequent 0-RTT connections in both direction.
 			</t>
 		</abstract>
@@ -141,7 +141,7 @@
 
 		<section anchor="sec:e2e_sol" title="End-to-end solution">
 
-			<t>This section proposes an improvement of the initialization of 0-RTT connections over satellite communication where the client recalls the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"/> that has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"/>
+			<t>This section proposes an improvement of the initialization of 0-RTT connections over high BDP networks where the client recalls, among other parameters, the BDP previously measured by the server during the 1-RTT handshake. The approach follows the tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"/> that has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"/>
 				<xref target="ICC16"/>.</t>
 
 			<section anchor="sec:e2e_sol:description" title="Description of the extension in the NewSessionTicket">
@@ -273,16 +273,16 @@ path         |           +'extension' field |
 		<!-- ######################################################-->
 
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
-			<t>We thank Gorry Fairhurst for his comments on this document.</t>
+			<t>None.</t>
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
-			<t>TBD: text is required to register the extension BDP_data field.</t>
+			<t>TBD: text is required to register the extension BDP_metadata field.</t>
 		</section>
 
 		<section anchor="sec:security" title="Security Considerations">
 			<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection. The exchange and the information are protected both by the TLS encryption and the NewSessionTicket (see section 4.6.1 of <xref target="RFC8446"/>).</t>
-			<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_data' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_data' field.</t>
+			<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_metadata' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_metadata' field.</t>
 			<t>The server does not have to honour all the received requests (e.g. when it is resource-limited).</t>
 		</section>
 	</middle>
