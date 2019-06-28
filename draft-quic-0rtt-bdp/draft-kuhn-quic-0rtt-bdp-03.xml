@@ -78,9 +78,7 @@
 		<!-- ######################################################-->
 		<!-- ######################################################-->
 		<abstract>
-			<t>Currently, to improve the time-to-service of subsequent 0-RTT reconnections the server sets in the early_data extension the maximum volume of egress data the client is allowed to send when reconnecting: It corresponds to the among of data the server can savely received. In practice the time-to-service duration depends on both directions. This memo discusses how to savely accelerate the throughput of the ingress traffic when reconnecting then it specifies a BDP_metadata extension that informs the client of the path adaptation (aka acceleration) the server will made.
-
-			</t>
+			<t>Currently, to improve the time-to-service of subsequent 0-RTT reconnections the server sets in the early_data extension the maximum volume of egress data the client is allowed to send when reconnecting: It corresponds to the among of data the server can savely received. In practice the time-to-service duration depends on both directions. This memo discusses how to savely accelerate the throughput of the ingress traffic when reconnecting then it specifies a BDP_metadata extension that informs the client of the path adaptation (aka acceleration) the server will made.</t>
 		</abstract>
 	</front>
 
@@ -224,8 +222,8 @@ path         |           +'extension' field |
 			</section> -->
 						
 			<!-- <section title="Network with small BDP - server activating BDP_data"> -->
-				<t>This section discusses the impact of a server activating the 'BDP_metadata' field when the network underneath actually has a small BDP. This could happen when the server BDP estimate was incorrect, client has multiple paths to choose from and uses the ticket on a different path to which it was requested, or when the path characteristics change significantly.</t>
-				<t>Depending on how the extension is exploited, this could result in assigning additional resources (e.g. buffer space) that later is not used. This could also motivate the requirement to pace the initial window to avoid transmitting data at a too high a rate.</t>				
+			<t>This section discusses the impact of a server activating the 'BDP_metadata' field when the network underneath actually has a small BDP. This could happen when the server BDP estimate was incorrect, client has multiple paths to choose from and uses the ticket on a different path to which it was requested, or when the path characteristics change significantly.</t>
+			<t>Depending on how the extension is exploited, this could result in assigning additional resources (e.g. buffer space) that later is not used. This could also motivate the requirement to pace the initial window to avoid transmitting data at a too high a rate.</t>				
 			<!-- </section> -->
 		</section>
 		
@@ -235,8 +233,7 @@ path         |           +'extension' field |
 
 		<section anchor="sec:discussion" title="Discussion">
 
-			<t>This mechanism follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_metadata' proposal aims at improving ingress traffic to the client. Improving the ingress traffic can result in significant improvement to the quality-of-experience. For example, this enables the use of transport parameters, such as the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection. In some large BDP deployment scenarios, this can halve the page load
-time of a web page download.</t>
+			<t>This mechanism follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_metadata' proposal aims at improving ingress traffic to the client. Improving the ingress traffic can result in significant improvement to the quality-of-experience. For example, this enables the use of transport parameters, such as the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection. In some large BDP deployment scenarios, this can halve the page load time of a web page download.</t>
 			<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but maintenance is mre complex because there can often be a change to the version of the web browsers' version.</t> -->
 
 		</section>
