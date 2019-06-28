@@ -78,7 +78,8 @@
 		<!-- ######################################################-->
 		<!-- ######################################################-->
 		<abstract>
-			<t>Currently, to improve the time-to-service of subsequent 0-RTT reconnections the server sets in the early_data extension the maximum volume of egress data the client is allowed to send when reconnecting: It corresponds to the among of data the server can savely received. In practice the time-to-service duration depends on both directions. This memo discusses how to savely accelerate the throughput of the ingress traffic when reconnecting then it specifies a BDP_metadata extension that informs the client of the path adaptation (aka acceleration) the server will made.</t>
+			<t>Currently, to improve the time-to-service of subsequent 0-RTT reconnections the server sets in the early_data extension the maximum volume of egress data the client is allowed to send when reconnecting. This corresponds to the among of data the server can savely received. In practice the time-to-service duration depends on both directions.</t>
+			<t>This memo discusses a solution where path parameters are shared between the peers so that both the client and the server can contribute to the reduction of the time-to-service. A BDP_metadata extension informs the client of the path characteristics.</t>
 		</abstract>
 	</front>
 
