@@ -99,8 +99,8 @@
 
 	<section anchor="sec:introduction" title="Introduction">
        
-	<t>The Internet is very varied. RTT goes from miliseconds to hundreds of miliseconds. Paths can be considered as error-free while others exhibit around 5% packet losses. Data-rates goes from kbps to Gbps. Moreover, some networks can be chained to provide a whole Internet access.</t>
-	<t>Design choices in transport protocols usually considers the majority of end users but may generate unwanted side effects for corner case scenarios. To avoid middleboxes adapting the end-to-end connections and thus ossifying the networks, considering the diversity of network paths could result in transport protocols providing relevant performance for many use-cases without impacting the majority of end users.</t>
+	<t>The Internet is very varied. The Round Trip Time (RTT) can extened to a wide variety of values and is typically from miliseconds to hundreds of miliseconds. Paths can be considered as error-free while others exhibit around 5% packet losses. Data-rates goes from kbps to Gbps. Moreover, some networks can be chained to provide a whole Internet access.</t>
+	<t>Design choices in implementing transport protocols usually first consider the majority of end users, but this can generate unwanted side effects for other usecase scenarios. To avoid middleboxes adapting the end-to-end connections and thus ossifying the networks, considering the diversity of network paths could result in transport protocols providing relevant performance for many use-cases without impacting the majority of end users.</t>
 	<t>This memo provides a list of some unwanted transport side effects and potential generic mechanims that could overcome from these issues.</t>
 
 	</section>
