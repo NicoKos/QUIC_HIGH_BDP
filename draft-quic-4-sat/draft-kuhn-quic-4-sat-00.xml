@@ -165,7 +165,9 @@
 		</section>
 
 		<section anchor="sec:quic-4-sat-ack-ratio" title="ACK ratio">
-		<t>TCP Performance Implications of Network Path Asymmetry <xref target="RFC3449"></xref> describes a range of mechanisms that can mitigate the impact of path asymmetry. Many of these mitigations have been deployed in satellite systems, often as a mechanism within a PEP. Despite their benefits over paths with a high asymmetry of capacity, most mechanisms rely on being able to inspect and/or modify the transport layer header information of TCP ACK packets. This is not possible when the transport layer information is encrypted.</t>
+		<t>Asymmetry in capacity (or in the way capacity is granted to a flow) can lead to cases where the throughput in one direction of communication is restricted by the acknowledgement traffic flowing in the opposite direction. The limitations of specific underlying networks could be in terms of the volume of acknowledgement traffic (limited return path capacity) or in the number of acknowledgement packets (e.g., when a radio-resource management system has to track channel usage) or both.</t>
+		<t>TCP Performance Implications of Network Path Asymmetry <xref target="RFC3449"></xref> describes a range of mechanisms that can mitigate the impact of path asymmetry. One simple method is to tell the remote endpoint to send compound acknowledgments less frequently. A rate of one ACK every RTT/4 can significantly reduce this traffic.</t>
+		<t>Many of these mitigations have been deployed in satellite systems, often as a mechanism within a PEP. Despite their benefits over paths with a high asymmetry of capacity, most mechanisms rely on being able to inspect and/or modify the transport layer header information of TCP ACK packets. This is not possible when the transport layer information is encrypted. The QUIC transport specification may evolve to allow the ACK Ratio to be adjusted.</t>
 		</section>
 
 	</section>
