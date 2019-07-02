@@ -179,7 +179,7 @@
         
         <section anchor="sec:discussion" title="Discussion">
 
-	<t>TBD</t>
+	<t>Many of the issues identified already exist for any encrypted transport service that uses a path that employs encryption at the IP layer. This includes endpoints that utilise IPsec at the network layer, or use VPN technology over the satellite network segment. These uses are unable to benefit from enhancement within the satellite network segment, and often the user is unaware of the presence of the satellite link on their path, except through observing the impact it has on the performance they experience.</t>
 	
 	</section>
 
