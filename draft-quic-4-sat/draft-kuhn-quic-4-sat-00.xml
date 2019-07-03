@@ -89,7 +89,7 @@
         <!-- ######################################################--> 
         <!-- ######################################################--> 
 	<abstract>
-	<t>The use of a congestion control and transport initialization not able to adapt to users in high Bandwidth-Delay Product (BDP) network results in higher page loading time for heavy pages. QUIC's congestion control is based on TCP NewReno and the recommended initial window is 10 packets. This may could limit the user experience over an Internet path with a high BDP. Moreover, user traffic can experince a path that includes satellites satellite capacity together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc); guaranting good end-to-end quality of experience is complicated.</t>
+	<t>The use of a congestion control and transport initialization not able to adapt to users in high Bandwidth-Delay Product (BDP) network results in higher page loading time for heavy pages. QUIC's congestion control is based on TCP NewReno and the recommended initial window is 10 packets. This limits the user experience over an Internet path with a high BDP. Moreover, user traffic can experince a path that includes satellites network segment together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc) complicating the characteristics, which if not addressed will degrade the end-to-end quality of experience.</t>
         <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol and proposes best current practice to ensure acceptable protocol performance.</t>
 	</abstract>
   </front>
@@ -98,7 +98,7 @@
 
 	<section anchor="sec:introduction" title="Introduction">
 	<t>The end-to-end performance of an application using an Internet path can be impacted by the Bandwidth-Delay Product (BDP) of the links and network devices forming the path. For instance, the page load time for a complex page can be much larger when the path includes a satellite link. A significant contribution to this reduced performance arises from the initialisation and design of transport mechanisms. QUIC's congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>. This could limit the user experience when user over an Internet path with a high BDP.</t>
-	<t>Moreover, satellite systems has long been used to support point-to-point links and specialised networks. The predominate current use is as a link-layer for Internet Protocols. Typical example applications include: use as an access technology for remote locations, backup and rapid deployment of new services, transit networks, and backhaul of various types of IP networks, and provision to mobile (maritime, aircraft, etc). The satellite IP network segment usually only forms one part of the end-to-end path. This means user traffic can experince a path that includes satellites satellite capacity together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc). Although a user can sometimes the presence of the satellite service, a typical user does not deploy special software or applications because they expect a satellite network is being used. Often a user is unaware of the technologies underpinning the links forming the network path.</t> 
+	<t>Moreover, satellite communications (SATCOM) systems have long been used to support point-to-point links and specialised networks. The predominate current use is as a link-layer for Internet Protocols. Typical example applications include: use as an access technology for remote locations, backup and rapid deployment of new services, transit networks, and backhaul of various types of IP networks, and provision to mobile (maritime, aircraft, etc). The satellite IP network segment usually only forms one part of the end-to-end path. This means user traffic can experince a path that includes satellite link together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc). Although a user can sometimes know the presence of the satellite service, a typical user does not deploy special software or applications because they expect a satellite network is being used. Often a user is unaware of the technologies underpinning the links forming the network path.</t> 
         <t>This memo identifies the characteristics of a SATCOM link that has an impact on QUIC transport protocol and proposes best current practice to ensure acceptable protocol performance.</t>
 	</section>
 
@@ -118,12 +118,12 @@
 		<t>A large propagation delay of at least 250ms one-way delay;</t>
 		<t>Some systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link);</t>
 		<t>Employ radio resource management (often using techniques similar to cellular mobile or DOCSIS cable networks, but differing to accommodate the satellite propagation delay);</t>
-		<t>Highly asymmetric links (in terms of capacity and one-way delay).</t>
+		<t>Links can be highly asymmetric (in terms of capacity and one-way delay).</t>
 	</list></t>
 	<t>More information on satellite links characteristics can be found in <xref target="RFC2488"></xref>.</t>
 
 	<t>These characteristics have an impact on the performance of end-to-end congestion controls:<list style="symbols">
-		<t>Transport initialization: the 3-way handshake takes a long time reducing the time at which actual data can be transmitted;</t>
+		<t>Transport initialization: the 3-way handshake takes a long time to complete, reducing the time at which actual data can be transmitted;</t>
 		<t>Size of windows required: to fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets;</t>
 		<t>Reliability: packet loss detection and correction is slow (the performance of end-to-end retransmission is also impacted when using a high RTT path);</t>
 		<t>Getting up to speed: the exponential increase of the data rate during slow start for a channel capacity probing is slowed down when the RTT is high.</t>
@@ -149,7 +149,7 @@
         <!-- New section -->
         <!-- ######################################################-->
         
-        <section anchor="sec:quic-4-sat" title="Adaptations on QUIC for SATCOM">
+        <section anchor="sec:quic-4-sat" title="Mechanisms that improve the performance of QUIC for SATCOM">
 
 		<section anchor="sec:quic-4-sat-ss" title="Getting up to speed">
 		<t>3-way handshake takes a long time reducing the time at which actual data can be transmitted.</t>
@@ -202,8 +202,7 @@
 	</section>
 
 	<section anchor="sec:ecurity" title="Security Considerations">
-	<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection. The exchange and the information are protected both by the TLS encryption and the NewSessionTicket (see section 4.6.1 of <xref target="RFC8446"></xref>).</t>
-	<t>The BDP information the server will received is protected in the opaque session ticket. The 'BDP_data' field is visible by the client only. An client which does not trust the server transport adaptation ignores any session ticket associated to a 'BDP_data' field.</t>
+	<t>This document does not propose changes to the security functions provided by the QUIC protocol. QUIC uses TLS encryption to protect the transport header and its payload. Security is considered in the "Security Considerations" of cited IETF documents.</t>
 	</section>
 	</middle>
 
