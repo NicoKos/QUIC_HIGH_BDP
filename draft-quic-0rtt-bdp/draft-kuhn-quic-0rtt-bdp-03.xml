@@ -287,7 +287,7 @@ path         |           +'extension' field |
 			<?rfc include="reference.RFC.6928.xml"?>
 			<?rfc include="reference.RFC.8446.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-http.xml"?>
-			<?rfc include="reference.I-D.ietf-kuehlewind-quic-substrate.xml"?>
+			<?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
