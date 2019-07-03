@@ -94,6 +94,7 @@
 				<t>the server and the client exploit the information to improve the time-to-service during subsequent 0-RTT connections.</t>
 				</list>
 			</t>
+			<t>Even if the current focus is QUIC, the proposed solution applies to TLS1.3 over any transport: even if the current focus is QUIC, the solution applies, e.g., for TCP Fast Open.</t>
 			
 			<section anchor="subsec:intro_rationale" title="Reducing ossification with the proposed solution">
 			<t>While each client and server can have their dedicated solution to store path parameters, having a standard way of exchanging this information helps in providing symmetrical control of the optimisation and reducing protocol ossification. This memo discusses a solution where the client is informed about path parameters: both the client and the server can contribute to the reduction of the time-to-service for subsequent connections. This would improve symetrical transmission of data and reduce ossification of the protocol. Some advantages of the proposed solution are the following.<list style="numbers">
