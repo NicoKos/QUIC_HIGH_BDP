@@ -116,17 +116,18 @@
 
 	<t>GEO-satellite based systems characteristics differ from paths only using terrestrial links in their path characteristics:<list style="symbols">
 		<t>A large propagation delay of at least 250ms one-way delay;</t>
-		<t>Some systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link);</t>
+		<!-- <t>Some systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link);</t> -->
 		<t>Employ radio resource management (often using techniques similar to cellular mobile or DOCSIS cable networks, but differing to accommodate the satellite propagation delay);</t>
 		<t>Links can be highly asymmetric (in terms of capacity and one-way delay).</t>
 	</list></t>
-	<t>More information on satellite links characteristics can be found in <xref target="RFC2488"></xref>.</t>
+	<t>More information on satellite links characteristics can be found in <xref target="RFC2488"></xref>. Beyond that, even for characteristics shared with terrestrial links, the impact on a satellite link may be much worse. For example, systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link).</t>
 
 	<t>These characteristics have an impact on the performance of end-to-end congestion controls:<list style="symbols">
-		<t>Transport initialization: the 3-way handshake takes a long time to complete, reducing the time at which actual data can be transmitted;</t>
+		<t>Transport initialization: the 3-way handshake takes a long time to complete, delaying the time at which actual data can be transmitted;</t>
 		<t>Size of windows required: to fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets;</t>
 		<t>Reliability: packet loss detection and correction is slow (the performance of end-to-end retransmission is also impacted when using a high RTT path);</t>
-		<t>Getting up to speed: the exponential increase of the data rate during slow start for a channel capacity probing is slowed down when the RTT is high.</t>
+		<t>Getting up to speed: the exponential increase of the data rate during slow start for a channel capacity probing is slowed down when the RTT is high;</t>
+		<t>When the links are asymmetric, the smaller link may not be able to sustain the transport level acknowledgement traffic needed to fully utilize the faster link.</t>
 	</list></t>
 
 	</section>
@@ -139,7 +140,7 @@
 
 	<t>High BDP networks commonly break the TCP end-to-end paradigm to adapt the transport protocol. Splitting TCP allows adaptations to this specific use-case and assessing the issues discussed in section <xref target="sec:large_bdp_connection"></xref>. Satellite communications commonly deploy Performance Enhancement Proxy (PEP) for compression, caching and TCP acceleration services <xref target ="RFC3135"></xref>. Their deployment can result in 50% page load time reduction in a SATCOM use-case <xref target="ICCRG100"></xref>.</t>
 
-	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functions of SATCOM TCP split solutions. Shortly, for traffic originated at a gateway to an endpoint connected via a satellite terminal, the TCP split intercepts TCP SYN packets to act on behalf of the endpoint and adapt the data rate transmission to the SATCOM scenario. The split solution specifically tunes the TCP parameters to the context (latency, available capacity). The tuning can be achieved using a priori information about the satellite system and/or by measuring the properties of the network segment that includes the satellite system.</t>
+	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functions of SATCOM TCP split solutions. Shortly, for traffic originated at a gateway to an endpoint connected via a satellite terminal, the TCP split intercepts TCP SYN packets to act on behalf of the endpoint and adapt the data rate transmission to the SATCOM scenario. The split solution specifically tunes the TCP parameters to the context (latency, available capacity) of each link.  When a PEP is used on each side of the satellite link, a protocol other than TCP, optimized for the satellite link, may be used. The tuning can be achieved using a priori information about the satellite system and/or by measuring the properties of the network segment that includes the satellite system.</t>
 
 	<t>One important advantage of a TCP split solution is that it does not require any end-to-end modifications and is independent for both client and server sides. That being said, this comes with a drawback: TCP splitters often are unable to track the most recent end-to-end improvements (e.g. ECN or TCP Fast Open support). The methods configured in the split proxy usually continue to be used until a split solution is finally updated. This can delay/negate the benefit of any end-to-end improvements.</t> 
 
