@@ -193,11 +193,12 @@ path         |           +'extension' field |
            +-----------------------------------+
              |                              |
              +ClientHello------------------&gt;|
-             |+'opaque' field               | +-------------------+
-             |                              | |param adaptation   |
-             |                              | |e.g.               |
-             |                              | |tuned and paced IW |
-             |                              | +-------------------+
+             |+'opaque' field               | 
+             |+ BDP_metadata                | +-------------------+
+             |  + BDP                       | |param adaptation   |
+             |  + RTT                       | |e.g.               |
+             |  + loss-rate                 | |tuned and paced IW |
+             |  + MTU                       | +-------------------+ 
              |                              |
              +&lt;----+data transmission+-----&gt;+
              |                              |
