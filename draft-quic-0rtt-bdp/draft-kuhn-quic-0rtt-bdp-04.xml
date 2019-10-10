@@ -148,7 +148,7 @@
 			<section anchor="sec:e2e_sol:usage" title="Usage of the extension in the NewSessionTicket">
 				<t>At the end of a 1-RTT connection, a server can send information in a NewSessionTicket that describes the path to the client. The message includes an additional 'extensions' field named 'BDP_metadata'. The client stores this session ticket and the 'BDP_metadata' field.</t>
 				<t>When the client reconnects to the same server in 0-RTT mode, it pushes back this session  ticket in the ClientHello and prepares itself to receive data in the context given by the 'BDP_metadata' field. The client does not send the 'BDP_metadata' field back to the server. The server receives the session ticket and extracts the BDP context. As example, it can use this message to provide information that may allow the congestion controller to provide a throughput closer to the capacity of the path.</t>
-				<t>Because the path characteristics can change over time, and may hence become invalid for use in a subsequent connection, the server sets the age of the ticket (see section 4.2.11.1 of <xref target="RFC8446"/>) to a short duration. A server could also update the ticket when the path characteristics of connection are known to have changed.</t>
+				<t>Because the path characteristics can change over time, and may hence become invalid for use in a subsequent connection, the server sets the age of the ticket (see section 4.2.11.1 of <xref target="RFC8446"/>) to a short duration. To guarantee that the ticket is still valid, the server could also exploit the IP address of the client. A server could also update the ticket when the path characteristics of connection are known to have changed.</t>
 			</section>
 
 		</section>
