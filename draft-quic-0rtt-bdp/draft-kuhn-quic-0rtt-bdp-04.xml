@@ -249,7 +249,7 @@ path         |           +'extension' field |
 		<!-- ######################################################-->
 
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
-			<t>None.</t>
+			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev and Christian Huitema for their fruitfull comments on earlier versions of this document.</t>
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
