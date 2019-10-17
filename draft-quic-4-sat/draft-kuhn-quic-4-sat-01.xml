@@ -284,6 +284,7 @@
                     <date year="2017" />
                     </front>
                     <seriesInfo name="International Journal of Satellite Communications and Networking" value="" />
+		</reference>
 		 <reference anchor="IJSCN19">
                     <front>
                     <title>Google QUIC performance over a public SATCOM access</title>
