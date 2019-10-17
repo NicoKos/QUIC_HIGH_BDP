@@ -56,7 +56,7 @@
       </address>
     </author>
  
-    <date month="July" year="2019" />
+    <date month="Octobre" year="2019" />
 
     <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
          in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -99,7 +99,7 @@
 	<section anchor="sec:introduction" title="Introduction">
 	<t>The end-to-end performance of an application using an Internet path can be impacted by the Bandwidth-Delay Product (BDP) of the links and network devices forming the path. For instance, the page load time for a complex page can be much larger when the path includes a satellite link. A significant contribution to this reduced performance arises from the initialisation and design of transport mechanisms. QUIC's congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>.</t>
 	<t>Moreover, satellite communications (SATCOM) systems have long been used to support point-to-point links and specialised networks. The predominate current use is as a link-layer for Internet Protocols. Typical example applications include: use as an access technology for remote locations, backup and rapid deployment of new services, transit networks and backhaul of various types of IP networks, and provision to mobile (maritime, aircraft, etc.). The satellite IP network segment usually only forms one part of the end-to-end path. This means user traffic can experince a path that includes satellite link together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc). Although a user can sometimes know the presence of the satellite service, a typical user does not deploy special software or applications because they expect a satellite network is being used. Often a user is unaware of the technologies underpinning the links forming the network path.</t> 
-        <t>This memo identifies the characteristics of a SATCOM link that impact  the operation of the QUIC transport protocol and proposes best current practice to ensure acceptable protocol performance.</t>
+        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol and proposes best current practice to ensure acceptable protocol performance.</t>
 	</section>
 
         <!-- ######################################################-->
@@ -120,9 +120,10 @@
 		<t>Employ radio resource management (often using techniques similar to cellular mobile or DOCSIS cable networks, but differing to accommodate the satellite propagation delay);</t>
 		<t>Links can be highly asymmetric (in terms of capacity and one-way delay).</t>
 	</list></t>
-	<t>More information on satellite links characteristics can be found in <xref target="RFC2488"></xref>. Beyond that, even for characteristics shared with terrestrial links, the impact on a satellite link may be much worse. For example, systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link).</t>
-
-	<t>These characteristics have an impact on the performance of end-to-end congestion controls:<list style="symbols">
+	<t>On DVB-S2 systems, the key concept to ensure both a good usage of the satellite resource and a Quasi Error Free (QEF) link consist in monitoring the link quality in real-time, with the help of known symbols sequences, included along regular packets, on which an estimation of the current signal-to-noise ratio can be done. Then, this estimation is send back to the transmitter who can adapt its coding rate and modulation order to best fit the actual transmission conditions.</t>
+	<t>On the forward link, the satellite gateway uses all the available bandwidth, possibly with several carriers, to communicate with the remote terminals. A carrier is a single Time-Division-Multiplexing where packets addressed to terminals are multiplexed. On the return link, the satellite resource is shared among the users. Two access methods can be distinguished: on-demand access or contention access. In the former, a terminal receives dedicated resources on its own to communicate with the gateway. In the latter, some resources are reserved for contention access, where several terminals can compete to obtain the resource. Dedicated access, which is more common in currently deployed systems, can be through a Demand Assigned Multiple Access (DAMA) mechanism, while contention access techniques are usually based on Slotted Aloha (SA) and its numerous derivatives. More information on satellite links characteristics can be found in <xref target="RFC2488"></xref><xref target="IJSCN17"></xref>.</t>
+		
+	<t>Beyond that, even for characteristics shared with terrestrial links, the impact on a satellite link may be much worse and amplified by the high latency of the system. For example, systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link) which would impact loss recovery mechanisms and congestion control reaction to such loss events. The characteristics of GEO-based accesses have an impact on the performance of end-to-end congestion controls:<list style="symbols">
 		<t>Transport initialization: the 3-way handshake takes a long time to complete, delaying the time at which actual data can be transmitted;</t>
 		<t>Size of windows required: to fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets;</t>
 		<t>Reliability: packet loss detection and correction is slow (the performance of end-to-end retransmission is also impacted when using a high RTT path);</t>
@@ -245,7 +246,25 @@
                     </front>
                     <seriesInfo name="IETF ICCRG" value="100" />
                 </reference>
-		 <reference anchor="IJSCN19">
+		<reference anchor="IJSCN17">
+                    <front>
+                    <title>Software‐defined satellite cloud RAN</title>
+                    <author initials="T" surname="Ahmed">
+                    </author>
+                    <author initials="E" surname="Dubois">
+                    </author>
+		    <author initials="JB" surname="Dupe">
+                    </author>
+		    <author initials="R" surname="Ferrus">
+                    </author>
+	            <author initials="P" surname="Gelard">
+                    </author>
+                    <author initials="N" surname="Kuhn">
+		    </author>
+                    <date year="2017" />
+                    </front>
+                    <seriesInfo name="International Journal of Satellite Communications and Networking" value="" />
+		 <reference anchor="IJSCN17">
                     <front>
                     <title>Google QUIC performance over a public SATCOM access</title>
                     <author initials="L" surname="Thomas">
