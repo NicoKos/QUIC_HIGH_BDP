@@ -154,17 +154,18 @@
         <section anchor="sec:quic-4-sat" title="Mechanisms that improve the performance of QUIC for SATCOM">
 
 		<section anchor="sec:quic-4-sat-ss" title="Getting up to speed">
-		<t>3-way handshake takes a long time reducing the time at which actual data can be transmitted.</t>
-		<t>The tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>.</t>
-		</section>
-
-		<section anchor="sec:quic-4-sat-loss" title="Reliability">
-		<t>Packet losses detection and correction is slow and the time needed for the end server to react to a congestion event may not be relevant. This happens when a user uses a Wi-Fi link to access a SATCOM terminal. Although the benefits needed to weighed against the additional capacity in introducing end-to-end FEC and the potential to use link-local ARQ and/or link-adaptive FEC.</t>
-		<t>Introducing network coding in QUIC could help in recovering from the residual Wi-Fi losses.</t>
+		<t>The advantage of using QUIC is that it includes the TLS and TCP negociations which reduces the time at which the data can be transmitted. That being said, results of <xref target="IJSCN19"></xref> illustrate that getting at the bottleneck capacity on a long RTT network takes an important time with QUIC. There is an issue in QUIC getting up to speed in a SATCOM context.</t>
+		<t>The tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref> could be a relevant solution. That being said, such solution requires the usage of pacing to avoid important bursts of packets in the network that does not have a large BDP.</t>
 		</section>
 
 		<section anchor="sec:quic-4-sat-max-window" title="Maximum window">
-		<t>To fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets.</t>
+		<t>To fully exploit the bottleneck capacity, the high BDP may induce an important number of in-flights packets. Default values of maximum windows may not be suitable for a SATCOM context.</t>
+		<t>Such as presented in <xref target="PANRG105"></xref>, only increasing the initial congestion window is not the only way that can improve QUIC performance in a SATCOM context: increasing maximum congestion windows can also result in much better performance.</t>
+		</section>
+		
+		<section anchor="sec:quic-4-sat-loss" title="Reliability">
+		<t>Packet losses detection and correction is slow and the time needed for the end server to react to a congestion event may not be relevant. This happens when a user uses a Wi-Fi link to access a SATCOM terminal. Although the benefits needed to weighed against the additional capacity in introducing end-to-end FEC and the potential to use link-local ARQ and/or link-adaptive FEC. End-to-end connections may not only suffer from losses in the Wi-Fi segment but also from congestion losses in the satellite operator ground segment. Using the mechanisms proposed in <xref target="I-D.ferrieux-hamchaoui-quic-lossbits"></xref>, congestion losses have been identified on the ground segment.</t>
+		<t>Introducing network coding in QUIC such as proposed in <xref target="I-D.swett-nwcrg-coding-for-quic"></xref> and <xref target="I-D.roca-nwcrg-rlc-fec-scheme-for-quic"></xref> could help in recovering from the residual Wi-Fi or congestion losses. Another solution would be the usage of QUIC tunnels <xref target="I-D.schinazi-masque"></xref>.</t>
 		</section>
 
 		<section anchor="sec:quic-4-sat-ack-ratio" title="ACK ratio">
@@ -232,12 +233,31 @@
 		<?rfc include="reference.RFC.6349.xml"?>
 		<?rfc include="reference.RFC.6928.xml"?>
 		<?rfc include="reference.RFC.8446.xml"?>
+		<?rfc include="reference.I-D.swett-nwcrg-coding-for-quic.xml"?> 
+		<?rfc include="reference.I-D.roca-nwcrg-rlc-fec-scheme-for-quic.xml"?>
+		<?rfc include="reference.I-D.schinazi-masque.xml"?>
+		<?rfc include="reference.I-D.ferrieux-hamchaoui-quic-lossbits.xml"?> 
 		<?rfc include="reference.I-D.ietf-quic-tls.xml"?> 
 		<?rfc include="reference.I-D.ietf-quic-transport.xml"?> 
 		<?rfc include="reference.I-D.ietf-quic-recovery.xml"?> 
 		<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
 		<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
-                <reference anchor="ICCRG100">
+                <reference anchor="PANRG105">
+                    <front>
+                    <title>QUIC Over In-sequence Paths with Different Characteristics</title>
+                    <author initials="N" surname="Kuhn">
+                    </author>
+	 	    <author initials="E" surname="Stephan">
+                    </author>
+		    <author initials="J" surname="Border">
+                    </author>
+	 	    <author initials="G" surname="Fairhurst">
+                    </author>
+                    <date year="2019" />
+                    </front>
+                    <seriesInfo name="IRTF PANRG" value="105" />
+                </reference>
+		<reference anchor="ICCRG100">
                     <front>
                     <title>MPTCP and BBR performance over Internet satellite paths</title>
                     <author initials="N" surname="Kuhn">
