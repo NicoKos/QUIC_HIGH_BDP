@@ -193,15 +193,15 @@
         <!-- ######################################################--> 
 
 	<section anchor="sec:acknowledgements" title="Acknowledgements">
-	<t>None.</t>
+	<t>TBD</t>
 	</section>
 
 	<section anchor="sec:contributors" title="Contributors">
-	<t>None.</t>
+	<t>TBD</t>
 	</section>
 
 	<section anchor="sec:IANA" title="IANA Considerations">
-	<t>TBD: text is required to register the extension BDP_data field.</t>
+	<t>TBD</t>
 	</section>
 
 	<section anchor="sec:ecurity" title="Security Considerations">
