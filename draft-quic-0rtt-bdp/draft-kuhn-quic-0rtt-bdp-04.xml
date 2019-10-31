@@ -94,7 +94,8 @@
 				<t>the server and the client exploit the information to improve the time-to-service during subsequent 0-RTT connections.</t>
 				</list>
 			</t>
-			<t>The proposed solution applies to TLS1.3 over any transport: even if the current focus is QUIC, the solution applies, e.g., for TCP Fast Open.</t>
+			<t>The proposed solution applies to TLS1.3 over any transport: even if the current focus is QUIC, the solution applies, e.g., for TCP Fast Open.</t> 			
+			<t>This mechanism follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_metadata' proposal aims at improving ingress traffic to the client. Improving the ingress traffic can result in significant improvement to the quality-of-experience. For example, this enables the use of transport parameters, such as the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection. In some large BDP deployment scenarios, this can halve the page load time of a web page download.</t>
 			
 			<section anchor="subsec:intro_rationale" title="Reducing ossification with the proposed solution">
 			<t>While each client and server can have their dedicated solution to store path parameters, having a standard way of exchanging this information helps in providing symmetrical control of the optimisation and reducing protocol ossification. This memo discusses a solution where the client is informed about path parameters: both the client and the server can contribute to the reduction of the time-to-service for subsequent connections. This would improve symmetrical transmission of data and reduce ossification of the protocol. Some advantages of the proposed solution are the following.<list style="numbers">
@@ -178,13 +179,13 @@
              +&lt;-----data transmission------&gt;+ |path charact|
              |                              | |record      |
              |                              | +------------+
-             |&lt;-------------NewSessionTicket+
-Client aware |           +ticket_lifetime   |
-of high BDP  |           +'opaque' field    |
-path         |           +'extension' field |
-             |            + early_data      |
-             |            + BDP_metadata    |
-             |              + BDP           |
+             |&lt;-------------NewSessionTicket+  
++----------+ |           +ticket_lifetime   |
+|client    | |           +'opaque' field    |
+|aware of  | |           +'extension' field |
+|path      | |            + early_data      |
+|charat.   | |            + BDP_metadata    |
++----------+ |              + BDP           |
              |              + RTT           |
              |              + loss-rate     |
              |              + MTU           |
@@ -194,11 +195,10 @@ path         |           +'extension' field |
              |                              |
              +ClientHello------------------&gt;|
              |+'opaque' field               | 
-             |+ BDP_metadata                | +-------------------+
-             |  + BDP                       | |param adaptation   |
-             |  + RTT                       | |e.g.               |
-             |  + loss-rate                 | |tuned and paced IW |
-             |  + MTU                       | +-------------------+ 
+             |                              | +-------------------+
+             |                              | |server aware of    |
+             |                              | |path charact.      |
+             |                              | +-------------------+
              |                              |
              +&lt;----+data transmission+-----&gt;+
              |                              |
@@ -236,9 +236,10 @@ path         |           +'extension' field |
 		<!-- New section -->
 		<!-- ######################################################-->
 
-		<section anchor="sec:discussion" title="Discussion">
+		<section anchor="sec:discussion" title="Relevance of the solution for QUIC and other protocols">
+			<t>In the QUIC framework, other solutions could have been proposed. As example, the NEW_TOKEN frame could be used to send path characteristics information to the client. However, this would require to specify its content, consistently with QUIC transport parameters, so that any client can exploit the information transmitted by any server in a standard way. Moreover, the NEW_TOKEN frame is not symmetrical  (Clients MUST NOT send NEW_TOKEN frames) does not enable the support of a symmetrical control of the optimisation.</t>    
 
-			<t>This mechanism follows the approach of the extension field 'early_data' of the NewSessionTicket of TLS1.3. While 'early_data' improves the egress traffic of a client, the 'BDP_metadata' proposal aims at improving ingress traffic to the client. Improving the ingress traffic can result in significant improvement to the quality-of-experience. For example, this enables the use of transport parameters, such as the RTT, PMTU and BDP to adapt the initial data transmission of a 0-RTT connection. In some large BDP deployment scenarios, this can halve the page load time of a web page download.</t>
+			<t>The proposed solution has been proposed with QUIC standardization in mind but is applicable to any transport under TLS1.3.</t>
 			<!-- <t>Deeper adaptations of the QUIC congestion control can improve the end-user experience in high BDP contexts but proposing it for other contexts may not be relevant. Indeed, designing either the data-center or the end-user stacks based on large BDP constraints can hardly be done if the deployment is not dedicated to this context (such as it would be the case with specific CDN). Adapting a generic data-center may not be viable since it may result in too aggressive behavior for more common BDP. Moreover, at the end-user side, adapting the stacks or the browser has been proposed in the past but maintenance is mre complex because there can often be a change to the version of the web browsers' version.</t> -->
 
 		</section>
