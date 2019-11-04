@@ -290,6 +290,7 @@
 			<?rfc include="reference.RFC.6347.xml"?>
 			<?rfc include="reference.RFC.6349.xml"?>
 			<?rfc include="reference.RFC.6928.xml"?>
+			<?rfc include="reference.RFC.7413.xml"?>
 			<?rfc include="reference.RFC.8446.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-http.xml"?>
 			<?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?>
