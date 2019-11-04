@@ -287,6 +287,7 @@
 		<references title="Informative References">
 			<?rfc include="reference.RFC.2488.xml"?>
 			<?rfc include="reference.RFC.3135.xml"?>
+			<?rfc include="reference.RFC.6347.xml"?>
 			<?rfc include="reference.RFC.6349.xml"?>
 			<?rfc include="reference.RFC.6928.xml"?>
 			<?rfc include="reference.RFC.8446.xml"?>
