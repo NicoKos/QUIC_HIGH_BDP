@@ -1,2 +1,4 @@
 # QUIC_HIGH_BDP
-Activities related to the performance of QUIC over high BDP networks
+QUIC has been designed for use across Internet paths. Initial designs of QUIC have focussed on common deployment scenarios for web traffic and have not focussed on the performance when using a path with a large Bandwidth-Delay Product (BDP). A path can combine satellites network segment together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc): this complicates the characteristics of the end-to-end path. One example of such a scenario occurs when a satellite communication (SATCOM) system is used to provide all or a part of the end-to-end path. If this is not addressed, the end-to-end quality of experience can be degraded.
+
+This repository gathers documents that are related to the usage of QUIC over SATCOM networks. For those who are interested in the activity, please subscribe to the EToSat mailing list. The EToSat list is a non-WG mailing list used to discuss performance implications of running encrypted transports such as QUIC over satellite. https://www.ietf.org/mailman/listinfo/etosat
