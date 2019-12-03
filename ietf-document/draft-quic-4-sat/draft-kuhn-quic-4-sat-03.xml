@@ -158,7 +158,7 @@
 		<t>Satellite uplink path: the path from the satellite terminal to the satellite gateway.</t>
 	</list></t>
 	
-	<section anchor="sec:quic-4-sat-regression-static-low" title "Silver public satellite broadband access">
+	<section anchor="sec:quic-4-sat-regression-static-low" title="Silver public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 10 Mbps</t>
 			<t>Satellite uplink path: 2 Mbps</t>
@@ -172,7 +172,7 @@
 		</list></t>
 	</section>
 
-	<section anchor="sec:quic-4-sat-regression-static-high" title "Gold public satellite broadband access">
+	<section anchor="sec:quic-4-sat-regression-static-high" title="Gold public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 50 Mbps</t>
 			<t>Satellite uplink path: 10 Mbps</t>
