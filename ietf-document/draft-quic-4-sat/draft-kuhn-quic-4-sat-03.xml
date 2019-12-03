@@ -166,7 +166,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP (i.e. 812 500 bytes)</t>
 		</list></t>
-		<t>The test should report:</list="symbols">
+		<t>The test should report:<list style="symbols">
 			<t>The time the solution needed to reach 10 Mbps on the downlink path</t>
 			<t>The time the solution needed to reach 2 Mbps on the uplink path</t>
 		</list></t>
@@ -180,7 +180,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP (i.e. 4 062 500 bytes)</t>
 		</list></t>
-		<t>The test should report:</list="symbols">
+		<t>The test should report:<list style="symbols">
 			<t>The time the solution needed to reach 50 Mbps on the downlink path</t>
 			<t>The time the solution needed to reach 10 Mbps on the uplink path</t>
 		</list></t>
