@@ -147,6 +147,47 @@
 
 	</section>
 
+  	<!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:quic-4-sat-regression" title="Regression tests">
+	
+	<t>This section proposes regression tests for QUIC. We define by :<list style="symbols">
+		<t>Satellite downlink path: the path from the satellite gateway to the satellite terminal.</t>
+		<t>Satellite uplink path: the path from the satellite terminal to the satellite gateway.</t>
+	</list></t>
+	
+	<section anchor="sec:quic-4-sat-regression-static-low" title "Silver public satellite broadband access">
+		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+			<t>Satellite downlink path: 10 Mbps</t>
+			<t>Satellite uplink path: 2 Mbps</t>
+			<t>Loss rate (percentage): 0</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP (i.e. 812 500 bytes)</t>
+		</list></t>
+		<t>The test should report:</list="symbols">
+			<t>The time the solution needed to reach 10 Mbps on the downlink path</t>
+			<t>The time the solution needed to reach 2 Mbps on the uplink path</t>
+		</list></t>
+	</section>
+
+	<section anchor="sec:quic-4-sat-regression-static-high" title "Gold public satellite broadband access">
+		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+			<t>Satellite downlink path: 50 Mbps</t>
+			<t>Satellite uplink path: 10 Mbps</t>
+			<t>Loss rate (percentage): 0</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP (i.e. 4 062 500 bytes)</t>
+		</list></t>
+		<t>The test should report:</list="symbols">
+			<t>The time the solution needed to reach 50 Mbps on the downlink path</t>
+			<t>The time the solution needed to reach 10 Mbps on the uplink path</t>
+		</list></t>
+	</section>
+			
+	</section>
+	  
 	<!-- ######################################################-->
         <!-- New section -->
         <!-- ######################################################-->
@@ -194,7 +235,7 @@
         <!-- ######################################################--> 
 
 	<section anchor="sec:acknowledgements" title="Acknowledgements">
-	<t>TBD</t>
+	<t>The authors would like to thank Christian Huitema, Igor Lubashev, Alexandre Ferrieux and the partipants of the IETF106 side-meeting on QUIC for high BDP for their useful feedbacks.</t>
 	</section>
 
 	<section anchor="sec:contributors" title="Contributors">
@@ -233,6 +274,7 @@
 		<?rfc include="reference.RFC.3449.xml"?>
 		<?rfc include="reference.RFC.6349.xml"?>
 		<?rfc include="reference.RFC.6928.xml"?>
+		<?rfc include="reference.RFC.7928.xml"?>
 		<?rfc include="reference.RFC.8446.xml"?>
 		<?rfc include="reference.I-D.swett-nwcrg-coding-for-quic.xml"?> 
 		<?rfc include="reference.I-D.roca-nwcrg-rlc-fec-scheme-for-quic.xml"?>
