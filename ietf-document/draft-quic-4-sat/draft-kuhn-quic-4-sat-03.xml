@@ -154,38 +154,66 @@
         <section anchor="sec:quic-4-sat-regression" title="Regression tests">
 	
 	<t>This section proposes regression tests for QUIC. We define by :<list style="symbols">
-		<t>Satellite downlink path: the path from the satellite gateway to the satellite terminal.</t>
-		<t>Satellite uplink path: the path from the satellite terminal to the satellite gateway.</t>
+		<t>Download : from Internet to host</t>
+		<t>Upload: from the host to Internet</t>
 	</list></t>
 	
-	<section anchor="sec:quic-4-sat-regression-static-low" title="Silver public satellite broadband access">
+	<section anchor="sec:quic-4-sat-regression-static-low" title="Small public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 10 Mbps</t>
 			<t>Satellite uplink path: 2 Mbps</t>
 			<t>Loss rate (percentage): 0</t>
 			<t>RTT: 650 ms</t>
-			<t>Buffer size : BDP (i.e. 812 500 bytes)</t>
+			<t>Buffer size : BDP</t>
 		</list></t>
 		<t>The test should report:<list style="symbols">
-			<t>The time the solution needed to reach 10 Mbps on the downlink path</t>
-			<t>The time the solution needed to reach 2 Mbps on the uplink path</t>
+			<t>The downloading time of 100 MB on the download</t>
+			<t>The downloading time of 100 MB on the upload</t>
 		</list></t>
 	</section>
 
-	<section anchor="sec:quic-4-sat-regression-static-high" title="Gold public satellite broadband access">
+	<section anchor="sec:quic-4-sat-regression-static-high" title="Medium public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 50 Mbps</t>
 			<t>Satellite uplink path: 10 Mbps</t>
 			<t>Loss rate (percentage): 0</t>
 			<t>RTT: 650 ms</t>
-			<t>Buffer size : BDP (i.e. 4 062 500 bytes)</t>
+			<t>Buffer size : BDP</t>
 		</list></t>
 		<t>The test should report:<list style="symbols">
-			<t>The time the solution needed to reach 50 Mbps on the downlink path</t>
-			<t>The time the solution needed to reach 10 Mbps on the uplink path</t>
+			<t>The downloading time of 100 MB on the download</t>
+			<t>The downloading time of 100 MB on the upload</t>
 		</list></t>
 	</section>
-			
+		
+	<section anchor="sec:quic-4-sat-regression-static-high" title="Loss-free large public satellite broadband access">
+		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+			<t>Satellite downlink path: 250 Mbps</t>
+			<t>Satellite uplink path: 3 Mbps</t>
+			<t>Loss rate (percentage): 0</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>The test should report:<list style="symbols">
+			<t>The downloading time of 100 MB on the download</t>
+			<t>The downloading time of 100 MB on the upload</t>
+		</list></t>
+	</section>
+		
+	<section anchor="sec:quic-4-sat-regression-static-high" title="Lossy large public satellite broadband access">
+		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+			<t>Satellite downlink path: 250 Mbps</t>
+			<t>Satellite uplink path: 3 Mbps</t>
+			<t>Loss rate (percentage): 1</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>The test should report:<list style="symbols">
+			<t>The downloading time of 100 MB on the download</t>
+			<t>The downloading time of 100 MB on the upload</t>
+		</list></t>
+	</section>
+		
 	</section>
 	  
 	<!-- ######################################################-->
