@@ -5,12 +5,12 @@
 Internet Engineering Task Force                                  N. Kuhn
 Internet-Draft                                                      CNES
 Intended status: Informational                              G. Fairhurst
-Expires: May 4, 2020                              University of Aberdeen
+Expires: June 7, 2020                             University of Aberdeen
                                                                J. Border
                                              Hughes Network Systems, LLC
                                                               E. Stephan
                                                                   Orange
-                                                        November 1, 2019
+                                                        December 5, 2019
 
 
                             QUIC for SATCOM
@@ -49,13 +49,13 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 4, 2020.
+   This Internet-Draft will expire on June 7, 2020.
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 1]
+Kuhn, et al.              Expires June 7, 2020                  [Page 1]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
 Copyright Notice
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 2]
+Kuhn, et al.              Expires June 7, 2020                  [Page 2]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
    is defined by [RFC6928].  Although QUIC's CC and recovery have been
@@ -165,9 +165,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 3]
+Kuhn, et al.              Expires June 7, 2020                  [Page 3]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
    transmitter that can adapt its coding rate and modulation order to
@@ -221,9 +221,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 4]
+Kuhn, et al.              Expires June 7, 2020                  [Page 4]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
    o  Asymetry : when the links are asymmetric, for various reasons, the
@@ -277,9 +277,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 5]
+Kuhn, et al.              Expires June 7, 2020                  [Page 5]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
 4.1.  Small public satellite broadband access
@@ -333,9 +333,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 6]
+Kuhn, et al.              Expires June 7, 2020                  [Page 6]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
    The test should report the downloading time of 100 MB from the
@@ -389,9 +389,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 7]
+Kuhn, et al.              Expires June 7, 2020                  [Page 7]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
 5.2.  Maximum window
@@ -445,9 +445,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 8]
+Kuhn, et al.              Expires June 7, 2020                  [Page 8]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
    compound acknowledgments less frequently.  A rate of one ACK every
@@ -501,9 +501,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                  [Page 9]
+Kuhn, et al.              Expires June 7, 2020                  [Page 9]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
 9.  IANA Considerations
@@ -557,9 +557,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                 [Page 10]
+Kuhn, et al.              Expires June 7, 2020                 [Page 10]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
    [ICC16]    Sallantin, R., Baudoin, C., Chaput, E., Arnal, F., Dubois,
@@ -613,9 +613,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.               Expires May 4, 2020                 [Page 11]
+Kuhn, et al.              Expires June 7, 2020                 [Page 11]
 
-Internet-Draft                 QUIC 4 SAT                  November 2019
+Internet-Draft                 QUIC 4 SAT                  December 2019
 
 
    [RFC6928]  Chu, J., Dukkipati, N., Cheng, Y., and M. Mathis,
@@ -669,4 +669,4 @@ Authors' Addresses
 
 
 
-Kuhn, et al.               Expires May 4, 2020                 [Page 12]
+Kuhn, et al.              Expires June 7, 2020                 [Page 12]
