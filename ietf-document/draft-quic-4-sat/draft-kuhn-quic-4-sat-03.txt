@@ -5,12 +5,12 @@
 Internet Engineering Task Force                                  N. Kuhn
 Internet-Draft                                                      CNES
 Intended status: Informational                              G. Fairhurst
-Expires: June 2, 2020                             University of Aberdeen
+Expires: May 4, 2020                              University of Aberdeen
                                                                J. Border
                                              Hughes Network Systems, LLC
                                                               E. Stephan
                                                                   Orange
-                                                       November 30, 2019
+                                                        November 1, 2019
 
 
                             QUIC for SATCOM
@@ -49,11 +49,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on June 2, 2020.
+   This Internet-Draft will expire on May 4, 2020.
 
 
 
-Kuhn, et al.              Expires June 2, 2020                  [Page 1]
+Kuhn, et al.               Expires May 4, 2020                  [Page 1]
 
 Internet-Draft                 QUIC 4 SAT                  November 2019
 
@@ -90,12 +90,10 @@ Table of Contents
      5.4.  ACK ratio . . . . . . . . . . . . . . . . . . . . . . . .   8
    6.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   9
    7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
-   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   9
    9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    10. Security Considerations . . . . . . . . . . . . . . . . . . .  10
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  10
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  10
+   11. Informative References  . . . . . . . . . . . . . . . . . . .  10
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
@@ -106,16 +104,16 @@ Table of Contents
    for a complex page can be much larger when the path includes a
    satellite link.  A significant contribution to this reduced
    performance arises from the initialisation and design of transport
+   mechanisms.  QUIC's default congestion control is based on TCP
+   NewReno [I-D.ietf-quic-recovery] and the recommended initial window
 
 
 
-Kuhn, et al.              Expires June 2, 2020                  [Page 2]
+Kuhn, et al.               Expires May 4, 2020                  [Page 2]
 
 Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
-   mechanisms.  QUIC's default congestion control is based on TCP
-   NewReno [I-D.ietf-quic-recovery] and the recommended initial window
    is defined by [RFC6928].  Although QUIC's CC and recovery have been
    designed for use across Internet Paths, the initial design could not
    optimise for the wide diversity of path characteristics that can
@@ -162,16 +160,16 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
    to ensure both a good usage of the satellite resource and a Quasi
    Error Free (QEF) link.  It consists in monitoring the link quality in
    real-time, with the help of known symbols sequences, included along
+   regular packets, on which an estimation of the current signal-to-
+   noise ratio can be done.  Then, this estimation is send back to the
 
 
 
-Kuhn, et al.              Expires June 2, 2020                  [Page 3]
+Kuhn, et al.               Expires May 4, 2020                  [Page 3]
 
 Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
-   regular packets, on which an estimation of the current signal-to-
-   noise ratio can be done.  Then, this estimation is send back to the
    transmitter that can adapt its coding rate and modulation order to
    best fit the actual transmission conditions.
 
@@ -221,7 +219,9 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.              Expires June 2, 2020                  [Page 4]
+
+
+Kuhn, et al.               Expires May 4, 2020                  [Page 4]
 
 Internet-Draft                 QUIC 4 SAT                  November 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-Kuhn, et al.              Expires June 2, 2020                  [Page 5]
+Kuhn, et al.               Expires May 4, 2020                  [Page 5]
 
 Internet-Draft                 QUIC 4 SAT                  November 2019
 
@@ -290,17 +290,14 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
    o  Satellite uplink path: 2 Mbps
 
-   o  Loss rate (percentage): 0
+   o  No emulated packet loss
 
    o  RTT: 650 ms
 
    o  Buffer size : BDP
 
-   The test should report:
-
-   o  The downloading time of 100 MB on the download
-
-   o  The downloading time of 100 MB on the upload
+   The test should report the downloading time of 100 MB from the
+   Internet to the host.
 
 4.2.  Medium public satellite broadband access
 
@@ -310,17 +307,14 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
    o  Satellite uplink path: 10 Mbps
 
-   o  Loss rate (percentage): 0
+   o  No emulated packet loss
 
    o  RTT: 650 ms
 
    o  Buffer size : BDP
 
-   The test should report:
-
-   o  The downloading time of 100 MB on the download
-
-   o  The downloading time of 100 MB on the upload
+   The test should report the downloading time of 100 MB from the
+   Internet to the host.
 
 4.3.  Loss-free large public satellite broadband access
 
@@ -330,25 +324,22 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
    o  Satellite uplink path: 3 Mbps
 
-
-
-
-Kuhn, et al.              Expires June 2, 2020                  [Page 6]
-
-Internet-Draft                 QUIC 4 SAT                  November 2019
-
-
-   o  Loss rate (percentage): 0
+   o  No emulated packet loss
 
    o  RTT: 650 ms
 
    o  Buffer size : BDP
 
-   The test should report:
 
-   o  The downloading time of 100 MB on the download
 
-   o  The downloading time of 100 MB on the upload
+
+Kuhn, et al.               Expires May 4, 2020                  [Page 6]
+
+Internet-Draft                 QUIC 4 SAT                  November 2019
+
+
+   The test should report the downloading time of 100 MB from the
+   Internet to the host.
 
 4.4.  Lossy large public satellite broadband access
 
@@ -358,17 +349,19 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
    o  Satellite uplink path: 3 Mbps
 
-   o  Loss rate (percentage): 1
+   o  Emulated packet loss on both downlink and uplink paths:
+
+      *  Uniform random losses: 1%, or
+
+      *  Bursty losses: P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355,
+         P(b|g)= 0.018 (see [RFC6534] for more details)
 
    o  RTT: 650 ms
 
    o  Buffer size : BDP
 
-   The test should report:
-
-   o  The downloading time of 100 MB on the download
-
-   o  The downloading time of 100 MB on the upload
+   The test should report the downloading time of 100 MB from the
+   Internet to the host.
 
 5.  Mechanisms that improve the performance of QUIC for SATCOM
 
@@ -386,16 +379,20 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
    [I-D.irtf-iccrg-sallantin-initial-spreading] which has been shown to
    improve performance both for high BDP and more common BDP
    [CONEXT15][ICC16] could be a relevant solution.  That being said,
+   such solution requires the usage of pacing to avoid important bursts
+   of packets in the network that does not have a large BDP.
 
 
 
-Kuhn, et al.              Expires June 2, 2020                  [Page 7]
+
+
+
+
+
+Kuhn, et al.               Expires May 4, 2020                  [Page 7]
 
 Internet-Draft                 QUIC 4 SAT                  November 2019
 
-
-   such solution requires the usage of pacing to avoid important bursts
-   of packets in the network that does not have a large BDP.
 
 5.2.  Maximum window
 
@@ -442,17 +439,17 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
    packets (e.g., when a radio-resource management system has to track
    channel usage) or both.
 
+   TCP Performance Implications of Network Path Asymmetry [RFC3449]
+   describes a range of mechanisms that can mitigate the impact of path
+   asymmetry.  One simple method is to tell the remote endpoint to send
 
 
 
-Kuhn, et al.              Expires June 2, 2020                  [Page 8]
+Kuhn, et al.               Expires May 4, 2020                  [Page 8]
 
 Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
-   TCP Performance Implications of Network Path Asymmetry [RFC3449]
-   describes a range of mechanisms that can mitigate the impact of path
-   asymmetry.  One simple method is to tell the remote endpoint to send
    compound acknowledgments less frequently.  A rate of one ACK every
    RTT/4 can significantly reduce this traffic.
 
@@ -491,24 +488,23 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 7.  Acknowledgements
 
    The authors would like to thank Christian Huitema, Igor Lubashev,
-   Alexandre Ferrieux and the partipants of the IETF106 side-meeting on
-   QUIC for high BDP for their useful feedbacks.
-
-
-
-
-
-
-
-
-Kuhn, et al.              Expires June 2, 2020                  [Page 9]
-
-Internet-Draft                 QUIC 4 SAT                  November 2019
-
+   Alexandre Ferrieux, Francois Michel, Emmanuel Lochin and the
+   partipants of the IETF106 side-meeting on QUIC for high BDP for their
+   useful feedbacks.
 
 8.  Contributors
 
    TBD
+
+
+
+
+
+
+Kuhn, et al.               Expires May 4, 2020                  [Page 9]
+
+Internet-Draft                 QUIC 4 SAT                  November 2019
+
 
 9.  IANA Considerations
 
@@ -521,16 +517,7 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
    the transport header and its payload.  Security is considered in the
    "Security Considerations" of cited IETF documents.
 
-11.  References
-
-11.1.  Normative References
-
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <https://www.rfc-editor.org/info/rfc2119>.
-
-11.2.  Informative References
+11.  Informative References
 
    [CONEXT15]
               Li, Q., Dong, M., and P. Godfrey, "Halfback: Running Short
@@ -544,27 +531,6 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
    [I-D.ietf-quic-recovery]
               Iyengar, J. and I. Swett, "QUIC Loss Detection and
               Congestion Control", draft-ietf-quic-recovery-24 (work in
-              progress), November 2019.
-
-   [I-D.ietf-quic-tls]
-              Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
-              draft-ietf-quic-tls-24 (work in progress), November 2019.
-
-   [I-D.ietf-quic-transport]
-              Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", draft-ietf-quic-transport-24 (work
-              in progress), November 2019.
-
-
-
-Kuhn, et al.              Expires June 2, 2020                 [Page 10]
-
-Internet-Draft                 QUIC 4 SAT                  November 2019
-
-
-   [I-D.ietf-tls-ticketrequests]
-              Pauly, T., Schinazi, D., and C. Wood, "TLS Ticket
-              Requests", draft-ietf-tls-ticketrequests-04 (work in
               progress), November 2019.
 
    [I-D.irtf-iccrg-sallantin-initial-spreading]
@@ -589,6 +555,13 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
               for QUIC", draft-swett-nwcrg-coding-for-quic-03 (work in
               progress), July 2019.
 
+
+
+Kuhn, et al.               Expires May 4, 2020                 [Page 10]
+
+Internet-Draft                 QUIC 4 SAT                  November 2019
+
+
    [ICC16]    Sallantin, R., Baudoin, C., Chaput, E., Arnal, F., Dubois,
               E., and A-L. Beylot, "Reducing web latency through TCP IW:
               Be smart", IEEE ICC , 2016.
@@ -611,13 +584,6 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
               performances over geostationary satellite link", Network
               and Communication Technologies , 2013.
 
-
-
-Kuhn, et al.              Expires June 2, 2020                 [Page 11]
-
-Internet-Draft                 QUIC 4 SAT                  November 2019
-
-
    [PANRG105]
               Kuhn, N., Stephan, E., Border, J., and G. Fairhurst, "QUIC
               Over In-sequence Paths with Different Characteristics",
@@ -639,24 +605,23 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
               Path Asymmetry", BCP 69, RFC 3449, DOI 10.17487/RFC3449,
               December 2002, <https://www.rfc-editor.org/info/rfc3449>.
 
-   [RFC6349]  Constantine, B., Forget, G., Geib, R., and R. Schrage,
-              "Framework for TCP Throughput Testing", RFC 6349,
-              DOI 10.17487/RFC6349, August 2011,
-              <https://www.rfc-editor.org/info/rfc6349>.
+   [RFC6534]  Duffield, N., Morton, A., and J. Sommers, "Loss Episode
+              Metrics for IP Performance Metrics (IPPM)", RFC 6534,
+              DOI 10.17487/RFC6534, May 2012,
+              <https://www.rfc-editor.org/info/rfc6534>.
+
+
+
+
+Kuhn, et al.               Expires May 4, 2020                 [Page 11]
+
+Internet-Draft                 QUIC 4 SAT                  November 2019
+
 
    [RFC6928]  Chu, J., Dukkipati, N., Cheng, Y., and M. Mathis,
               "Increasing TCP's Initial Window", RFC 6928,
               DOI 10.17487/RFC6928, April 2013,
               <https://www.rfc-editor.org/info/rfc6928>.
-
-   [RFC7928]  Kuhn, N., Ed., Natarajan, P., Ed., Khademi, N., Ed., and
-              D. Ros, "Characterization Guidelines for Active Queue
-              Management (AQM)", RFC 7928, DOI 10.17487/RFC7928, July
-              2016, <https://www.rfc-editor.org/info/rfc7928>.
-
-   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
-              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
-              <https://www.rfc-editor.org/info/rfc8446>.
 
 Authors' Addresses
 
@@ -664,14 +629,6 @@ Authors' Addresses
    CNES
 
    Email: nicolas.kuhn@cnes.fr
-
-
-
-
-
-Kuhn, et al.              Expires June 2, 2020                 [Page 12]
-
-Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
    Godred Fairhurst
@@ -712,17 +669,4 @@ Internet-Draft                 QUIC 4 SAT                  November 2019
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Kuhn, et al.              Expires June 2, 2020                 [Page 13]
+Kuhn, et al.               Expires May 4, 2020                 [Page 12]

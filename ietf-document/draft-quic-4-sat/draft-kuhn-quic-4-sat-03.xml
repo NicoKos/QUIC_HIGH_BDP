@@ -162,56 +162,47 @@
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 10 Mbps</t>
 			<t>Satellite uplink path: 2 Mbps</t>
-			<t>Loss rate (percentage): 0</t>
+			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>The test should report:<list style="symbols">
-			<t>The downloading time of 100 MB on the download</t>
-			<t>The downloading time of 100 MB on the upload</t>
-		</list></t>
+		<t>The test should report the downloading time of 100 MB from the Internet to the host.</t>
 	</section>
 
 	<section anchor="sec:quic-4-sat-regression-static-medium" title="Medium public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 50 Mbps</t>
 			<t>Satellite uplink path: 10 Mbps</t>
-			<t>Loss rate (percentage): 0</t>
+			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>The test should report:<list style="symbols">
-			<t>The downloading time of 100 MB on the download</t>
-			<t>The downloading time of 100 MB on the upload</t>
-		</list></t>
+		<t>The test should report the downloading time of 100 MB from the Internet to the host.</t>
 	</section>
 		
 	<section anchor="sec:quic-4-sat-regression-static-large" title="Loss-free large public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 250 Mbps</t>
 			<t>Satellite uplink path: 3 Mbps</t>
-			<t>Loss rate (percentage): 0</t>
+			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>The test should report:<list style="symbols">
-			<t>The downloading time of 100 MB on the download</t>
-			<t>The downloading time of 100 MB on the upload</t>
-		</list></t>
+		<t>The test should report the downloading time of 100 MB from the Internet to the host.</t>
 	</section>
 		
 	<section anchor="sec:quic-4-sat-regression-static-large-loss" title="Lossy large public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 250 Mbps</t>
 			<t>Satellite uplink path: 3 Mbps</t>
-			<t>Loss rate (percentage): 1</t>
+			<t>Emulated packet loss on both downlink and uplink paths:<list style="symbols">
+				<t>Uniform random losses: 1%, or </t>
+				<t>Bursty losses: P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355, P(b|g)= 0.018 (see <xref target="RFC6534"></xref> for more details)</t>
+				</list></t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>The test should report:<list style="symbols">
-			<t>The downloading time of 100 MB on the download</t>
-			<t>The downloading time of 100 MB on the upload</t>
-		</list></t>
+		<t>The test should report the downloading time of 100 MB from the Internet to the host.</t>
 	</section>
 		
 	</section>
@@ -263,7 +254,7 @@
         <!-- ######################################################--> 
 
 	<section anchor="sec:acknowledgements" title="Acknowledgements">
-	<t>The authors would like to thank Christian Huitema, Igor Lubashev, Alexandre Ferrieux and the partipants of the IETF106 side-meeting on QUIC for high BDP for their useful feedbacks.</t>
+	<t>The authors would like to thank Christian Huitema, Igor Lubashev, Alexandre Ferrieux, Francois Michel, Emmanuel Lochin and the partipants of the IETF106 side-meeting on QUIC for high BDP for their useful feedbacks.</t>
 	</section>
 
 	<section anchor="sec:contributors" title="Contributors">
@@ -292,26 +283,27 @@
 	with a value containing a set of directories to search.  These can be either in the local
 	filing system or remote ones accessed by http (http://domain/dir/... ).-->
 
-	<references title="Normative References">
+	<!-- <references title="Normative References">
 		&RFC2119;
-	</references>
+	</references> -->
 
 	<references title="Informative References">
 		<?rfc include="reference.RFC.2488.xml"?>
 		<?rfc include="reference.RFC.3135.xml"?>
 		<?rfc include="reference.RFC.3449.xml"?>
-		<?rfc include="reference.RFC.6349.xml"?>
+		<!-- <?rfc include="reference.RFC.6349.xml"?> -->
+		<?rfc include="reference.RFC.6534.xml"?>
 		<?rfc include="reference.RFC.6928.xml"?>
-		<?rfc include="reference.RFC.7928.xml"?>
-		<?rfc include="reference.RFC.8446.xml"?>
+		<!-- <?rfc include="reference.RFC.7928.xml"?> -->
+		<!-- <?rfc include="reference.RFC.8446.xml"?> -->
 		<?rfc include="reference.I-D.swett-nwcrg-coding-for-quic.xml"?> 
 		<?rfc include="reference.I-D.roca-nwcrg-rlc-fec-scheme-for-quic.xml"?>
 		<?rfc include="reference.I-D.schinazi-masque.xml"?>
 		<?rfc include="reference.I-D.ferrieux-hamchaoui-quic-lossbits.xml"?> 
-		<?rfc include="reference.I-D.ietf-quic-tls.xml"?> 
-		<?rfc include="reference.I-D.ietf-quic-transport.xml"?> 
+		<!-- <?rfc include="reference.I-D.ietf-quic-tls.xml"?> -->
+		<!-- <?rfc include="reference.I-D.ietf-quic-transport.xml"?> -->
 		<?rfc include="reference.I-D.ietf-quic-recovery.xml"?> 
-		<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
+		<!-- <?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?> -->
 		<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
                 <reference anchor="PANRG105">
                     <front>
