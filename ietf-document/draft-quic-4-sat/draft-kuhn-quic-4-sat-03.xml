@@ -196,8 +196,8 @@
 			<t>Satellite downlink path: 250 Mbps</t>
 			<t>Satellite uplink path: 3 Mbps</t>
 			<t>Emulated packet loss on both downlink and uplink paths:<list style="symbols">
-				<t>Uniform random losses: 1%, or </t>
-				<t>Bursty losses: P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355, P(b|g)= 0.018 (see <xref target="RFC6534"></xref> for more details)</t>
+				<t>Uniform random transmission losses: 1%, or </t>
+				<t>Bursty losses, including transmission and congestion losses: P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355, P(b|g)= 0.018 (see <xref target="RFC6534"></xref> for more details)</t>
 				</list></t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
