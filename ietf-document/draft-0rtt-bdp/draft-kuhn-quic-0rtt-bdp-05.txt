@@ -98,9 +98,7 @@ Table of Contents
 
    The memo focuses on cases where with high Bandwidth Delay Product
    (BDP) and constrained situations.  The extension name is 'BDP
-   metadata'.  The transport parameters this memo introduces are defined
-   in Section 3.  It is up to the WG to agree on those that need to be
-   exchanged during the 0-RTT preparation.
+   metadata'.  Candidate transport parameters are discussed in Section 3. 
 
 
 
@@ -155,11 +153,16 @@ Internet-Draft             Transport for 0-RTT             December 2019
 
 3.  BDP metadata parameters
 
-   The BDP_metadata extension proposes an improvement of the
-   initialization of 0-RTT connections where the client recalls the BDP
-   metadata previously measured by the server during the 1-RTT
-   handshake.  The candidate parameters are the following set:
-
+   Acording to section 7.3.1 of QUIC transport 'Both endpoints store the value of the server transport parameters
+   from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer'.
+   
+   Amongst the six mandatory initial parameters that section 7.3.1 defines, only initial_max_data improves the TTS of the 0-RTT.
+   The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the TTS.   
+      
+   Path characteristics and stack parameters listed below migh be exchanged as new transport parameters:
+   
+   o  IW
+   
    o  Minimum RTT
 
 
@@ -206,7 +209,8 @@ Internet-Draft             Transport for 0-RTT             December 2019
 
 5.  IANA Considerations
 
-   TBD: text is required to register the extension BDP_metadata field.
+   TBD: text is required to register the extension BDP_metadata field. 
+   Parameters are registered using the procedure defined https://tools.ietf.org/html/draft-ietf-quic-transport-24#section-22.1
 
 6.  Security Considerations
 
