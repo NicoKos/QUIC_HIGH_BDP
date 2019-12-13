@@ -96,7 +96,7 @@ Table of Contents
    central to dissociate the signalling (aka the initiator of the
    connection) from the peer which first sends application data.
 
-   The memo focuses on cases where with high Bandwidth Delay Product
+   The memo focuses on cases with high Bandwidth Delay Product
    (BDP) and constrained situations.  The extension name is 'BDP
    metadata'.  Candidate transport parameters are discussed in Section 3. 
 
