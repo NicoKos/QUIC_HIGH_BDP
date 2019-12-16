@@ -5,10 +5,10 @@
 Internet Engineering Task Force                             N. Kuhn, Ed.
 Internet-Draft                                                      CNES
 Intended status: Informational                           E. Stephan, Ed.
-Expires: June 15, 2020                                            Orange
+Expires: June 18, 2020                                            Orange
                                                        G. Fairhurst, Ed.
                                                   University of Aberdeen
-                                                       December 13, 2019
+                                                       December 16, 2019
 
 
                Transport parameters for 0-RTT connections
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on June 15, 2020.
+   This Internet-Draft will expire on June 18, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kuhn, et al.              Expires June 15, 2020                 [Page 1]
+Kuhn, et al.              Expires June 18, 2020                 [Page 1]
 
 Internet-Draft             Transport for 0-RTT             December 2019
 
@@ -64,19 +64,13 @@ Internet-Draft             Transport for 0-RTT             December 2019
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Rationale . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Rationale . . . . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  BDP metadata parameters . . . . . . . . . . . . . . . . . . .   3
-     3.1.  Minimum RTT . . . . . . . . . . . . . . . . . . . . . . .   4
-     3.2.  Bandwidth . . . . . . . . . . . . . . . . . . . . . . . .   4
-     3.3.  Packet loss rate  . . . . . . . . . . . . . . . . . . . .   4
-     3.4.  Path MTU  . . . . . . . . . . . . . . . . . . . . . . . .   4
    4.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   4
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   4
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   4
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   4
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   5
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .   5
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   7.  Informative References  . . . . . . . . . . . . . . . . . . .   5
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
 
 1.  Introduction
 
@@ -96,21 +90,9 @@ Table of Contents
    central to dissociate the signalling (aka the initiator of the
    connection) from the peer which first sends application data.
 
-   The memo focuses on cases with high Bandwidth Delay Product
-   (BDP) and constrained situations.  The extension name is 'BDP
-   metadata'.  Candidate transport parameters are discussed in Section 3. 
-
-
-
-
-
-
-
-
-Kuhn, et al.              Expires June 15, 2020                 [Page 2]
-
-Internet-Draft             Transport for 0-RTT             December 2019
-
+   The memo focuses on cases with high Bandwidth Delay Product (BDP) and
+   constrained situations.  The extension name is 'BDP metadata'.
+   Candidate transport parameters are discussed in Section 3.
 
 2.  Rationale
 
@@ -124,6 +106,14 @@ Internet-Draft             Transport for 0-RTT             December 2019
    does not improve the time-to-service.  While initial_max_data
    improves the egress time to server, the BDP metadata extension aims
    at improving ingress traffic delivery.  Improving the ingress traffic
+
+
+
+Kuhn, et al.              Expires June 18, 2020                 [Page 2]
+
+Internet-Draft             Transport for 0-RTT             December 2019
+
+
    can result in significant improvement to the quality-of-experience.
    This enables the use of transport parameters to adapt the initial
    data transmission of a 0-RTT connection.  In some large BDP
@@ -153,53 +143,64 @@ Internet-Draft             Transport for 0-RTT             December 2019
 
 3.  BDP metadata parameters
 
-   Acording to section 7.3.1 of QUIC transport 'Both endpoints store the value of the server transport parameters
-   from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer'.
-   
-   Amongst the six mandatory initial parameters that section 7.3.1 defines, only initial_max_data improves the TTS of the 0-RTT.
-   The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the TTS.   
-      
-   Path characteristics and stack parameters listed below migh be exchanged as new transport parameters:
-   
-   o  IW
-   
-   o  Minimum RTT
+   Acording to [I-D.ietf-quic-transport], both endpoints store the value
+   of the server transport parameters from a connection and apply them
+   to any 0-RTT packets that are sent in subsequent connections to that
+   peer.  Amongst the six mandatory initial parameters that section
+   7.3.1 defines, only initial_max_data improves the time-to-service of
+   the 0-RTT connection.  The BDP metadata extension augments the list
+   of server transport parameters that are shared with the client to
+   improve the time-to-service and save resource like CPU, memory and
+   power.
+
+   Path characteristics and stack parameters listed below migh be
+   exchanged as new transport parameter:
+
+   o  Initial window (IW)
+
+   o  RTT
+
+   o  Bandwidth
 
 
 
 
-Kuhn, et al.              Expires June 15, 2020                 [Page 3]
+Kuhn, et al.              Expires June 18, 2020                 [Page 3]
 
 Internet-Draft             Transport for 0-RTT             December 2019
 
 
-   o  Bandwidth
+   o  Loss rate
 
-   o  Packet loss rate
+   o  MTU
 
-   o  Path MTU
+   o  Asymmetry
 
-3.1.  Minimum RTT
+   Figure 1 provide more details on the parameters that can be
+   exchanged.  The variables have been extracted from
+   [I-D.ietf-quic-recovery].
 
-   The knowledge of the minimum RTT of a previous connection can improve
-   the throughput with slow start adaptation or timers tuning.
+             +-----------------+---------+--------------------------+
+             |usefull          |transport|computed param            |
+             |variables        |param    |                          |
+             |                 |(yes/no) |                          |
+   +---------+-----------------+---------+--------------------------+
+   |IW       |initial_max_data | yes     |                          |
+   +---------+-----------------+---------+--------------------------+
+   |RTT      |min_rtt          | no      |                          |
+   +---------+-----------------+---------+--------------------------+
+   |Bandwidth|congestion_window| no      |bdp=                      |
+   |         |                 |         | min_rtt*congestion_window|
+   +---------+-----------------+---------+--------------------------+
+   |Loss     |lost_packets     | no      |loss_ratio=               |
+   |rate     |sent_packets     | no      | lost_packets/sent_packets|
+   +---------+-----------------+---------+--------------------------+
+   |MTU      |max_packet_size  | yes     |                          |
+   +---------+-----------------+---------+--------------------------+
+   |Asymmetry|                 |         |asymmetry=TBD             |
+   +---------+-----------------+---------+--------------------------+
 
-3.2.  Bandwidth
-
-   The knowledge of the bandwidth of a previous connection, in
-   conjunction with the use of the minimum RTT, can let both client and
-   servers prepare (potentially large) buffers accordingly.
-
-3.3.  Packet loss rate
-
-   The knowledge of the packet loss rate of a previous connection can
-   help in tuning a coding mechanism.
-
-3.4.  Path MTU
-
-   The knowledge of the PMTU of a previous path improves the performance
-   for long file transfers because it reduces the duration of the path
-   validation process [I-D.ietf-quic-transport].
+                      Figure 1: BDP metadata detailed
 
 4.  Acknowledgements
 
@@ -209,110 +210,38 @@ Internet-Draft             Transport for 0-RTT             December 2019
 
 5.  IANA Considerations
 
-   TBD: text is required to register the extension BDP_metadata field. 
-   Parameters are registered using the procedure defined https://tools.ietf.org/html/draft-ietf-quic-transport-24#section-22.1
+   TBD: text is required to register the extension BDP_metadata field.
+   Parameters are registered using the procedure defined in
+   [I-D.ietf-quic-transport].
+
+
+
+
+
+
+
+
+Kuhn, et al.              Expires June 18, 2020                 [Page 4]
+
+Internet-Draft             Transport for 0-RTT             December 2019
+
 
 6.  Security Considerations
 
    The security is provided by the 1-RTT phase.  The measure of BDP is
    made during a previous connection.
 
-7.  References
-
-
-
-
-
-
-
-Kuhn, et al.              Expires June 15, 2020                 [Page 4]
-
-Internet-Draft             Transport for 0-RTT             December 2019
-
-
-7.1.  Normative References
-
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <https://www.rfc-editor.org/info/rfc2119>.
-
-7.2.  Informative References
-
-   [CONEXT15]
-              Li, Q., Dong, M., and P. Godfrey, "Halfback: Running Short
-              Flows Quickly and Safely", ACM CoNEXT , 2015.
-
-   [I-D.ietf-quic-http]
-              Bishop, M., "Hypertext Transfer Protocol Version 3
-              (HTTP/3)", draft-ietf-quic-http-24 (work in progress),
-              November 2019.
+7.  Informative References
 
    [I-D.ietf-quic-recovery]
               Iyengar, J. and I. Swett, "QUIC Loss Detection and
               Congestion Control", draft-ietf-quic-recovery-24 (work in
               progress), November 2019.
 
-   [I-D.ietf-quic-tls]
-              Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
-              draft-ietf-quic-tls-24 (work in progress), November 2019.
-
    [I-D.ietf-quic-transport]
               Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
               and Secure Transport", draft-ietf-quic-transport-24 (work
               in progress), November 2019.
-
-   [I-D.ietf-tls-ticketrequests]
-              Pauly, T., Schinazi, D., and C. Wood, "TLS Ticket
-              Requests", draft-ietf-tls-ticketrequests-04 (work in
-              progress), November 2019.
-
-   [I-D.irtf-iccrg-sallantin-initial-spreading]
-              Sallantin, R., Baudoin, C., Arnal, F., Dubois, E., Chaput,
-              E., and A. Beylot, "Safe increase of the TCP's Initial
-              Window Using Initial Spreading", draft-irtf-iccrg-
-              sallantin-initial-spreading-00 (work in progress), January
-              2014.
-
-
-
-
-
-
-
-
-Kuhn, et al.              Expires June 15, 2020                 [Page 5]
-
-Internet-Draft             Transport for 0-RTT             December 2019
-
-
-   [I-D.kuehlewind-quic-substrate]
-              Kuehlewind, M., Sarker, Z., Fossati, T., and L. Pardue,
-              "Use Cases and Requirements for QUIC as a Substrate",
-              draft-kuehlewind-quic-substrate-02 (work in progress),
-              November 2019.
-
-   [I-D.pauly-quic-datagram]
-              Pauly, T., Kinnear, E., and D. Schinazi, "An Unreliable
-              Datagram Extension to QUIC", draft-pauly-quic-datagram-05
-              (work in progress), November 2019.
-
-   [ICC16]    Sallantin, R., Baudoin, C., Chaput, E., Arnal, F., Dubois,
-              E., and A-L. Beylot, "Reducing web latency through TCP IW:
-              Be smart", IEEE ICC , 2016.
-
-   [ICCRG100]
-              Kuhn, N., "MPTCP and BBR performance over Internet
-              satellite paths", IETF ICCRG 100, 2017.
-
-   [IJSCN19]  Thomas, L., Dubois, E., Kuhn, N., and E. Lochin, "Google
-              QUIC performance over a public SATCOM access",
-              International Journal of Satellite Communications and
-              Networking , 2019.
-
-   [NCT13]    Pirovano, A. and F. Garcia, "A new survey on improving TCP
-              performances over geostationary satellite link", Network
-              and Communication Technologies , 2013.
 
    [RFC2488]  Allman, M., Glover, D., and L. Sanchez, "Enhancing TCP
               Over Satellite Channels using Standard Mechanisms",
@@ -324,36 +253,6 @@ Internet-Draft             Transport for 0-RTT             December 2019
               Mitigate Link-Related Degradations", RFC 3135,
               DOI 10.17487/RFC3135, June 2001,
               <https://www.rfc-editor.org/info/rfc3135>.
-
-   [RFC6347]  Rescorla, E. and N. Modadugu, "Datagram Transport Layer
-              Security Version 1.2", RFC 6347, DOI 10.17487/RFC6347,
-              January 2012, <https://www.rfc-editor.org/info/rfc6347>.
-
-   [RFC6349]  Constantine, B., Forget, G., Geib, R., and R. Schrage,
-              "Framework for TCP Throughput Testing", RFC 6349,
-              DOI 10.17487/RFC6349, August 2011,
-              <https://www.rfc-editor.org/info/rfc6349>.
-
-
-
-
-Kuhn, et al.              Expires June 15, 2020                 [Page 6]
-
-Internet-Draft             Transport for 0-RTT             December 2019
-
-
-   [RFC6928]  Chu, J., Dukkipati, N., Cheng, Y., and M. Mathis,
-              "Increasing TCP's Initial Window", RFC 6928,
-              DOI 10.17487/RFC6928, April 2013,
-              <https://www.rfc-editor.org/info/rfc6928>.
-
-   [RFC7413]  Cheng, Y., Chu, J., Radhakrishnan, S., and A. Jain, "TCP
-              Fast Open", RFC 7413, DOI 10.17487/RFC7413, December 2014,
-              <https://www.rfc-editor.org/info/rfc7413>.
-
-   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
-              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
-              <https://www.rfc-editor.org/info/rfc8446>.
 
 Authors' Addresses
 
@@ -378,19 +277,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Kuhn, et al.              Expires June 15, 2020                 [Page 7]
+Kuhn, et al.              Expires June 18, 2020                 [Page 5]

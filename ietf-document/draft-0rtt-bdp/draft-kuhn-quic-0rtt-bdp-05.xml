@@ -97,38 +97,38 @@
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 			<t>Acording to <xref target="I-D.ietf-quic-transport"></xref>, both endpoints store the value of the server transport parameters from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer. Amongst the six mandatory initial parameters that section 7.3.1 defines, only initial_max_data improves the time-to-service of the 0-RTT connection. The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the time-to-service and save resource like CPU, memory and power.</t>
 			<t>Path characteristics and stack parameters listed below migh be exchanged as new transport parameter:<list style="symbols">
-				<t>Initial window</t>
-				<t>Minimum RTT</t>
+				<t>Initial window (IW) </t>
+				<t>RTT</t>
 				<t>Bandwidth</t>
-				<t>Packet loss rate</t>
-				<t>Path MTU</t></list></t>
-			<t><xref target="fig:tp_mapping"></xref> provide more details on the parameters that can be exchanged.</t> 
+				<t>Loss rate</t>
+				<t>MTU</t>
+				<t>Asymmetry</t></list></t>
+		<t><xref target="fig:tp_mapping"></xref> provide more details on the parameters that can be exchanged. The variables have been extracted from <xref target="I-D.ietf-quic-recovery"></xref>.</t> 
 <figure anchor="fig:tp_mapping" title="BDP metadata detailed">
 <artwork>
-            +-----------------+---------+------------------------------------+
-            |usefull          |transport|computed param                      |
-            |variables        |param    |                                    | 
-            |                 |(yes/no) |                                    |
-+-----------+-----------------+---------+------------------------------------+
-|IW         |initial_max_data | yes     |                                    |
-|RTT        |min_rtt          | no      |                                    |
-|Bandwidth  |congestion_window| no      |bdp=min_rtt*congestion_window       |
-|Packet loss|lost_packets     | no      |loss_ratio=lost_packets/sent_packets|
-|rate       |sent_packets     | no      |                                    |
-|MTU        |max_packet_size  | yes     |                                    |
-|ACK ratio  |ack_ratio        | no      |                                    |
-+-----------+-----------------+---------+------------------------------------+
+          +-----------------+---------+--------------------------+
+          |usefull          |transport|computed param            |
+          |variables        |param    |                          | 
+          |                 |(yes/no) |                          |
++---------+-----------------+---------+--------------------------+
+|IW       |initial_max_data | yes     |                          |
++---------+-----------------+---------+--------------------------+
+|RTT      |min_rtt          | no      |                          |
++---------+-----------------+---------+--------------------------+
+|Bandwidth|congestion_window| no      |bdp=                      |
+|         |                 |         | min_rtt*congestion_window|
++---------+-----------------+---------+--------------------------+
+|Loss     |lost_packets     | no      |loss_ratio=               |
+|rate     |sent_packets     | no      | lost_packets/sent_packets|
++---------+-----------------+---------+--------------------------+
+|MTU      |max_packet_size  | yes     |                          |
++---------+-----------------+---------+--------------------------+
+|Asymmetry|                 |         |asymmetry=TBD             | 
++---------+-----------------+---------+--------------------------+
 </artwork>
 </figure>	
 		</section> 
 		
-		<section anchor="sec:rationale" title="Example of BDP metadata usage">			
-
-			<section anchor="subsec:path_mtu" title="Path MTU">
-				<t>The knowledge of the PMTU of a previous path improves the performance for long file transfers because it reduces the duration of the path validation process <xref target="I-D.ietf-quic-transport"></xref>.</t>
-			</section>
-		</section>
-				
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
 			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev and Christian Huitema for their fruitful comments on earlier versions of this document.</t>
 		</section>
@@ -155,27 +155,27 @@
 	with a value containing a set of directories to search.  These can be either in the local
 	filing system or remote ones accessed by http (http://domain/dir/... ).-->
 
-		<references title="Normative References">
+		<!-- <references title="Normative References">
 			&RFC2119;
-		</references>
+		</references> -->
 
 		<references title="Informative References">
 			<?rfc include="reference.RFC.2488.xml"?>
 			<?rfc include="reference.RFC.3135.xml"?>
-			<?rfc include="reference.RFC.6347.xml"?>
-			<?rfc include="reference.RFC.6349.xml"?>
-			<?rfc include="reference.RFC.6928.xml"?>
-			<?rfc include="reference.RFC.7413.xml"?>
-			<?rfc include="reference.RFC.8446.xml"?>
-			<?rfc include="reference.I-D.ietf-quic-http.xml"?>
-			<?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?>
-			<?rfc include="reference.I-D.pauly-quic-datagram.xml"?>
-			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
+			<!-- <?rfc include="reference.RFC.6347.xml"?> -->
+			<!-- <?rfc include="reference.RFC.6349.xml"?> -->
+			<!-- <?rfc include="reference.RFC.6928.xml"?> -->
+			<!-- <?rfc include="reference.RFC.7413.xml"?> -->
+			<!-- <?rfc include="reference.RFC.8446.xml"?> -->
+			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
+			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
+			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
+			<!-- <?rfc include="reference.I-D.ietf-quic-tls.xml"?> -->
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
-			<?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?>
-			<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
-			<reference anchor="ICCRG100">
+			<!-- <?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?> -->
+			<!-- <?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?> -->
+			<!-- <reference anchor="ICCRG100">
 				<front>
 					<title>MPTCP and BBR performance over Internet satellite paths</title>
 					<author initials="N" surname="Kuhn">
@@ -183,8 +183,8 @@
 					<date year="2017"/>
 				</front>
 				<seriesInfo name="IETF ICCRG" value="100"/>
-			</reference>
-			<reference anchor="IJSCN19">
+			</reference> -->
+			<!-- <reference anchor="IJSCN19">
 				<front>
 					<title>Google QUIC performance over a public SATCOM access</title>
 					<author initials="L" surname="Thomas">
@@ -198,8 +198,8 @@
 					<date year="2019"/>
 				</front>
 				<seriesInfo name="International Journal of Satellite Communications and Networking" value=""/>
-			</reference>
-			<reference anchor="CONEXT15">
+			</reference> -->
+			<!-- <reference anchor="CONEXT15">
 				<front>
 					<title>Halfback: Running Short Flows Quickly and Safely</title>
 					<author initials="Q" surname="Li">
@@ -211,8 +211,8 @@
 					<date year="2015"/>
 				</front>
 				<seriesInfo name="ACM CoNEXT" value=""/>
-			</reference>
-			<reference anchor="NCT13">
+			</reference> -->
+			<!-- <reference anchor="NCT13">
 				<front>
 					<title>A new survey on improving TCP performances over geostationary satellite link</title>
 					<author initials="A" surname="Pirovano">
@@ -222,8 +222,8 @@
 					<date year="2013"/>
 				</front>
 				<seriesInfo name="Network and Communication Technologies" value=""/>
-			</reference>
-			<reference anchor="ICC16">
+			</reference> -->
+			<!-- <reference anchor="ICC16">
 				<front>
 					<title>Reducing web latency through TCP IW: Be smart</title>
 					<author initials="R" surname="Sallantin">
@@ -241,7 +241,7 @@
 					<date year="2016"/>
 				</front>
 				<seriesInfo name="IEEE ICC" value=""/>
-			</reference>
+			</reference> -->
 		</references>
 	</back>
 </rfc>
