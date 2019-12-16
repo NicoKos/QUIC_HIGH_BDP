@@ -97,37 +97,26 @@
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 			<t>Acording to <xref target="I-D.ietf-quic-transport"></xref>, both endpoints store the value of the server transport parameters from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer. Amongst the six mandatory initial parameters that section 7.3.1 defines, only initial_max_data improves the time-to-service of the 0-RTT connection. The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the time-to-service and save resource like CPU, memory and power.</t>
 			<t>Path characteristics and stack parameters listed below migh be exchanged as new transport parameter:<list style="symbols">
-				<t>Initial window (IW) </t>
-				<t>RTT</t>
-				<t>Bandwidth</t>
-				<t>Loss rate</t>
-				<t>MTU</t>
-				<t>Asymmetry</t></list></t>
+				<t>Initial window (IW)</t>
+				<t>ACK ratio</t>
+				<t>Bandwidth</t></list></t>
 		<t><xref target="fig:tp_mapping"></xref> provide more details on the parameters that can be exchanged. The variables have been extracted from <xref target="I-D.ietf-quic-recovery"></xref>.</t> 
 <figure anchor="fig:tp_mapping" title="BDP metadata detailed">
 <artwork>
-          +-----------------+---------+--------------------------+
-          |usefull          |transport|computed param            |
-          |variables        |param    |                          | 
-          |                 |(yes/no) |                          |
-+---------+-----------------+---------+--------------------------+
-|IW       |initial_max_data | yes     |                          |
-+---------+-----------------+---------+--------------------------+
-|Asymmetry|                 |         |ack_ratio=TBD             | 
-+---------+-----------------+---------+--------------------------+
-|RTT      |min_rtt          | no      |                          |
-+---------+-----------------+---------+--------------------------+
-|Bandwidth|congestion_window| no      |bdp=                      |
-|         |min_rtt          |         | min_rtt*congestion_window|
-+---------+-----------------+---------+--------------------------+
-|Loss     |lost_packets     | no      |loss_ratio=               |
-|rate     |sent_packets     | no      | lost_packets/sent_packets|
-+---------+-----------------+---------+--------------------------+
-|MTU      |max_packet_size  | yes     |                          |
-+---------+-----------------+---------+--------------------------+
+          +-----------------+--------------------------+---------+
+          |existing         |computed param            |transport|
+          |variables        |                          |param    | 
+          |                 |                          |(yes/no) |
++---------+-----------------+--------------------------+---------+
+|IW       |initial_max_data |                          | yes     |
++---------+-----------------+--------------------------+---------+
+|Bandwidth|congestion_window|bdp=                      | no      |
+|         |min_rtt          | min_rtt*congestion_window|         |
++---------+-----------------+--------------------------+---------+
 </artwork>
-</figure>	
-		</section> 
+</figure>
+			<t>Measuring the BDP, the server and the client can adapt their buffer sizes. If the server decides to adapt the initial congestion window, the value can be communicated to the client and buffers can be adaptated. Other parameters such as the ack ratio, based on asymmetry measurements, are under investigation.</t>
+		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
 			<t>In TLS1.3 [ADD REF], when the client sends back the NewSessionTicket with the same early_data, it activates the ingress optimization. In QUICv1, when the client sends back the transport parameter initial_max_data, it activates the ingress optimization.</t>
