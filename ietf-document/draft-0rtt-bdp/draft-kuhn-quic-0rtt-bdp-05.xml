@@ -102,15 +102,28 @@
 				<t>Bandwidth</t>
 				<t>Packet loss rate</t>
 				<t>Path MTU</t></list></t>
-			<section anchor="subsec:minrtt" title="Minimum RTT">
-				<t>The knowledge of the minimum RTT of a previous connection can improve the throughput with slow start adaptation or timers tuning.</t>
-			</section>
-			<section anchor="subsec:bandwidth" title="Bandwidth">
-				<t>The knowledge of the bandwidth of a previous connection, in conjunction with the use of the minimum RTT, can let both client and servers prepare (potentially large) buffers accordingly.</t>
-			</section>
-			<section anchor="subsec:loss_rate" title="Packet loss rate">
-				<t>The knowledge of the packet loss rate of a previous connection can help in tuning a coding mechanism.</t>
-			</section>
+			<t><xref target="fig:tp_mapping"></xref> provide more details on the parameters that can be exchanged.</t> 
+<figure anchor="fig:tp_mapping" title="BDP metadata detailed">
+<artwork>
+            +-----------------+---------+------------------------------------+
+            |usefull          |transport|computed param                      |
+            |variables        |param    |                                    | 
+            |                 |(yes/no) |                                    |
++-----------+-----------------+---------+------------------------------------+
+|IW         |initial_max_data | yes     |                                    |
+|RTT        |min_rtt          | no      |                                    |
+|Bandwidth  |congestion_window| no      |bdp=min_rtt*congestion_window       |
+|Packet loss|lost_packets     | no      |loss_ratio=lost_packets/sent_packets|
+|rate       |sent_packets     | no      |                                    |
+|MTU        |max_packet_size  | yes     |                                    |
+|ACK ratio  |ack_ratio        | no      |                                    |
++-----------+-----------------+---------+------------------------------------+
+</artwork>
+</figure>	
+		</section> 
+		
+		<section anchor="sec:rationale" title="Example of BDP metadata usage">			
+
 			<section anchor="subsec:path_mtu" title="Path MTU">
 				<t>The knowledge of the PMTU of a previous path improves the performance for long file transfers because it reduces the duration of the path validation process <xref target="I-D.ietf-quic-transport"></xref>.</t>
 			</section>
