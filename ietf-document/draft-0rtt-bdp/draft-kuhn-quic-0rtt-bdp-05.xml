@@ -97,34 +97,23 @@
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 			<t>Acording to <xref target="I-D.ietf-quic-transport"></xref>, both endpoints store the value of the server transport parameters from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer. Amongst the six mandatory initial parameters that section 7.3.1 defines, only initial_max_data improves the time-to-service of the 0-RTT connection. The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the time-to-service and save resource like CPU, memory and power.</t>
 			<t>Parameters listed below migh be exchanged as transport parameter:<list style="symbols">
-				<t>Initial window (IW)</t>
-				<t>Bandwidth Delay Product (BDP)</t></list></t>
-		<t><xref target="fig:tp_mapping"></xref> provide more details on the parameters that can be exchanged. The variables have been extracted from <xref target="I-D.ietf-quic-recovery"></xref>.</t> 
-<figure anchor="fig:tp_mapping" title="BDP metadata detailed">
-<artwork>
-    +-----------------+--------------------------+---------+
-    |existing         |computed param            |transport|
-    |variables        |                          |param    | 
-    |                 |                          |(yes/no) |
-+---+-----------------+--------------------------+---------+
-|IW |initial_max_data |                          | yes     |
-+---+-----------------+--------------------------+---------+
-|BDP|congestion_window|bdp=                      | no      |
-|   |min_rtt          | min_rtt*congestion_window|         |
-+---+-----------------+--------------------------+---------+
-</artwork>
-</figure>
-			<t>Measuring the BDP, the server and the client can adapt their buffer sizes for the 0-RTT connection. If the server decides to adapt the initial congestion window, the value can be communicated to the client and buffers can be adaptated.</t>
-			<t>Other parameters such as the ack ratio, based on asymmetry measurements, are under investigation.</t>
+				<t>last_bdp (0x000X): The last_bdp parameter is the BDP measured on the previous connection by the server. It is an integer in unit of bytes. Using the min_rtt and congestion_window defined in <xref target="I-D.ietf-quic-recovery"></xref>, last_bdp can be set to min_rtt*congestion_window.</t>
+				<t>initial_max_pkt_number (0x000X): The maximum amount of packets that the server is allowed to send when reconnecting. It is an integer in unit of packets.</t></list></t>
+			<t>When a server measures a large BDP, it may decide to increase the maximum amount of packets it will send when reconnecting. This enables a client which accepts the optimization to adjust its buffers at reconnection time.</t>
 		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
 			<t>Currently a client which activates 0-RTT egress optimization must send back the transport parameters (initial_max_data ...) received from the server during the previous connection. These parameters are defined in section 7.3.1 of [QUIC transport].</t>
-			<t>Similarly a client which activates ingress optimization must send back the transport parameters of the BDP metadata extension taht it received from the server during the previous connection.  The client should not change the values of these parameters.</t>
-			
-			<t>A client which does not send back these parameters indicates to the server that it does accept ingress optimisation.</t>
+			<t>Accept: Similarly a client which activates ingress optimization must send back the transport parameters of the BDP metadata extension taht it received from the server during the previous connection.  The client should not change the values of these parameters.</t>
+			<t>Tuning initial_max_pkt_number: the client can send back a value lower than the initial value received by the server.</t>
+			<t>Refusing: A client which does not send back these parameters indicates to the server that it does not accept ingress optimisation. A client measuring a regular BDP may refuse the optimization. A limited-resource client may discard the optimization.</t>
 		</section>
 
+		<section anchor="sec:other_parameter" title="Discussion">
+			<t>Other parameters can contribute to the optimization of 0-RTT connection.</t>
+			<t>There are good candidates, like min_rtt, in the Appendix of <xref target="I-D.ietf-quic-recovery"></xref>. </t>
+			<t>Field measurements showed that tuning the ACK ratio improves the performance of asymmetrical exchange <xref target="PANRG106"></xref>.</t>
+		</section>
 		
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
 			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev and Christian Huitema for their fruitful comments on earlier versions of this document.</t>
@@ -172,6 +161,15 @@
 			<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
 			<!-- <?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?> -->
 			<!-- <?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?> -->
+			<reference anchor="PANRG106">
+				<front>
+					<title>Impact of Asymmetric Path Characteristics</title>
+					<author initials="G" surname="Fairhurst">
+					</author>
+					<date year="2019"/>
+				</front>
+				<seriesInfo name="IETF PANRG" value="106"/>
+			</reference>
 			<!-- <reference anchor="ICCRG100">
 				<front>
 					<title>MPTCP and BBR performance over Internet satellite paths</title>
