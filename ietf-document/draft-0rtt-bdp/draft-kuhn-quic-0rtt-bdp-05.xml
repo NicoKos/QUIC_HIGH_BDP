@@ -115,7 +115,7 @@
 +---------+-----------------+--------------------------+---------+
 </artwork>
 </figure>
-			<t>Measuring the BDP, the server and the client can adapt their buffer sizes. If the server decides to adapt the initial congestion window, the value can be communicated to the client and buffers can be adaptated. Other parameters such as the ack ratio, based on asymmetry measurements, are under investigation.</t>
+			<t>Measuring the BDP, the server and the client can adapt their buffer sizes for the 0-RTT connection. If the server decides to adapt the initial congestion window, the value can be communicated to the client and buffers can be adaptated. Other parameters such as the ack ratio, based on asymmetry measurements, are under investigation.</t>
 		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
