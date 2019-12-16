@@ -66,10 +66,12 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Rationale . . . . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  BDP metadata parameters . . . . . . . . . . . . . . . . . . .   3
-   4.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   4
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   4
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
-   7.  Informative References  . . . . . . . . . . . . . . . . . . .   5
+   4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   4
+   5.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   4
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   4
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   4
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   9.  Informative References  . . . . . . . . . . . . . . . . . . .   5
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
 
 1.  Introduction
@@ -104,8 +106,6 @@ Table of Contents
 
    There are cases where egress acceleration like 0-RTT early data alone
    does not improve the time-to-service.  While initial_max_data
-   improves the egress time to server, the BDP metadata extension aims
-   at improving ingress traffic delivery.  Improving the ingress traffic
 
 
 
@@ -114,11 +114,9 @@ Kuhn, et al.              Expires June 18, 2020                 [Page 2]
 Internet-Draft             Transport for 0-RTT             December 2019
 
 
-   can result in significant improvement to the quality-of-experience.
-   This enables the use of transport parameters to adapt the initial
-   data transmission of a 0-RTT connection.  In some large BDP
-   deployment scenarios, this can halve the page load time of a web page
-   download.
+   improves the egress time to server, the BDP metadata extension aims
+   at improving ingress traffic delivery.  In some large BDP deployment
+   scenarios, this can significantly improve page load time.
 
    There are reconnection situation where the time-to-service depends
    only on server data arrival because the service logic does not
@@ -153,15 +151,17 @@ Internet-Draft             Transport for 0-RTT             December 2019
    improve the time-to-service and save resource like CPU, memory and
    power.
 
-   Path characteristics and stack parameters listed below migh be
-   exchanged as new transport parameter:
+   Parameters listed below migh be exchanged as transport parameter:
 
-   o  Initial window (IW)
+   o  last_bdp (0x000X): The last_bdp parameter is the BDP measured on
+      the previous connection by the server.  It is an integer in unit
+      of bytes.  Using the min_rtt and congestion_window defined in
+      [I-D.ietf-quic-recovery], last_bdp can be set to
+      min_rtt*congestion_window.
 
-   o  RTT
-
-   o  Bandwidth
-
+   o  initial_max_pkt_number (0x000X): The maximum amount of packets
+      that the server is allowed to send when reconnecting.  It is an
+      integer in unit of packets.
 
 
 
@@ -170,53 +170,53 @@ Kuhn, et al.              Expires June 18, 2020                 [Page 3]
 Internet-Draft             Transport for 0-RTT             December 2019
 
 
-   o  Loss rate
+   When a server measures a large BDP, it may decide to increase the
+   maximum amount of packets it will send when reconnecting.  This
+   enables a client which accepts the optimization to adjust its buffers
+   at reconnection time.
 
-   o  MTU
+4.  Extension activation
 
-   o  Asymmetry
+   Currently a client which activates 0-RTT egress optimization must
+   send back the transport parameters (initial_max_data ...) received
+   from the server during the previous connection.  These parameters are
+   defined in section 7.3.1 of [QUIC transport].
 
-   Figure 1 provide more details on the parameters that can be
-   exchanged.  The variables have been extracted from
+   Accept: Similarly a client which activates ingress optimization must
+   send back the transport parameters of the BDP metadata extension taht
+   it received from the server during the previous connection.  The
+   client should not change the values of these parameters.
+
+   Tuning initial_max_pkt_number: the client can send back a value lower
+   than the initial value received by the server.
+
+   Refusing: A client which does not send back these parameters
+   indicates to the server that it does not accept ingress optimisation.
+   A client measuring a regular BDP may refuse the optimization.  A
+   limited-resource client may discard the optimization.
+
+5.  Discussion
+
+   Other parameters can contribute to the optimization of 0-RTT
+   connection.
+
+   There are good candidates, like min_rtt, in the Appendix of
    [I-D.ietf-quic-recovery].
 
-             +-----------------+---------+--------------------------+
-             |usefull          |transport|computed param            |
-             |variables        |param    |                          |
-             |                 |(yes/no) |                          |
-   +---------+-----------------+---------+--------------------------+
-   |IW       |initial_max_data | yes     |                          |
-   +---------+-----------------+---------+--------------------------+
-   |RTT      |min_rtt          | no      |                          |
-   +---------+-----------------+---------+--------------------------+
-   |Bandwidth|congestion_window| no      |bdp=                      |
-   |         |                 |         | min_rtt*congestion_window|
-   +---------+-----------------+---------+--------------------------+
-   |Loss     |lost_packets     | no      |loss_ratio=               |
-   |rate     |sent_packets     | no      | lost_packets/sent_packets|
-   +---------+-----------------+---------+--------------------------+
-   |MTU      |max_packet_size  | yes     |                          |
-   +---------+-----------------+---------+--------------------------+
-   |Asymmetry|                 |         |asymmetry=TBD             |
-   +---------+-----------------+---------+--------------------------+
+   Field measurements showed that tuning the ACK ratio improves the
+   performance of asymmetrical exchange [PANRG106].
 
-                      Figure 1: BDP metadata detailed
-
-4.  Acknowledgements
+6.  Acknowledgements
 
    The authors would like to thank Gabriel Montenegro, Patrick McManus,
    Ian Swett, Igor Lubashev and Christian Huitema for their fruitful
    comments on earlier versions of this document.
 
-5.  IANA Considerations
+7.  IANA Considerations
 
    TBD: text is required to register the extension BDP_metadata field.
    Parameters are registered using the procedure defined in
    [I-D.ietf-quic-transport].
-
-
-
-
 
 
 
@@ -226,12 +226,12 @@ Kuhn, et al.              Expires June 18, 2020                 [Page 4]
 Internet-Draft             Transport for 0-RTT             December 2019
 
 
-6.  Security Considerations
+8.  Security Considerations
 
    The security is provided by the 1-RTT phase.  The measure of BDP is
    made during a previous connection.
 
-7.  Informative References
+9.  Informative References
 
    [I-D.ietf-quic-recovery]
               Iyengar, J. and I. Swett, "QUIC Loss Detection and
@@ -242,6 +242,10 @@ Internet-Draft             Transport for 0-RTT             December 2019
               Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
               and Secure Transport", draft-ietf-quic-transport-24 (work
               in progress), November 2019.
+
+   [PANRG106]
+              Fairhurst, G., "Impact of Asymmetric Path
+              Characteristics", IETF PANRG 106, 2019.
 
    [RFC2488]  Allman, M., Glover, D., and L. Sanchez, "Enhancing TCP
               Over Satellite Channels using Standard Mechanisms",
@@ -268,6 +272,16 @@ Authors' Addresses
    Email: emile.stephan@orange.com
 
 
+
+
+
+
+
+Kuhn, et al.              Expires June 18, 2020                 [Page 5]
+
+Internet-Draft             Transport for 0-RTT             December 2019
+
+
    Gorry Fairhurst (editor)
    University of Aberdeen
 
@@ -277,4 +291,46 @@ Authors' Addresses
 
 
 
-Kuhn, et al.              Expires June 18, 2020                 [Page 5]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kuhn, et al.              Expires June 18, 2020                 [Page 6]
