@@ -113,21 +113,27 @@
 +---------+-----------------+---------+--------------------------+
 |IW       |initial_max_data | yes     |                          |
 +---------+-----------------+---------+--------------------------+
+|Asymmetry|                 |         |ack_ratio=TBD             | 
++---------+-----------------+---------+--------------------------+
 |RTT      |min_rtt          | no      |                          |
 +---------+-----------------+---------+--------------------------+
 |Bandwidth|congestion_window| no      |bdp=                      |
-|         |                 |         | min_rtt*congestion_window|
+|         |min_rtt          |         | min_rtt*congestion_window|
 +---------+-----------------+---------+--------------------------+
 |Loss     |lost_packets     | no      |loss_ratio=               |
 |rate     |sent_packets     | no      | lost_packets/sent_packets|
 +---------+-----------------+---------+--------------------------+
 |MTU      |max_packet_size  | yes     |                          |
 +---------+-----------------+---------+--------------------------+
-|Asymmetry|                 |         |asymmetry=TBD             | 
-+---------+-----------------+---------+--------------------------+
 </artwork>
 </figure>	
 		</section> 
+
+		<section anchor="sec:bdp_activation" title="Extension activation">
+			<t>In TLS1.3 [ADD REF], when the client sends back the NewSessionTicket with the same early_data, it activates the ingress optimization. In QUICv1, when the client sends back the transport parameter initial_max_data, it activates the ingress optimization.</t>
+			<t>During the 1-RTT connection, the server sends the BDP metadata extension is activated when the parameter toto is not null.</t>
+		</section>
+
 		
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
 			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev and Christian Huitema for their fruitful comments on earlier versions of this document.</t>
