@@ -124,7 +124,8 @@
 		</section>
 
 		<section anchor="sec:security" title="Security Considerations">
-			<t>The security is provided by the 1-RTT phase. The measure of BDP is made during a previous connection.</t>
+			<t> The BDP metadata parameters are measured by the server made during a previous connection.</t>
+			<t> BDP extension is protected by the mechanism which protect the exchange of the 0-RTT transport parameters.	For the version 1 od QUIC, the BDP extension is protected using the mechanism which already protects the 'initial_max_data' parameter. It is defined in sections 4.5 to 4.7 of [https://tools.ietf.org/html/draft-ietf-quic-tls-24]. It provides the server with a mean to check that the parameters proposed by the client are those the server sent to the client during the previous connexion.</t> 
 		</section>
 	</middle>
 
