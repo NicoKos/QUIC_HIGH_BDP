@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="yes" ?>
+<?rfc toc="yes"?>
+<?rfc tocdepth="4"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<rfc category="info" docName="draft-kuhn-quic-0rtt-bdp-06" ipr="trust200902">
+	<!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN"
+     they will automatically be output with "(if approved)" -->
+
+	<!-- ***** FRONT MATTER ***** -->
+
+	<front>
+		<!-- The abbreviated title is used in the page header - it is only necessary if the
+         full title is longer than 39 characters -->
+
+		<title abbrev="Transport for 0-RTT">Transport parameters for 0-RTT connections</title>
+
+		<author role="editor" fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
+			<organization>CNES</organization>
+			<address>
+				<email>nicolas.kuhn@cnes.fr</email>
+			</address>
+		</author>
+
+		<author role="editor" fullname="Emile Stephan" initials="E" surname="Stephan">
+			<organization>Orange</organization>
+			<address>
+				<email>emile.stephan@orange.com</email>
+			</address>
+		</author>
+
+		<author role="editor" fullname="Gorry Fairhurst" initials="G" surname="Fairhurst">
+			<organization>University of Aberdeen</organization>
+			<address>
+				<email>gorry@erg.abdn.ac.uk</email>
+			</address>
+		</author>
+		
+		<date year="2019"/>
+
+		<!-- If the month and year are both specified and are the current ones, xml2rfc will fill
+         in the current day for you. If only the current year is specified, xml2rfc will fill
+	 in the current day and month for you. If the year is not the current one, it is
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to
+	 specify just the year. -->
+
+		<!-- Meta-data Declarations -->
+
+		<area>Transport</area>
+
+		<workgroup>Internet Engineering Task Force</workgroup>
+
+		<!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.
+	 If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+		<keyword>QUIC, high BDP, Transport, 0-RTT, early_data</keyword>
+
+		<!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+		<abstract>
+			<t>QUIC 0-RTT enables the optimization of the egress traffic. It relies on the sharing of the "initial_max_data" transport parameter between peer consent. This memo proposes the sharing of additional transport parameters to optimize the ingress traffic.</t>
+		</abstract>
+	</front>
+
+	<middle>
+
+		<section anchor="sec:introduction" title="Introduction">
+			<t>QUIC 0-RTT enables the optimization of the egress traffic. It relies on the sharing of the "initial_max_data" transport parameter between peers: it indicates to the client the number of bytes it is allowed to send in the first packet sent when reconnecting.</t>
+			<t>This memo proposes the sharing of additional transport parameters to optimize the ingress traffic exchange at both ends. The optimization of the time-to-service duration depends on both direction optimization. QUIC may not be used for the sole use of HTTP3 services, but also for symmetrical services. The client device should be able to adapt to the path adaptation chosen by the server. Since there are more and more exchange based on subscription where the server sends data first, with regard to ossification, it is central to dissociate the signalling (aka the initiator of the connection) from the peer which first sends application data.</t>
+			<t>The memo focuses on cases with high Bandwidth Delay Product (BDP) and constrained situations. The extension name is 'BDP metadata'. Candidate transport parameters are discussed in <xref target="sec:bdp_metadata"></xref>.</t> 			
+		</section>
+
+		<section anchor="sec:rationale" title="Rationale">
+			<t>QUIC encryption of transport headers prevents the adding of Performance-enhancing proxy (PEP). The BDP metadata extension may be a substitute to PEP proxy <xref target="RFC2488"></xref> <xref target="RFC3135"></xref> when time-to-service improvement requires acceleration of the refilling of client application buffers.</t>
+			<t>There are cases where egress acceleration like 0-RTT early data alone does not improve the time-to-service. While initial_max_data improves the egress time to server, the BDP metadata extension aims at improving ingress traffic delivery. In some large BDP deployment scenarios, this can significantly improve page load time.</t>
+			<t>There are reconnection situation where the time-to-service depends only on server data arrival because the service logic does not requires any additional information from the client.</t>
+			<t>Currently each side has its proprietary solution to measure and to store path characteristics. Having a standard way to share these parameters will allow the client to prepare the right resources and should improve the adaptation to non-default path characteristics.</t>
+			<t>Avoid peers to compute the same path characteristics and decide opposed strategies: When the BDP is high the server may decide to increase the data on the flight while a resource-limited client will decide, as the ingress is expected to be slow, to reduce the resources.</t>
+			<t>Having a symmetrical optimization reduces ossification. Having the server to share the path characteristics avoid duplicate works and allows resource-limited client to save resources like CPU, memory and power. Tune the default transport parameters of network paths which have path characteristics that increase the time-to-service.</t>
+		</section>
+				
+		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
+			<t>Acording to <xref target="I-D.ietf-quic-transport"></xref>, both endpoints store the value of the server transport parameters from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer. Amongst the six mandatory initial parameters that section 7.3.1 defines, only initial_max_data improves the time-to-service of the 0-RTT connection. The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the time-to-service and save resource like CPU, memory and power.</t>
+			<t>Parameters listed below migh be exchanged as transport parameter:<list style="symbols">
+				<t>last_bdp (0x000X): The last_bdp parameter is the BDP measured on the previous connection by the server. It is an integer in unit of bytes. Using the min_rtt and congestion_window defined in <xref target="I-D.ietf-quic-recovery"></xref>, last_bdp can be set to min_rtt*congestion_window.</t>
+				<t>initial_max_pkt_number (0x000X): The maximum amount of packets that the server is allowed to send when reconnecting. It is an integer in unit of packets.</t></list></t>
+			<t>When a server measures a large BDP, it may decide to increase the maximum amount of packets it will send when reconnecting. This enables a client which accepts the optimization to adjust its buffers at reconnection time.</t>
+		</section>
+
+		<section anchor="sec:bdp_activation" title="Extension activation">
+			<t>Currently, in section 7.3.1 of <xref target="I-D.ietf-quic-transport"></xref>, a client which activates 0-RTT sends back the transport parameters (initial_max_data ...) received from the server during the previous connection.</t>
+			<t>Accept: A client which activates ingress optimization must send back the transport parameters of the BDP metadata extension that it received from the server during the previous connection.</t>
+			<t>Tune: A client may send back a value lower than the initial_max_pkt_number received from the server.</t>
+			<t>Refuse: A client which does not send back these parameters indicates to the server that it does not accept ingress optimisation. A client which disagrees with the BDP measured by the server may refuse the optimization. A limited-resource client may discard the optimization.</t>
+		</section>
+
+		<section anchor="sec:other_parameter" title="Discussion">
+			<t>Other parameters can contribute to the optimization of 0-RTT connection.</t>
+			<t>There are good candidates, like min_rtt, in the Appendix of <xref target="I-D.ietf-quic-recovery"></xref>. </t>
+			<t>Field measurements showed that tuning the ACK ratio improves the performance of asymmetrical exchange <xref target="PANRG106"></xref>.</t>
+		</section>
+		
+		<section anchor="sec:acknowledgements" title="Acknowledgements">
+			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev and Christian Huitema for their fruitful comments on earlier versions of this document.</t>
+		</section>
+
+		<section anchor="sec:IANA" title="IANA Considerations">
+			<t>TBD: text is required to register the extension BDP_metadata field. Parameters are registered using the procedure defined in <xref target="I-D.ietf-quic-transport"></xref>.</t>
+		</section>
+
+		<section anchor="sec:security" title="Security Considerations">
+			<t> The BDP metadata parameters are measured by the server made during a previous connection.</t>
+			<t> BDP extension is protected by the mechanism which protect the exchange of the 0-RTT transport parameters.	For the version 1 od QUIC, the BDP extension is protected using the mechanism which already protects the 'initial_max_data' parameter. It is defined in sections 4.5 to 4.7 of [https://tools.ietf.org/html/draft-ietf-quic-tls-24]. It provides the server with a mean to check that the parameters proposed by the client are those the server sent to the client during the previous connexion.</t> 
+		</section>
+	</middle>
+
+	<!--  *****BACK MATTER ***** -->
+	<back>
+		<!-- References split into informative and normative -->
+		<!-- There are 2 ways to insert reference entries from the citation libraries:
+	1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+	2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+	(for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+	Both are cited textually in the same manner: by using xref elements.
+	If you use the PI option, xml2rfc will, by default, try to find included files in the same
+	directory as the including file. You can also define the XML_LIBRARY environment variable
+	with a value containing a set of directories to search.  These can be either in the local
+	filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+		<!-- <references title="Normative References">
+			&RFC2119;
+		</references> -->
+
+		<references title="Informative References">
+			<?rfc include="reference.RFC.2488.xml"?>
+			<?rfc include="reference.RFC.3135.xml"?>
+			<!-- <?rfc include="reference.RFC.6347.xml"?> -->
+			<!-- <?rfc include="reference.RFC.6349.xml"?> -->
+			<!-- <?rfc include="reference.RFC.6928.xml"?> -->
+			<!-- <?rfc include="reference.RFC.7413.xml"?> -->
+			<!-- <?rfc include="reference.RFC.8446.xml"?> -->
+			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
+			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
+			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
+			<!-- <?rfc include="reference.I-D.ietf-quic-tls.xml"?> -->
+			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
+			<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
+			<!-- <?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?> -->
+			<!-- <?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?> -->
+			<reference anchor="PANRG106">
+				<front>
+					<title>Impact of Asymmetric Path Characteristics</title>
+					<author initials="G" surname="Fairhurst">
+					</author>
+					<date year="2019"/>
+				</front>
+				<seriesInfo name="IETF PANRG" value="106"/>
+			</reference>
+			<!-- <reference anchor="ICCRG100">
+				<front>
+					<title>MPTCP and BBR performance over Internet satellite paths</title>
+					<author initials="N" surname="Kuhn">
+					</author>
+					<date year="2017"/>
+				</front>
+				<seriesInfo name="IETF ICCRG" value="100"/>
+			</reference> -->
+			<!-- <reference anchor="IJSCN19">
+				<front>
+					<title>Google QUIC performance over a public SATCOM access</title>
+					<author initials="L" surname="Thomas">
+					</author>
+					<author initials="E" surname="Dubois">
+					</author>
+					<author initials="N" surname="Kuhn">
+					</author>
+					<author initials="E" surname="Lochin">
+					</author>
+					<date year="2019"/>
+				</front>
+				<seriesInfo name="International Journal of Satellite Communications and Networking" value=""/>
+			</reference> -->
+			<!-- <reference anchor="CONEXT15">
+				<front>
+					<title>Halfback: Running Short Flows Quickly and Safely</title>
+					<author initials="Q" surname="Li">
+					</author>
+					<author initials="M" surname="Dong">
+					</author>
+					<author initials="P B" surname="Godfrey">
+					</author>
+					<date year="2015"/>
+				</front>
+				<seriesInfo name="ACM CoNEXT" value=""/>
+			</reference> -->
+			<!-- <reference anchor="NCT13">
+				<front>
+					<title>A new survey on improving TCP performances over geostationary satellite link</title>
+					<author initials="A" surname="Pirovano">
+					</author>
+					<author initials="F" surname="Garcia">
+					</author>
+					<date year="2013"/>
+				</front>
+				<seriesInfo name="Network and Communication Technologies" value=""/>
+			</reference> -->
+			<!-- <reference anchor="ICC16">
+				<front>
+					<title>Reducing web latency through TCP IW: Be smart</title>
+					<author initials="R" surname="Sallantin">
+					</author>
+					<author initials="C" surname="Baudoin">
+					</author>
+					<author initials="E" surname="Chaput">
+					</author>
+					<author initials="F" surname="Arnal">
+					</author>
+					<author initials="E" surname="Dubois">
+					</author>
+					<author initials="A-L" surname="Beylot">
+					</author>
+					<date year="2016"/>
+				</front>
+				<seriesInfo name="IEEE ICC" value=""/>
+			</reference> -->
+		</references>
+	</back>
+</rfc>
