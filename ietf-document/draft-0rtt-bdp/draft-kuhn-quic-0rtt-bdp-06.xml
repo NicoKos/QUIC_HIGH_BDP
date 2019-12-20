@@ -158,7 +158,7 @@
 			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
 			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
 			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
-			<!-- <?rfc include="reference.I-D.ietf-quic-tls.xml"?> -->
+			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
 			<!-- <?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?> -->
