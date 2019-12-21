@@ -97,11 +97,11 @@
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 			<t>Acording to <xref target="I-D.ietf-quic-transport"></xref>, both endpoints store the value of the server transport parameters from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer. Amongst the six mandatory initial parameters that section 7.3.1 defines, only initial_max_data improves the time-to-service of the 0-RTT connection. The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the time-to-service and save resource like CPU, memory and power.</t>
 			<t>Parameters listed below migh be exchanged as transport parameter:<list style="symbols">
-				<t>last_bdp (0x000X): The BDP measured on the previous connection by the server. It is an integer in unit of bytes. Using the congestion_window defined in <xref target="I-D.ietf-quic-recovery"></xref>, last_bdp can be set to congestion_window.</t>
+				<t>last_bytes_in_flight (0x000X): The bytes in flight measured on the previous connection by the server. It is an integer in unit of bytes. Using the bytes_in_flight defined in <xref target="I-D.ietf-quic-recovery"></xref>, last_bytes_in_flight can be set to bytes_in_flight.</t>
 				<t>last_min_rtt (0x000X): The minimum RTT measured on the previous connection by the server. It is an integer in unit of milliseconds. Using the min_rtt defined in <xref target="I-D.ietf-quic-recovery"></xref>, last_min_rtt can be set to min_rtt.</t>
 				<t>initial_max_pkt_number (0x000X): The maximum amount of packets that the server is allowed to send when reconnecting. It is an integer in unit of packets.</t>
 				<t>ack_ratio (0x000X): The acknowledgment ratio that has been used at the end of the previous connection by the server or the acknowledgment ratio that the server is willing to use. It is an integer in unit of packets.</t></list></t>
-			<t>When a server measures a large BDP, it may decide to increase the maximum amount of packets it will send when reconnecting. This enables a client which accepts the optimization to adjust its buffers at reconnection time.</t>
+			<t>The last_bytes_in_flight parameter is higher than the actual BDP since it may include bytes in buffers along the path. The last_bytes_in_flight parameter is still a indication of the end-to-end BDP that is experienced by the congestion control. If the last_bytes_in_flight is high, the server may decide to increase the maximum amount of packets it will send when reconnecting. This enables a client which accepts the optimization to adjust its buffers at reconnection time.</t>
 		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
