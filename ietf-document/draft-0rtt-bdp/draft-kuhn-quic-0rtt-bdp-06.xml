@@ -101,7 +101,6 @@
 				<t>last_min_rtt (0x000X): The minimum RTT measured on the previous connection by the server. It is an integer in unit of milliseconds. Using the min_rtt defined in <xref target="I-D.ietf-quic-recovery"></xref>, last_min_rtt can be set to min_rtt.</t>
 				<t>initial_max_pkt_number (0x000X): The maximum amount of packets that the server is allowed to send when reconnecting. It is an integer in unit of packets.</t>
 				<t>ack_ratio (0x000X): The acknowledgment ratio that has been used at the end of the previous connection by the server or the acknowledgment ratio that the server is willing to use. It is an integer in unit of packets.</t></list></t>
-			<t>The last_bytes_in_flight parameter is higher than the actual BDP since it may include bytes in buffers along the path. The last_bytes_in_flight parameter is still a indication of the end-to-end BDP that is experienced by the congestion control. If the last_bytes_in_flight is high, the server may decide to increase the maximum amount of packets it will send when reconnecting. This enables a client which accepts the optimization to adjust its buffers at reconnection time.</t>
 		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
@@ -112,8 +111,8 @@
 		</section>
 
 		<section anchor="sec:other_parameter" title="Discussion">
-			<t>Other parameters can contribute to the optimization of 0-RTT connection.</t>
-			<t>There are good candidates, like max_ack_delay, in the Appendix of <xref target="I-D.ietf-quic-recovery"></xref>. </t>
+			<t>The last_bytes_in_flight parameter is higher than the actual BDP since it may include bytes in buffers along the path. The last_bytes_in_flight parameter is still a indication of the end-to-end BDP that is experienced by the congestion control. If the last_bytes_in_flight is high, the server may decide to increase the maximum amount of packets it will send when reconnecting. The maximum number of initial data packets that can be sent without acknowledgement needs to be chosen to avoid congestion collapse. An example of a server solution is proposed in <xref target="appendix-server"></xref>.</t>
+			<t>Other parameters can contribute to the optimization of 0-RTT connection. There are good candidates, like max_ack_delay, in the Appendix of <xref target="I-D.ietf-quic-recovery"></xref>. </t>
 		</section>
 		
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
@@ -240,5 +239,9 @@
 				<seriesInfo name="IEEE ICC" value=""/>
 			</reference> -->
 		</references>
+		<section anchor="appendix-server" title="Example of server solution">
+			<t>This section details a solution at the server to safely increase the maximum amount of packets that the server sends when receiving a 0-RTT packet from a client.</t>
+			<t>The server keeps a standard initial window to avoid adding congestion to a congested network. After the reception of the acknowledgments for the last packet of the initial window, the server checks that the min_rtt is consistent. It then adapts the congestion window to a higher value that must be paced out. The initial_max_pkt_number is then the amount of data that the server sends during the two firsts RTT.</t>
+		</section>
 	</back>
 </rfc>
