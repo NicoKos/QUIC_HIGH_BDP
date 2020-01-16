@@ -31,8 +31,9 @@ Abstract
    experience can be degraded.
 
    This memo identifies the characteristics of a SATCOM link that impact
-   the operation of the QUIC transport protocol and proposes current
-   practice to ensure acceptable protocol performance.
+   the operation of the QUIC transport protocol.  It proposes regression
+   tests to evaluate QUIC over SATCOM links.  It discusses how to ensure
+   acceptable protocol performance.
 
 Status of This Memo
 
@@ -49,7 +50,6 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 19, 2020.
 
 
 
@@ -57,6 +57,8 @@ Kuhn, et al.              Expires July 19, 2020                 [Page 1]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
+
+   This Internet-Draft will expire on July 19, 2020.
 
 Copyright Notice
 
@@ -104,8 +106,6 @@ Table of Contents
    for a complex page can be much larger when the path includes a
    satellite link.  A significant contribution to this reduced
    performance arises from the initialisation and design of transport
-   mechanisms.  QUIC's default congestion control is based on TCP
-   NewReno [I-D.ietf-quic-recovery] and the recommended initial window
 
 
 
@@ -114,6 +114,8 @@ Kuhn, et al.              Expires July 19, 2020                 [Page 2]
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
+   mechanisms.  QUIC's default congestion control is based on TCP
+   NewReno [I-D.ietf-quic-recovery] and the recommended initial window
    is defined by [RFC6928].  Although QUIC's CC and recovery have been
    designed for use across Internet Paths, the initial design could not
    optimise for the wide diversity of path characteristics that can
@@ -138,8 +140,9 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    forming the network path.
 
    This memo identifies the characteristics of a SATCOM link that impact
-   the operation of the QUIC transport protocol and proposes best
-   current practice to ensure acceptable protocol performance.
+   the operation of the QUIC transport protocol.  It proposes regression
+   tests to evaluate QUIC over SATCOM links.  It discusses how to ensure
+   acceptable protocol performance.
 
 2.  Operating over a path with a large BDP
 
@@ -159,9 +162,6 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    Many systems use the DVB-S2 specifications, where the key concept is
    to ensure both a good usage of the satellite resource and a Quasi
    Error Free (QEF) link.  It consists in monitoring the link quality in
-   real-time, with the help of known symbols sequences, included along
-   with regular packets, on which an estimation of the current signal-
-   to-noise ratio can be done.  Then, this estimation is sent back to
 
 
 
@@ -170,6 +170,9 @@ Kuhn, et al.              Expires July 19, 2020                 [Page 3]
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
+   real-time, with the help of known symbols sequences, included along
+   with regular packets, on which an estimation of the current signal-
+   to-noise ratio can be done.  Then, this estimation is sent back to
    the transmitter that can adapt its coding rate and modulation in
    order to best fit the actual transmission conditions.
 
@@ -215,9 +218,6 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    o  Getting up to speed: the exponential increase of the data rate
       during slow start for a channel capacity probing is slowed down
       when the RTT is high;
-
-
-
 
 
 
@@ -270,9 +270,9 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
    This section proposes regression tests for QUIC.  We define by:
 
-   o  Download: from Internet to host
+   o  Download path: from Internet to host
 
-   o  Upload: from the host to Internet
+   o  Upload path: from the host to Internet
 
 
 
@@ -296,9 +296,9 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
    o  Buffer size : BDP
 
-   During the transmission of 100 MB, the test should report the
-   downloading time of 2 MB, 10 MB and 100 MB from the Internet to the
-   host.
+   During the transmission of 100 MB on both download and upload paths,
+   the test should report the downloading time of 2 MB, 10 MB and 100
+   MB.
 
 4.2.  Medium public satellite broadband access
 
@@ -314,9 +314,8 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
    o  Buffer size : BDP
 
-   During the transmission of 100 MB, the test should report the
-   downloading time of 2 MB, 10 MB and 100 MB from the Internet to the
-   host.
+   During the transmission of 100 MB on the download path, the test
+   should report the downloading time of 2 MB, 10 MB and 100 MB.
 
 4.3.  Loss-free large public satellite broadband access
 
@@ -330,6 +329,7 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
    o  RTT: 650 ms
 
+   o  Buffer size : BDP
 
 
 
@@ -338,11 +338,8 @@ Kuhn, et al.              Expires July 19, 2020                 [Page 6]
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
-   o  Buffer size : BDP
-
-   During the transmission of 100 MB, the test should report the
-   downloading time of 2 MB, 10 MB and 100 MB from the Internet to the
-   host.
+   During the transmission of 100 MB on the download path, the test
+   should report the downloading time of 2 MB, 10 MB and 100 MB.
 
 4.4.  Lossy large public satellite broadband access
 
@@ -364,9 +361,8 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
    o  Buffer size : BDP
 
-   During the transmission of 100 MB, the test should report the
-   downloading time of 2 MB, 10 MB and 100 MB from the Internet to the
-   host.
+   During the transmission of 100 MB on the download path, the test
+   should report the downloading time of 2 MB, 10 MB and 100 MB.
 
 5.  Mechanisms that improve the performance of QUIC for SATCOM
 
@@ -386,6 +382,10 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    [CONEXT15][ICC16] could be a relevant solution.  That being said,
    such solution requires the usage of pacing to avoid important bursts
    of packets in a network that does not have a large BDP.
+
+
+
+
 
 
 

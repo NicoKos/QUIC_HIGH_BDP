@@ -90,7 +90,7 @@
         <!-- ######################################################--> 
 	<abstract>
 	<t>QUIC has been designed for use across Internet paths. Initial designs of QUIC have focussed on common deployment scenarios for web traffic and have not focussed on the performance when using a path with a large Bandwidth-Delay Product (BDP). A path can combine satellites network segment together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc): this complicates the characteristics of the end-to-end path. One example of such a scenario occurs when a satellite communication (SATCOM) system is used to provide all or a part of the end-to-end path. If this is not addressed, the end-to-end quality of experience can be degraded.</t>
-        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol and proposes current practice to ensure acceptable protocol performance.</t>
+        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol. It proposes regression tests to evaluate QUIC over SATCOM links. It discusses how to ensure acceptable protocol performance.</t>
 	</abstract>
   </front>
 
@@ -99,7 +99,7 @@
 	<section anchor="sec:introduction" title="Introduction">
 	<t>The end-to-end performance of an application using an Internet path can be impacted by the Bandwidth-Delay Product (BDP) of the links and network devices forming the path. For instance, the page load time for a complex page can be much larger when the path includes a satellite link. A significant contribution to this reduced performance arises from the initialisation and design of transport mechanisms. QUIC's default congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>. Although QUIC's CC and recovery have been designed for use across Internet Paths, the initial design could not optimise for the wide diversity of path characteristics that can occur. This document therefore considers the specific implications of paths with a significant BDP.</t>
 	<t>Satellite communications (SATCOM) systems have long been used to support point-to-point links and specialised networks. The predominate current use is as a link-layer for Internet Protocols. Typical example applications include: use as an access technology for remote locations, backup and rapid deployment of new services, transit networks and backhaul of various types of IP networks, and provision to mobile (maritime, aircraft, etc.). In most scenarios, the satellite IP network segment usually only forms one part of the end-to-end path. This means user traffic can experience a path that includes satellite link together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc). Although a user can sometimes know the presence of the satellite service, a typical user does not deploy special software or applications because they expect a satellite network is being used. Often a user is unaware of the technologies underpinning the links forming the network path.</t> 
-        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol and proposes best current practice to ensure acceptable protocol performance.</t>
+        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol. It proposes regression tests to evaluate QUIC over SATCOM links. It discusses how to ensure acceptable protocol performance.</t>
 	</section>
 
         <!-- ######################################################-->
@@ -154,8 +154,8 @@
         <section anchor="sec:quic-4-sat-regression" title="Regression tests">
 	
 	<t>This section proposes regression tests for QUIC. We define by:<list style="symbols">
-		<t>Download: from Internet to host</t>
-		<t>Upload: from the host to Internet</t>
+		<t>Download path: from Internet to host</t>
+		<t>Upload path: from the host to Internet</t>
 	</list></t>
 	
 	<section anchor="sec:quic-4-sat-regression-static-small" title="Small public satellite broadband access">
@@ -166,7 +166,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB, the test should report the downloading time of 2 MB, 10 MB and 100 MB from the Internet to the host.</t>
+		<t>During the transmission of 100 MB on both download and upload paths, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
 	</section>
 
 	<section anchor="sec:quic-4-sat-regression-static-medium" title="Medium public satellite broadband access">
@@ -177,7 +177,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB, the test should report the downloading time of 2 MB, 10 MB and 100 MB from the Internet to the host.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
 	</section>
 		
 	<section anchor="sec:quic-4-sat-regression-static-large" title="Loss-free large public satellite broadband access">
@@ -188,7 +188,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB, the test should report the downloading time of 2 MB, 10 MB and 100 MB from the Internet to the host.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
 	</section>
 		
 	<section anchor="sec:quic-4-sat-regression-static-large-loss" title="Lossy large public satellite broadband access">
@@ -202,7 +202,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB, the test should report the downloading time of 2 MB, 10 MB and 100 MB from the Internet to the host.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
 	</section>
 		
 	</section>
