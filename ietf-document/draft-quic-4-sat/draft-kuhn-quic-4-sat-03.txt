@@ -5,12 +5,12 @@
 Internet Engineering Task Force                                  N. Kuhn
 Internet-Draft                                                      CNES
 Intended status: Informational                              G. Fairhurst
-Expires: July 18, 2020                            University of Aberdeen
+Expires: July 19, 2020                            University of Aberdeen
                                                                J. Border
                                              Hughes Network Systems, LLC
                                                               E. Stephan
                                                                   Orange
-                                                        January 15, 2020
+                                                        January 16, 2020
 
 
                             QUIC for SATCOM
@@ -49,11 +49,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 18, 2020.
+   This Internet-Draft will expire on July 19, 2020.
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 1]
+Kuhn, et al.              Expires July 19, 2020                 [Page 1]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 2]
+Kuhn, et al.              Expires July 19, 2020                 [Page 2]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -160,18 +160,18 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    to ensure both a good usage of the satellite resource and a Quasi
    Error Free (QEF) link.  It consists in monitoring the link quality in
    real-time, with the help of known symbols sequences, included along
-   regular packets, on which an estimation of the current signal-to-
-   noise ratio can be done.  Then, this estimation is send back to the
+   with regular packets, on which an estimation of the current signal-
+   to-noise ratio can be done.  Then, this estimation is sent back to
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 3]
+Kuhn, et al.              Expires July 19, 2020                 [Page 3]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
-   transmitter that can adapt its coding rate and modulation order to
-   best fit the actual transmission conditions.
+   the transmitter that can adapt its coding rate and modulation in
+   order to best fit the actual transmission conditions.
 
    It is common to consider the satellite network segment composed of a
    forward link and a return link.  The two links can have different
@@ -179,18 +179,18 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    On the forward link, the satellite gateway uses all the available
    bandwidth, possibly with several carriers, to communicate with the
    remote terminals.  A carrier is a single Time-Division-Multiplexing
-   where packets addressed to terminals are multiplexed.  On the return
-   link, the satellite resource is shared among the users.  Two access
-   methods can be distinguished: on-demand access or contention access.
-   In the former, a terminal receives dedicated resources on its own to
-   communicate with the gateway.  In the latter, some resources are
-   reserved for contention access, where several terminals can compete
-   to obtain the resource.  Dedicated access, which is more common in
-   currently deployed systems, can be through a Demand Assigned Multiple
-   Access (DAMA) mechanism, while contention access techniques are
-   usually based on Slotted Aloha (SA) and its numerous derivatives.
-   More information on satellite links characteristics can be found in
-   [RFC2488][IJSCN17].
+   channel where packets addressed to terminals are multiplexed.  On the
+   return link, the satellite resource is shared among the users.  Two
+   access methods can be distinguished: on-demand access or contention
+   access.  In the former, a terminal receives dedicated resources on
+   its own to communicate with the gateway.  In the latter, some
+   resources are reserved for contention access, where several terminals
+   can compete to obtain the resource.  Dedicated access, which is more
+   common in currently deployed systems, can be through a Demand
+   Assigned Multiple Access (DAMA) mechanism, while contention access
+   techniques are usually based on Slotted Aloha (SA) and its numerous
+   derivatives.  More information on satellite links characteristics can
+   be found in [RFC2488][IJSCN17].
 
    Beyond that, even for characteristics shared with terrestrial links,
    the impact on a satellite link could be more and can be amplified by
@@ -221,13 +221,13 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 4]
+Kuhn, et al.              Expires July 19, 2020                 [Page 4]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
-   o  Asymetry : when the links are asymmetric, for various reasons, the
-      sizing of the return link may induce modifications of the
+   o  Asymmetry : when the links are asymmetric, for various reasons,
+      the sizing of the return link may induce modifications of the
       transport level acknowledgement traffic.
 
 3.  TCP Split Solution
@@ -251,6 +251,10 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    satellite link, may be used.  The tuning can be achieved using a
    priori information about the satellite system and/or by measuring the
    properties of the network segment that includes the satellite system.
+   Split connections also allow for recovery from packet losses that is
+   local to the part of the connection on which the packet losses
+   occurred.  This eliminates the need for end-to-end recovery of lost
+   packets.
 
    One important advantage of a TCP split solution is that it does not
    require any end-to-end modifications and is independent for both
@@ -264,20 +268,16 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
 4.  Regression tests
 
-   This section proposes regression tests for QUIC.  We define by :
+   This section proposes regression tests for QUIC.  We define by:
 
-   o  Download : from Internet to host
+   o  Download: from Internet to host
 
    o  Upload: from the host to Internet
 
 
 
 
-
-
-
-
-Kuhn, et al.              Expires July 18, 2020                 [Page 5]
+Kuhn, et al.              Expires July 19, 2020                 [Page 5]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -333,7 +333,7 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 6]
+Kuhn, et al.              Expires July 19, 2020                 [Page 6]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -373,7 +373,7 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 5.1.  Getting up to speed
 
    The advantage of using QUIC is that it includes the TLS and TCP
-   negociations that reduce the time at which the data can be
+   negotiations that reduce the time at which the data can be
    transmitted.  That being said, results of [IJSCN19] illustrate that
    it will take many RTTs for the congestion controller to increase the
    rate before it fills the bottleneck capacity.  This dominates
@@ -385,11 +385,11 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    improve performance both for high BDP and more common BDP
    [CONEXT15][ICC16] could be a relevant solution.  That being said,
    such solution requires the usage of pacing to avoid important bursts
-   of packets in the network that does not have a large BDP.
+   of packets in a network that does not have a large BDP.
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 7]
+Kuhn, et al.              Expires July 19, 2020                 [Page 7]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -413,12 +413,12 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
    with a larger RTT.  This increases the time that a server needs to
    react to a congestion event.  Both can impact the user experience.
    This happens when a user uses a Wi-Fi link to access a SATCOM
-   terminal.  Although the benefits needed to weighed against the
+   terminal.  Although the benefits need to weighed against the
    additional capacity in introducing end-to-end FEC and the potential
    to use link-local ARQ and/or link-adaptive FEC.  End-to-end
    connections may not only suffer from losses in the Wi-Fi segment but
-   also from congestion losses in the satellite operator ground segment.
-   Using the mechanisms proposed in
+   also from congestion losses in the satellite operator ground segment
+   (and even on the Internet itself).  Using the mechanisms proposed in
    [I-D.ferrieux-hamchaoui-quic-lossbits], congestion losses have been
    identified on the ground segment.
 
@@ -445,7 +445,7 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 8]
+Kuhn, et al.              Expires July 19, 2020                 [Page 8]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -501,7 +501,7 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
 
-Kuhn, et al.              Expires July 18, 2020                 [Page 9]
+Kuhn, et al.              Expires July 19, 2020                 [Page 9]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -557,7 +557,7 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
 
-Kuhn, et al.              Expires July 18, 2020                [Page 10]
+Kuhn, et al.              Expires July 19, 2020                [Page 10]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -613,7 +613,7 @@ Internet-Draft                 QUIC 4 SAT                   January 2020
 
 
 
-Kuhn, et al.              Expires July 18, 2020                [Page 11]
+Kuhn, et al.              Expires July 19, 2020                [Page 11]
 
 Internet-Draft                 QUIC 4 SAT                   January 2020
 
@@ -669,4 +669,4 @@ Authors' Addresses
 
 
 
-Kuhn, et al.              Expires July 18, 2020                [Page 12]
+Kuhn, et al.              Expires July 19, 2020                [Page 12]
