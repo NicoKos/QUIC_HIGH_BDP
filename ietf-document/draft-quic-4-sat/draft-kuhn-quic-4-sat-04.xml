@@ -114,17 +114,18 @@
         
         <section anchor="sec:large_bdp_connection" title="Operating over a path with a large BDP">
 
+	<t>Satellite communications systems have been deployed using many space orbits, including low earth orbit, medium earth orbits, geosynchronous orbits, elliptical orbits and more. This document focuses on Geosynchronous Earth Orbit (GEO) satellite systems.</t>
 	<t>The characteristics of systems using Geosynchronous Earth Orbit (GEO) satellites differ from paths only using terrestrial links in their path characteristics:<list style="symbols">
 		<t>A large propagation delay of at least 250ms one-way delay;</t>
 		<!-- <t>Some systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link);</t> -->
 		<t>Employ radio resource management (often using techniques similar to cellular mobile or DOCSIS cable networks, but differing to accommodate the satellite propagation delay);</t>
-		<t>Links can be highly asymmetric (in terms of capacity and one-way delay).</t>
+		<t>Links can be highly asymmetric (in terms of capacity, one-way delay and in their cost of operation).</t>
 	</list></t>
-	<t>Many systems use the DVB-S2 specifications, where the key concept is to ensure both a good usage of the satellite resource and a Quasi Error Free (QEF) link. It consists in monitoring the link quality in real-time, with the help of known symbols sequences, included along with regular packets, on which an estimation of the current signal-to-noise ratio can be done. Then, this estimation is sent back to the transmitter that can adapt its coding rate and modulation in order to best fit the actual transmission conditions.</t>
+	<t>Many systems use the DVB-S2 specifications, published by the European Telecomunications Standards Institute (ETSI), where the key concept is to ensure both a good usage of the satellite resource and a Quasi Error Free (QEF) link. It consists of monitoring the link quality in real-time, with the help of known symbol sequences, included along with regular packets, on which an estimation of the current signal-to-noise ratio can be done. Then, this estimation is sent back to the transmitter that can adapt its coding rate and modulation in order to best fit the actual transmission conditions.</t>
 	<t>It is common to consider the satellite network segment composed of a forward link and a return link. The two links can have different capacities and employ different technologies to carry the IP packets. On the forward link, the satellite gateway uses all the available bandwidth, possibly with several carriers, to communicate with the remote terminals. A carrier is a single Time-Division-Multiplexing channel where packets addressed to terminals are multiplexed. On the return link, the satellite resource is shared among the users. Two access methods can be distinguished: on-demand access or contention access. In the former, a terminal receives dedicated resources on its own to communicate with the gateway. In the latter, some resources are reserved for contention access, where several terminals can compete to obtain the resource. Dedicated access, which is more common in currently deployed systems, can be through a Demand Assigned Multiple Access (DAMA) mechanism, while contention access techniques are usually based on Slotted Aloha (SA) and its numerous derivatives. More information on satellite links characteristics can be found in <xref target="RFC2488"></xref><xref target="IJSCN17"></xref>.</t>
 		
 	<t>Beyond that, even for characteristics shared with terrestrial links, the impact on a satellite link could be more and can be amplified by the large RTT. For example, systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link) which would impact loss recovery mechanisms and congestion control reaction to such loss events. The characteristics of a GEO SATCOM system impact the performance of congestion control:<list style="symbols">
-		<t>Transport initialization: the 3-way handshake takes a long time to complete, delaying the time at which actual data can be transmitted;</t>
+		<t>Transport initialization: the 3-way handshake takes a long time to complete, delaying the time at which actual data can be transmitted (there could be other transport protocol exchanges, such as TLS);</t>
 		<t>Size of windows required: to fully exploit the bottleneck capacity, a high BDP will increase the number of in-flights packets;</t>
 		<t>Reliability: packet loss detection and correction is slow (the performance of end-to-end retransmission is also impacted when using a high RTT path);</t>
 		<t>Getting up to speed: the exponential increase of the data rate during slow start for a channel capacity probing is slowed down when the RTT is high;</t>
@@ -188,8 +189,8 @@
 		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
 		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
 			<t>3 s for downloading 2 MB</t>
-			<t>7 s for downloading 10 MB</t>
-			<t>22 s for downloading 100 MB</t>
+			<t>5 s for downloading 10 MB</t>
+			<t>20 s for downloading 100 MB</t>
 		</list></t>
 	</section>
 		
@@ -204,8 +205,8 @@
 		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
 		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
 			<t>3 s for downloading 2 MB</t>
-			<t>7 s for downloading 10 MB</t>
-			<t>10 s for downloading 100 MB</t>
+			<t>5 s for downloading 10 MB</t>
+			<t>8 s for downloading 100 MB</t>
 		</list></t>
 	</section>
 		
@@ -214,17 +215,20 @@
 			<t>Satellite downlink path: 250 Mbps</t>
 			<t>Satellite uplink path: 3 Mbps</t>
 			<t>Emulated packet loss on both downlink and uplink paths:<list style="symbols">
-				<t>Uniform random transmission losses: 1%, or </t>
-				<t>Bursty losses, including transmission and congestion losses: P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355, P(b|g)= 0.018 (see <xref target="RFC6534"></xref> for more details)</t>
+				<t>Uniform random transmission link losses: 1% </t>
+				<!-- <t>Bursty losses, including transmission and congestion losses: P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355, P(b|g)= 0.018 (see <xref target="RFC6534"></xref> for more details)</t> -->
 				</list></t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
 		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
 		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
-			<t>TBD s for downloading 2 MB</t>
-			<t>TBD s for downloading 10 MB</t>
-			<t>TBD s for downloading 100 MB</t>
+			<t>3 s for downloading 2 MB (uniform transmission link losses)</t>
+			<t>6 s for downloading 10 MB (uniform transmission link losses)</t>
+			<t>10 s for downloading 100 MB (uniform transmission link losses)</t>
+			<!-- <t>TBD s for downloading 2 MB (bursty transmission and congestion losses)</t>
+			<t>TBD s for downloading 10 MB (bursty transmission and congestion losses)</t>
+			<t>TBD s for downloading 100 MB (bursty transmission and congestion losses)</t> -->
 		</list></t>
 	</section>
 		
@@ -237,7 +241,7 @@
         <section anchor="sec:quic-4-sat" title="Mechanisms that improve the performance of QUIC for SATCOM">
 
 		<section anchor="sec:quic-4-sat-ss" title="Getting up to speed">
-		<t>The advantage of using QUIC is that it includes the TLS and TCP negotiations that reduce the time at which the data can be transmitted. That being said, results of <xref target="IJSCN19"></xref> illustrate that it will take many RTTs for the congestion controller to increase the rate before it fills the bottleneck capacity. This dominates performance when a path has a large RTT (as in GEO SATCOM networks). There is an issue in QUIC getting up to speed in a SATCOM context.</t>
+		<t>The advantage of using QUIC is that it includes the TLS and TCP negotiations that reduce the time at which the data can be transmitted. That being said, results of <xref target="IJSCN19"></xref> illustrate that it will take many RTTs for the congestion controller to increase the rate before it fills the bottleneck capacity. This dominates performance when a path has a large RTT (as in GEO SATCOM networks). There can be an issue in QUIC getting up to speed in a SATCOM context if the congestion and flow controls are not adapted.</t>
 		<t>The tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref> could be a relevant solution. That being said, such solution requires the usage of pacing to avoid important bursts of packets in a network that does not have a large BDP.</t>
 		</section>
 
@@ -247,7 +251,7 @@
 		</section>
 		
 		<section anchor="sec:quic-4-sat-loss" title="Reliability">
-		<t>Packet loss detection and loss repair take additional time on paths with a larger RTT. This increases the time that a server needs to react to a congestion event. Both can impact the user experience. This happens when a user uses a Wi-Fi link to access a SATCOM terminal. Although the benefits need to weighed against the additional capacity in introducing end-to-end FEC and the potential to use link-local ARQ and/or link-adaptive FEC. End-to-end connections may not only suffer from losses in the Wi-Fi segment but also from congestion losses in the satellite operator ground segment (and even on the Internet itself). Using the mechanisms proposed in <xref target="I-D.ferrieux-hamchaoui-quic-lossbits"></xref>, congestion losses have been identified on the ground segment.</t>
+		<t>Packet loss detection and loss repair take additional time on paths with a larger RTT. This increases the time that a server needs to react to a congestion event. Both can impact the user experience. This happens when a user uses a Wi-Fi link to access a SATCOM terminal. Although the benefits need to weighed against the additional capacity in introducing end-to-end FEC and the potential to use link-local ARQ and/or link-adaptive FEC. End-to-end connections may suffer from losses not only in the Wi-Fi segment, but also from congestion losses in the satellite operator ground segment (and even on the Internet itself). Using the mechanisms proposed in <xref target="I-D.ferrieux-hamchaoui-quic-lossbits"></xref>, congestion losses have been identified on the ground segment.</t>
 		<t>Introducing network coding in QUIC such as proposed in <xref target="I-D.swett-nwcrg-coding-for-quic"></xref> and <xref target="I-D.roca-nwcrg-rlc-fec-scheme-for-quic"></xref> could help in recovering from the residual Wi-Fi or congestion losses. Another solution would be the usage of QUIC tunnels <xref target="I-D.schinazi-masque"></xref>.</t>
 		</section>
 
@@ -278,14 +282,6 @@
 
 	<section anchor="sec:acknowledgements" title="Acknowledgements">
 	<t>The authors would like to thank Christian Huitema, Igor Lubashev, Alexandre Ferrieux, Francois Michel, Emmanuel Lochin and the partipants of the IETF106 side-meeting on QUIC for high BDP for their useful feedbacks.</t>
-	</section>
-
-	<section anchor="sec:contributors" title="Contributors">
-	<t>TBD</t>
-	</section>
-
-	<section anchor="sec:IANA" title="IANA Considerations">
-	<t>TBD</t>
 	</section>
 
 	<section anchor="sec:ecurity" title="Security Considerations">

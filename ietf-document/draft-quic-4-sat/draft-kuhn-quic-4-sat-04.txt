@@ -5,12 +5,12 @@
 Internet Engineering Task Force                                  N. Kuhn
 Internet-Draft                                                      CNES
 Intended status: Informational                              G. Fairhurst
-Expires: August 31, 2020                          University of Aberdeen
+Expires: September 4, 2020                        University of Aberdeen
                                                                J. Border
                                              Hughes Network Systems, LLC
                                                               E. Stephan
                                                                   Orange
-                                                       February 28, 2020
+                                                           March 3, 2020
 
 
                             QUIC for SATCOM
@@ -53,12 +53,12 @@ Status of This Memo
 
 
 
-Kuhn, et al.             Expires August 31, 2020                [Page 1]
+Kuhn, et al.            Expires September 4, 2020               [Page 1]
 
-Internet-Draft                 QUIC 4 SAT                  February 2020
+Internet-Draft                 QUIC 4 SAT                     March 2020
 
 
-   This Internet-Draft will expire on August 31, 2020.
+   This Internet-Draft will expire on September 4, 2020.
 
 Copyright Notice
 
@@ -80,22 +80,20 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Operating over a path with a large BDP  . . . . . . . . . . .   3
    3.  TCP Split Solution  . . . . . . . . . . . . . . . . . . . . .   5
-   4.  Regression tests  . . . . . . . . . . . . . . . . . . . . . .   5
+   4.  Regression tests  . . . . . . . . . . . . . . . . . . . . . .   6
      4.1.  Small public satellite broadband access . . . . . . . . .   6
      4.2.  Medium public satellite broadband access  . . . . . . . .   6
      4.3.  Loss-free large public satellite broadband access . . . .   7
-     4.4.  Lossy large public satellite broadband access . . . . . .   7
+     4.4.  Lossy large public satellite broadband access . . . . . .   8
    5.  Mechanisms that improve the performance of QUIC for SATCOM  .   8
      5.1.  Getting up to speed . . . . . . . . . . . . . . . . . . .   8
-     5.2.  Maximum window  . . . . . . . . . . . . . . . . . . . . .   8
+     5.2.  Maximum window  . . . . . . . . . . . . . . . . . . . . .   9
      5.3.  Reliability . . . . . . . . . . . . . . . . . . . . . . .   9
      5.4.  ACK ratio . . . . . . . . . . . . . . . . . . . . . . . .   9
    6.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .  10
    7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
-   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  10
-   11. Informative References  . . . . . . . . . . . . . . . . . . .  11
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   9.  Informative References  . . . . . . . . . . . . . . . . . . .  11
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
@@ -106,16 +104,16 @@ Table of Contents
    for a complex page can be much larger when the path includes a
    satellite link.  A significant contribution to this reduced
    performance arises from the initialisation and design of transport
-
-
-
-Kuhn, et al.             Expires August 31, 2020                [Page 2]
-
-Internet-Draft                 QUIC 4 SAT                  February 2020
-
-
    mechanisms.  QUIC's default congestion control is based on TCP
    NewReno [I-D.ietf-quic-recovery] and the recommended initial window
+
+
+
+Kuhn, et al.            Expires September 4, 2020               [Page 2]
+
+Internet-Draft                 QUIC 4 SAT                     March 2020
+
+
    is defined by [RFC6928].  Although QUIC's CC and recovery have been
    designed for use across Internet Paths, the initial design could not
    optimise for the wide diversity of path characteristics that can
@@ -146,6 +144,11 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
 2.  Operating over a path with a large BDP
 
+   Satellite communications systems have been deployed using many space
+   orbits, including low earth orbit, medium earth orbits,
+   geosynchronous orbits, elliptical orbits and more.  This document
+   focuses on Geosynchronous Earth Orbit (GEO) satellite systems.
+
    The characteristics of systems using Geosynchronous Earth Orbit (GEO)
    satellites differ from paths only using terrestrial links in their
    path characteristics:
@@ -156,21 +159,22 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
       to cellular mobile or DOCSIS cable networks, but differing to
       accommodate the satellite propagation delay);
 
-   o  Links can be highly asymmetric (in terms of capacity and one-way
-      delay).
-
-   Many systems use the DVB-S2 specifications, where the key concept is
-   to ensure both a good usage of the satellite resource and a Quasi
-   Error Free (QEF) link.  It consists in monitoring the link quality in
+   o  Links can be highly asymmetric (in terms of capacity, one-way
+      delay and in their cost of operation).
 
 
 
-Kuhn, et al.             Expires August 31, 2020                [Page 3]
+
+Kuhn, et al.            Expires September 4, 2020               [Page 3]
 
-Internet-Draft                 QUIC 4 SAT                  February 2020
+Internet-Draft                 QUIC 4 SAT                     March 2020
 
 
-   real-time, with the help of known symbols sequences, included along
+   Many systems use the DVB-S2 specifications, published by the European
+   Telecomunications Standards Institute (ETSI), where the key concept
+   is to ensure both a good usage of the satellite resource and a Quasi
+   Error Free (QEF) link.  It consists of monitoring the link quality in
+   real-time, with the help of known symbol sequences, included along
    with regular packets, on which an estimation of the current signal-
    to-noise ratio can be done.  Then, this estimation is sent back to
    the transmitter that can adapt its coding rate and modulation in
@@ -205,11 +209,22 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
    o  Transport initialization: the 3-way handshake takes a long time to
       complete, delaying the time at which actual data can be
-      transmitted;
+      transmitted (there could be other transport protocol exchanges,
+      such as TLS);
 
    o  Size of windows required: to fully exploit the bottleneck
       capacity, a high BDP will increase the number of in-flights
       packets;
+
+
+
+
+
+
+Kuhn, et al.            Expires September 4, 2020               [Page 4]
+
+Internet-Draft                 QUIC 4 SAT                     March 2020
+
 
    o  Reliability: packet loss detection and correction is slow (the
       performance of end-to-end retransmission is also impacted when
@@ -218,13 +233,6 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    o  Getting up to speed: the exponential increase of the data rate
       during slow start for a channel capacity probing is slowed down
       when the RTT is high;
-
-
-
-Kuhn, et al.             Expires August 31, 2020                [Page 4]
-
-Internet-Draft                 QUIC 4 SAT                  February 2020
-
 
    o  Asymmetry : when the links are asymmetric, for various reasons,
       the sizing of the return link may induce modifications of the
@@ -266,6 +274,14 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    to be used until a split solution is finally updated.  This can
    delay/negate the benefit of any end-to-end improvements.
 
+
+
+
+Kuhn, et al.            Expires September 4, 2020               [Page 5]
+
+Internet-Draft                 QUIC 4 SAT                     March 2020
+
+
 4.  Regression tests
 
    This section proposes regression tests for QUIC.  We define by:
@@ -273,14 +289,6 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    o  Download path: from Internet to host
 
    o  Upload path: from the host to Internet
-
-
-
-
-Kuhn, et al.             Expires August 31, 2020                [Page 5]
-
-Internet-Draft                 QUIC 4 SAT                  February 2020
-
 
 4.1.  Small public satellite broadband access
 
@@ -323,20 +331,18 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
    o  Satellite uplink path: 10 Mbps
 
+
+
+Kuhn, et al.            Expires September 4, 2020               [Page 6]
+
+Internet-Draft                 QUIC 4 SAT                     March 2020
+
+
    o  No emulated packet loss
 
    o  RTT: 650 ms
 
    o  Buffer size : BDP
-
-
-
-
-
-Kuhn, et al.             Expires August 31, 2020                [Page 6]
-
-Internet-Draft                 QUIC 4 SAT                  February 2020
-
 
    During the transmission of 100 MB on the download path, the test
    should report the downloading time of 2 MB, 10 MB and 100 MB.
@@ -346,9 +352,9 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
    o  3 s for downloading 2 MB
 
-   o  7 s for downloading 10 MB
+   o  5 s for downloading 10 MB
 
-   o  22 s for downloading 100 MB
+   o  20 s for downloading 100 MB
 
 4.3.  Loss-free large public satellite broadband access
 
@@ -372,9 +378,21 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
    o  3 s for downloading 2 MB
 
-   o  7 s for downloading 10 MB
+   o  5 s for downloading 10 MB
 
-   o  10 s for downloading 100 MB
+   o  8 s for downloading 100 MB
+
+
+
+
+
+
+
+
+Kuhn, et al.            Expires September 4, 2020               [Page 7]
+
+Internet-Draft                 QUIC 4 SAT                     March 2020
+
 
 4.4.  Lossy large public satellite broadband access
 
@@ -386,19 +404,7 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
    o  Emulated packet loss on both downlink and uplink paths:
 
-
-
-
-Kuhn, et al.             Expires August 31, 2020                [Page 7]
-
-Internet-Draft                 QUIC 4 SAT                  February 2020
-
-
-      *  Uniform random transmission losses: 1%, or
-
-      *  Bursty losses, including transmission and congestion losses:
-         P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355, P(b|g)= 0.018 (see
-         [RFC6534] for more details)
+      *  Uniform random transmission link losses: 1%
 
    o  RTT: 650 ms
 
@@ -406,6 +412,15 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
    During the transmission of 100 MB on the download path, the test
    should report the downloading time of 2 MB, 10 MB and 100 MB.
+
+   Initial thoughts of the performance obectives for QUIC are the
+   following:
+
+   o  3 s for downloading 2 MB (uniform transmission link losses)
+
+   o  6 s for downloading 10 MB (uniform transmission link losses)
+
+   o  10 s for downloading 100 MB (uniform transmission link losses)
 
 5.  Mechanisms that improve the performance of QUIC for SATCOM
 
@@ -417,7 +432,8 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    it will take many RTTs for the congestion controller to increase the
    rate before it fills the bottleneck capacity.  This dominates
    performance when a path has a large RTT (as in GEO SATCOM networks).
-   There is an issue in QUIC getting up to speed in a SATCOM context.
+   There can be an issue in QUIC getting up to speed in a SATCOM context
+   if the congestion and flow controls are not adapted.
 
    The tuning of the initial window described in
    [I-D.irtf-iccrg-sallantin-initial-spreading] which has been shown to
@@ -425,6 +441,14 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    [CONEXT15][ICC16] could be a relevant solution.  That being said,
    such solution requires the usage of pacing to avoid important bursts
    of packets in a network that does not have a large BDP.
+
+
+
+
+Kuhn, et al.            Expires September 4, 2020               [Page 8]
+
+Internet-Draft                 QUIC 4 SAT                     March 2020
+
 
 5.2.  Maximum window
 
@@ -439,17 +463,6 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    mechanisms also need to be considered, such as flow control at the
    stream level in QUIC.
 
-
-
-
-
-
-
-Kuhn, et al.             Expires August 31, 2020                [Page 8]
-
-Internet-Draft                 QUIC 4 SAT                  February 2020
-
-
 5.3.  Reliability
 
    Packet loss detection and loss repair take additional time on paths
@@ -459,7 +472,7 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    terminal.  Although the benefits need to weighed against the
    additional capacity in introducing end-to-end FEC and the potential
    to use link-local ARQ and/or link-adaptive FEC.  End-to-end
-   connections may not only suffer from losses in the Wi-Fi segment but
+   connections may suffer from losses not only in the Wi-Fi segment, but
    also from congestion losses in the satellite operator ground segment
    (and even on the Internet itself).  Using the mechanisms proposed in
    [I-D.ferrieux-hamchaoui-quic-lossbits], congestion losses have been
@@ -485,6 +498,14 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    TCP Performance Implications of Network Path Asymmetry [RFC3449]
    describes a range of mechanisms that can mitigate the impact of path
    asymmetry.  One simple method is to tell the remote endpoint to send
+
+
+
+Kuhn, et al.            Expires September 4, 2020               [Page 9]
+
+Internet-Draft                 QUIC 4 SAT                     March 2020
+
+
    compound acknowledgments less frequently.  A rate of one ACK every
    RTT/4 can significantly reduce this traffic.
 
@@ -495,16 +516,6 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    TCP ACK packets.  This is not possible when the transport layer
    information is encrypted.  The QUIC transport specification may
    evolve to allow the ACK Ratio to be adjusted.
-
-
-
-
-
-
-Kuhn, et al.             Expires August 31, 2020                [Page 9]
-
-Internet-Draft                 QUIC 4 SAT                  February 2020
-
 
 6.  Discussion
 
@@ -537,15 +548,7 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
    partipants of the IETF106 side-meeting on QUIC for high BDP for their
    useful feedbacks.
 
-8.  Contributors
-
-   TBD
-
-9.  IANA Considerations
-
-   TBD
-
-10.  Security Considerations
+8.  Security Considerations
 
    This document does not propose changes to the security functions
    provided by the QUIC protocol.  QUIC uses TLS encryption to protect
@@ -554,15 +557,12 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
 
 
-
-
-
-Kuhn, et al.             Expires August 31, 2020               [Page 10]
+Kuhn, et al.            Expires September 4, 2020              [Page 10]
 
-Internet-Draft                 QUIC 4 SAT                  February 2020
+Internet-Draft                 QUIC 4 SAT                     March 2020
 
 
-11.  Informative References
+9.  Informative References
 
    [CONEXT15]
               Li, Q., Dong, M., and P. Godfrey, "Halfback: Running Short
@@ -613,9 +613,9 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
 
 
-Kuhn, et al.             Expires August 31, 2020               [Page 11]
+Kuhn, et al.            Expires September 4, 2020              [Page 11]
 
-Internet-Draft                 QUIC 4 SAT                  February 2020
+Internet-Draft                 QUIC 4 SAT                     March 2020
 
 
    [IJSCN17]  Ahmed, T., Dubois, E., Dupe, JB., Ferrus, R., Gelard, P.,
@@ -669,9 +669,9 @@ Internet-Draft                 QUIC 4 SAT                  February 2020
 
 
 
-Kuhn, et al.             Expires August 31, 2020               [Page 12]
+Kuhn, et al.            Expires September 4, 2020              [Page 12]
 
-Internet-Draft                 QUIC 4 SAT                  February 2020
+Internet-Draft                 QUIC 4 SAT                     March 2020
 
 
 Authors' Addresses
@@ -725,4 +725,4 @@ Authors' Addresses
 
 
 
-Kuhn, et al.             Expires August 31, 2020               [Page 13]
+Kuhn, et al.            Expires September 4, 2020              [Page 13]
