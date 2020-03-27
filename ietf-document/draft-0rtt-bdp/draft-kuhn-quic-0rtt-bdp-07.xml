@@ -106,7 +106,7 @@
 			<t>Currently, in section 7.3.1 of <xref target="I-D.ietf-quic-transport"></xref>, a client which activates 0-RTT sends back the transport parameters (initial_max_data ...) received from the server during the previous connection.</t>
 			<t>Accept: A client which activates ingress optimization must send back the transport parameters of the BDP metadata extension that it received from the server during the previous connection.</t>
 			<t>Tune: A client may send back a value lower than the initial_max_pkt_number received from the server.</t>
-			<t>Refuse: A client which does not send back these parameters indicates to the server that it does not accept ingress optimisation. A client which disagrees with the BDP measured by the server may refuse the optimization. A limited-resource client may discard the optimization.</t>
+			<t>Refuse: A client which does support ingress optimisation drop the extension signal. A client which disagrees with the extension parameters received from the server refuses the optimization. A limited-resource client ignores the extension.</t>
 		</section>
 
 		<section anchor="sec:other_parameter" title="Discussion">
