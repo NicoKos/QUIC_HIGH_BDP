@@ -73,7 +73,7 @@
          keywords will be used for the search engine. -->
 
 		<abstract>
-			<t>QUIC 0-RTT improves egress traffic. This memo proposes the sharing of additional transport parameters to improve ingress traffic.</t>
+			<t>0-RTT improves egress traffic when reconnecting. This memo proposes the sharing of additional transport parameters to improve ingress traffic when reconnecting.</t>
 		</abstract>
 	</front>
 
