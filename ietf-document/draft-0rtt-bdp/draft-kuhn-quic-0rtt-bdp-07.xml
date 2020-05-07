@@ -155,8 +155,8 @@
 			measure and to store path characteristics. Recalling
 			the parameters of a previous connection would allow:
 			<list style="symbols">
-					<t>Server and client to
-					immediately recover measured
+					<t>Server and client can re-initialise
+					the state from previously established
 					parameters (i.e., minRTT, MTU,
 					bottleneck capacity, etc.)</t>
 
@@ -190,7 +190,7 @@
 
 				<t>recon_bytes_in_flight (0x000X): The bytes in
 				flight measured on the previous connection by
-				the server. Integer numbder of bytes.
+				the server. Integer number of bytes.
 				Using the bytes_in_flight defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
 				recon_bytes_in_flight can be set to
@@ -213,7 +213,7 @@
 		<section anchor="sec:bdp_activation" title="Extension activation">
 			<t>The BDP extension is protected by the same mechanism
 			that protects the exchange of the 0-RTT transport
-			parameters.  A client which activates 0-RTT data sends
+			parameters.  A client that activates 0-RTT data sends
 			back the transport parameters received from the server
 			during the previous connection (see Section 7.3.1 of
 			<xref target="I-D.ietf-quic-transport"></xref>).  </t>
@@ -221,10 +221,10 @@
 			<t>The client MUST read the parameters in the BDP
 			metadata extension but can not change them.</t>
 
-			<t>Accept: A client which activates ingress
-			optimization must send back the transport parameters of
-			the BDP metadata extension that it received from the
-			server during the previous connection.</t>
+			<t>Accept: A client that activates ingress optimization
+			SHOULD send back the transport parameters of the BDP
+			metadata extension that it received from the server
+			during the previous connection.</t>
 
 			<t>Refuse: A client which does not support ingress
 			optimisation drops the extension signal. A client which
