@@ -24,10 +24,9 @@ Abstract
 
    This document describes a generic method to exchange path parameters
    relating to transport.  The additional transport parameters can help
-   a connection that continues after an interruption by caching and
-   sharing connection properties for use when the connection resumes.
-   They can be used to increase the performance for a path with large
-   RTT.
+   a connection that continues after an interruption or restarts by
+   sharing connection properties.  They can be used to increase the
+   performance for a path with large RTT.
 
 Status of This Memo
 
@@ -46,9 +45,10 @@ Status of This Memo
 
    This Internet-Draft will expire on November 9, 2020.
 
+Copyright Notice
 
-
-
+   Copyright (c) 2020 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
 
 
 
@@ -57,11 +57,6 @@ Kuhn, et al.            Expires November 9, 2020                [Page 1]
 
 Internet-Draft             Transport for 0-RTT                  May 2020
 
-
-Copyright Notice
-
-   Copyright (c) 2020 IETF Trust and the persons identified as the
-   document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
@@ -78,7 +73,7 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Motivation  . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  BDP metadata parameters . . . . . . . . . . . . . . . . . . .   4
-   4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   5
+   4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   4
    5.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   5
    6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   6
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
@@ -106,6 +101,11 @@ Table of Contents
 
    A QUIC server must store a copy of a number of flow control related
    transport parameters to enable the use of 0-RTT data.  Due to the
+   nature of flow control in QUIC it is possible that by omitting or
+   setting one of these parameter to zero a connection will be created,
+   but it will not be possible for any data to be sent.
+
+   For 0-RTT data to be sent, the QUIC server must record the values of:
 
 
 
@@ -113,12 +113,6 @@ Kuhn, et al.            Expires November 9, 2020                [Page 2]
 
 Internet-Draft             Transport for 0-RTT                  May 2020
 
-
-   nature of flow control in QUIC it is possible that by omitting or
-   setting one of these parameter to zero a connection will be created,
-   but it will not be possible for any data to be sent.
-
-   For 0-RTT data to be sent, the QUIC server must record the values of:
 
    o  initial_max_data
 
@@ -162,6 +156,12 @@ Internet-Draft             Transport for 0-RTT                  May 2020
    store path characteristics.  Recalling the parameters of a previous
    connection would allow:
 
+   o  Server and client can re-initialise the state from previously
+      established parameters (i.e., minRTT, MTU, bottleneck capacity,
+      etc.)
+
+   o  The client to prepare the right resources
+
 
 
 
@@ -169,12 +169,6 @@ Kuhn, et al.            Expires November 9, 2020                [Page 3]
 
 Internet-Draft             Transport for 0-RTT                  May 2020
 
-
-   o  Server and client can re-initialise the state from previously
-      established parameters (i.e., minRTT, MTU, bottleneck capacity,
-      etc.)
-
-   o  The client to prepare the right resources
 
    o  Server side adaptation to non-default path characteristics
 
@@ -217,15 +211,6 @@ Internet-Draft             Transport for 0-RTT                  May 2020
       the server is allowed to send when reconnecting.  Integer unit of
       packets.
 
-
-
-
-
-Kuhn, et al.            Expires November 9, 2020                [Page 4]
-
-Internet-Draft             Transport for 0-RTT                  May 2020
-
-
 4.  Extension activation
 
    The BDP extension is protected by the same mechanism that protects
@@ -233,6 +218,13 @@ Internet-Draft             Transport for 0-RTT                  May 2020
    activates 0-RTT data sends back the transport parameters received
    from the server during the previous connection (see Section 7.3.1 of
    [I-D.ietf-quic-transport]).
+
+
+
+Kuhn, et al.            Expires November 9, 2020                [Page 4]
+
+Internet-Draft             Transport for 0-RTT                  May 2020
+
 
    The client reads the parameters in the BDP metadata extension but can
    not change them.
@@ -274,6 +266,14 @@ Internet-Draft             Transport for 0-RTT                  May 2020
 
    o  recon_max_pkt_number lets the server warn the client that it may
       increase the amount of packets that it expects to send when
+      reconnecting.  This value is negotiated with the client and result
+      in better buffer management and reduced flow start up.
+
+   Other parameters can contribute to the optimization of 0-RTT
+   connection.  There are good candidates, like max_ack_delay, in the
+   Appendix of [I-D.ietf-quic-recovery].
+
+
 
 
 
@@ -281,13 +281,6 @@ Kuhn, et al.            Expires November 9, 2020                [Page 5]
 
 Internet-Draft             Transport for 0-RTT                  May 2020
 
-
-      reconnecting.  This value is negotiated with the client and result
-      in better buffer management and reduced flow start up.
-
-   Other parameters can contribute to the optimization of 0-RTT
-   connection.  There are good candidates, like max_ack_delay, in the
-   Appendix of [I-D.ietf-quic-recovery].
 
 6.  Acknowledgments
 
@@ -330,6 +323,13 @@ Internet-Draft             Transport for 0-RTT                  May 2020
               Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
               draft-ietf-quic-tls-27 (work in progress), February 2020.
 
+   [I-D.ietf-quic-transport]
+              Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
+              and Secure Transport", draft-ietf-quic-transport-27 (work
+              in progress), February 2020.
+
+
+
 
 
 
@@ -337,11 +337,6 @@ Kuhn, et al.            Expires November 9, 2020                [Page 6]
 
 Internet-Draft             Transport for 0-RTT                  May 2020
 
-
-   [I-D.ietf-quic-transport]
-              Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", draft-ietf-quic-transport-27 (work
-              in progress), February 2020.
 
    [I-D.ietf-tcpm-2140bis]
               Touch, J., Welzl, M., and S. Islam, "TCP Control Block
@@ -386,6 +381,11 @@ Appendix A.  Example of server solution
 
    The QoS mechanisms that are deployed in the networks should help in
    preventing the congestion collapse from occurring.  However, the
+   sender must provide a significant reduction if there is evidence of
+   potential congestion collapse [RFC2914] from his point of view.
+   Precautions can be taken to guarantee that it is reasonably safe to
+   jump to a high sending rate : measuring that network conditions did
+
 
 
 
@@ -394,10 +394,6 @@ Kuhn, et al.            Expires November 9, 2020                [Page 7]
 Internet-Draft             Transport for 0-RTT                  May 2020
 
 
-   sender must provide a significant reduction if there is evidence of
-   potential congestion collapse [RFC2914] from his point of view.
-   Precautions can be taken to guarantee that it is reasonably safe to
-   jump to a high sending rate : measuring that network conditions did
    not change, allowing some space for other flows that have started and
    pace packets.
 
@@ -419,6 +415,10 @@ Authors' Addresses
    University of Aberdeen
 
    Email: gorry@erg.abdn.ac.uk
+
+
+
+
 
 
 

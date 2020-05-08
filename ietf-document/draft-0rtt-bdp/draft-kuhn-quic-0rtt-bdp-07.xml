@@ -84,8 +84,8 @@
 		<t>
 		This document describes a generic method to exchange path parameters relating to transport.
 		The additional transport parameters can help a connection that continues after
-		an interruption by caching and sharing connection properties
-		for use when the connection resumes. They can be used to increase the performance for a path with large RTT.
+		an interruption or restarts by sharing connection properties.
+		They can be used to increase the performance for a path with large RTT.
 		</t>
 	</abstract>
 	</front>
