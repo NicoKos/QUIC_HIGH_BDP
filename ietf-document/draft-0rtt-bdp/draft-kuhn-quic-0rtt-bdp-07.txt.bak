@@ -24,7 +24,7 @@ Abstract
 
    This document describes a generic method to exchange path parameters
    relating to transport.  The additional transport parameters can help
-   a connection that continues after an interruption by caching and
+   a connection that continues after an interuption by caching and
    sharing connection properties for use when the connection resumes.
    They can be used to increase the performance for a path with large
    RTT.
@@ -80,7 +80,7 @@ Table of Contents
    3.  BDP metadata parameters . . . . . . . . . . . . . . . . . . .   4
    4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   5
    5.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   5
-   6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
    9.  Informative References  . . . . . . . . . . . . . . . . . . .   6
@@ -90,11 +90,11 @@ Table of Contents
 1.  Introduction
 
    Each transport connection typically starts without knowledge of the
-   path between the endpoints.  Transport protocols use implicit signals
-   from the network to discover the properties of the path.  This
-   information is used to adapt the transport mechanisms to the network
-   path.  For example, an Internet transport endpoint is unable to
-   determine a safe rate at which to start or continue their
+   path between the endpoints.  Transport protocoles use implicit
+   signals from the network to discover the properties of the path.
+   This information is used to adapt the transport mechanisms to the
+   network path.  For example, an Internet transport endpoint is unable
+   to determine a safe rate at which to start or continue their
    transmission, and uses slow-start to determine a safe rate.  This
    applies to the 1-RTT mode of QUIC.
 
@@ -178,11 +178,12 @@ Internet-Draft             Transport for 0-RTT                  May 2020
 
    o  Server side adaptation to non-default path characteristics
 
-   There is an interest in sharing transport information across multiple
-   connections.  Indeed, our proposal is inline with the motivation of
-   [I-D.ietf-tcpm-2140bis].  While our proposal aims at improving 0-RTT
-   mechanisms, [I-D.ietf-tcpm-2140bis] considers the sharing of
-   transport parameters between connections sharing the same host.
+   There is an interest in sharing transport information accross
+   multiple connections.  Indeed, our proposal is inline with the
+   motivation of [I-D.ietf-tcpm-2140bis].  While our proposal aims at
+   improving 0-RTT mechanisms, [I-D.ietf-tcpm-2140bis] considers the
+   sharing of transport parameters between connections sharing the same
+   host.
 
 3.  BDP metadata parameters
 
@@ -211,12 +212,11 @@ Internet-Draft             Transport for 0-RTT                  May 2020
       be set to min_rtt.  The min_rtt parameter may not track a
       decreasing RTT: the min_rtt that is reported here may not be the
       actual minimum RTT measured during the 1-RTT connection but still
-      reflects the characteristics of the latency on the network.
+      reflects the characterics of the latency on the network.
 
    o  recon_max_pkt_number (0x000X): The maximum amount of packets that
       the server is allowed to send when reconnecting.  Integer unit of
       packets.
-
 
 
 
@@ -260,7 +260,7 @@ Internet-Draft             Transport for 0-RTT                  May 2020
    the recon_max_pkt_number parameter.
 
    The maximum number of initial data packets that can be sent without
-   acknowledgment needs to be chosen to avoid congestion collapse.  An
+   acknowledgement needs to be chosen to avoid congestion collapse.  An
    example of a server solution is proposed in Appendix A.  In short:
 
    o  recon_bytes_in_flight indicates the characteristics of the network
@@ -289,7 +289,7 @@ Internet-Draft             Transport for 0-RTT                  May 2020
    connection.  There are good candidates, like max_ack_delay, in the
    Appendix of [I-D.ietf-quic-recovery].
 
-6.  Acknowledgments
+6.  Acknowledgements
 
    The authors would like to thank Gabriel Montenegro, Patrick McManus,
    Ian Swett, Igor Lubashev, Christian Huitema and Tom Jones for their
@@ -385,7 +385,7 @@ Appendix A.  Example of server solution
    [I-D.cardwell-iccrg-bbr-congestion-control] and [RFC4782].
 
    The QoS mechanisms that are deployed in the networks should help in
-   preventing the congestion collapse from occurring.  However, the
+   preventing the congestion collapse from occuring.  However, the
 
 
 
@@ -395,8 +395,8 @@ Internet-Draft             Transport for 0-RTT                  May 2020
 
 
    sender must provide a significant reduction if there is evidence of
-   potential congestion collapse [RFC2914] from his point of view.
-   Precautions can be taken to guarantee that it is reasonably safe to
+   potential congestion collapse [RFC2914] from his point ov view.
+   Precautions can be taken to guarantee that it is reasonnably safe to
    jump to a high sending rate : measuring that network conditions did
    not change, allowing some space for other flows that have started and
    pace packets.

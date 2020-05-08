@@ -84,7 +84,7 @@
 		<t>
 		This document describes a generic method to exchange path parameters relating to transport.
 		The additional transport parameters can help a connection that continues after
-		an interruption by caching and sharing connection properties
+		an interuption by caching and sharing connection properties
 		for use when the connection resumes. They can be used to increase the performance for a path with large RTT.
 		</t>
 	</abstract>
@@ -96,7 +96,7 @@
 			<t>
 			Each transport connection typically starts without
 			knowledge of the path between the endpoints. Transport
-			protocols use implicit signals from the network to
+			protocoles use implicit signals from the network to
 			discover the properties of the path. This information
 			is used to adapt the transport mechanisms to the
 			network path. For example, an Internet transport
@@ -185,7 +185,7 @@
 			
 			<t>
 			There is an interest in sharing transport information
-			across multiple connections. Indeed, our proposal is
+			accross multiple connections. Indeed, our proposal is
 			inline with the motivation of <xref
 				target="I-D.ietf-tcpm-2140bis"></xref>.  While
 			our proposal aims at improving 0-RTT mechanisms, <xref
@@ -232,7 +232,7 @@
 				parameter may not track a decreasing RTT: the 
 				min_rtt that is reported here may not be the 
 				actual minimum RTT measured during the 1-RTT 
-				connection but still reflects the characteristics 
+				connection but still reflects the characterics 
 				of the latency on the network.
 				</t>
 
@@ -281,7 +281,7 @@
 			parameter. </t>
 
 			<t>The maximum number of initial data packets
-			that can be sent without acknowledgment needs to be
+			that can be sent without acknowledgement needs to be
 			chosen to avoid congestion collapse. An example of a
 			server solution is proposed in <xref
 			target="appendix-server"></xref>. In short:
@@ -317,7 +317,7 @@
 			<t>Starting with a high ACK ratio may induce bursts of packet in a potentially congested network. That being said, keeping a low ack_ratio may limit performance in case of asymmetry <xref target="PANRG106"></xref>. The server may want to be recalled the ACK ratio that had been used at the end of the connection but not use it when starting the 0-RTT conection.</t> --> 
 		</section>
 		
-		<section anchor="sec:acknowledgments" title="Acknowledgments">
+		<section anchor="sec:acknowledgements" title="Acknowledgements">
 			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema and Tom Jones for their fruitful comments on earlier versions of this document.</t>
 		</section>
 
@@ -482,11 +482,11 @@
 			<t>
 			The QoS mechanisms that are deployed in the networks
 			should help in preventing the congestion collapse from
-			occurring. However, the sender must provide a
+			occuring. However, the sender must provide a
 			significant reduction if there is evidence of potential
 			congestion collapse <xref target="RFC2914"></xref> from
-			his point of view. Precautions can be taken to
-			guarantee that it is reasonably safe to jump to a high
+			his point ov view. Precautions can be taken to
+			guarantee that it is reasonnably safe to jump to a high
 			sending rate : measuring that network conditions did
 			not change, allowing some space for other flows that
 			have started and pace packets.   
