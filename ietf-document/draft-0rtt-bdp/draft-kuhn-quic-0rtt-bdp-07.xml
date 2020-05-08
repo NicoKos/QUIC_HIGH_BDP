@@ -72,56 +72,214 @@
          output. If you submit your draft to the RFC Editor, the
          keywords will be used for the search engine. -->
 
-		<abstract>
-			<t>0-RTT improves egress traffic when reconnecting. This memo proposes the sharing of additional transport parameters to improve ingress traffic when reconnecting.</t>
-		</abstract>
+	<abstract>
+		<t>
+		0-RTT mechanisms reduce the time it takes for the first bytes
+		of application data to be processed in a transport connection
+		and can greatly reduce connection latency during setup. </t>
+
+		<t>The 0-RTT transport features described by quic-transport help
+		clients establish secure connections with a minimal number of
+		round-trips.  This document describes additional transport
+		parameters that can help a connection that continues after
+		an interuption by caching and sharing connection properties
+		for use when the connection resumes.
+		</t>
+	</abstract>
 	</front>
 
 	<middle>
 
 		<section anchor="sec:introduction" title="Introduction">
-			<t>Currently, QUIC 0-RTT relies on the sharing of the "initial_max_data" transport parameter between peers. It indicates to the client the number of bytes it is allowed to send in the first packet of the 0-RTT connection. This allows a faster startup of flows and enables adaptated buffer sizes at the server. The traffic that the client sends, i.e. the egress trafic, is improved.</t>
-			<t>This memo proposes the sharing of additional transport parameters to provide a faster startup of flows and a better buffer management for the data that the client receives, i.e. the ingress traffic. To do so, an extension, 'BDP metadata', is proposed. Candidate transport parameters are discussed in <xref target="sec:bdp_metadata"></xref>.</t> 			
-			<!-- <t>The optimization of the time-to-service duration depends on both direction optimization. QUIC may not be used for the sole use of HTTP3 services <xref target="I-D.ietf-quic-http"></xref>, but also for symmetrical services. The client device should be able to adapt to the path adaptation chosen by the server. Since there are more and more exchange based on subscription where the server sends data first, with regard to ossification, it is central to dissociate the signalling (aka the initiator of the connection) from the peer which first sends application data.</t> -->
+			<t> QUIC supports the sending of data in two different
+			modes, after the transport handshake has completed,
+			1-RTT mode, and sending data along with handshake
+			packets, 0-RTT mode.  By using 0-RTT data an
+			application is able to send data with the handshake
+			packets, making it possible to reduce the latency
+			of the connection setup. </t>
+
+			<t> A QUIC server must store a copy of a number of flow
+			control related transport parameters to enable the use
+			of 0-RTT data. Due to the nature of flow control in
+			QUIC it is possible that by omitting or setting one of
+			these parameter to zero a connection will be created,
+			but it will not be possible for any data to be sent.
+			</t>
+
+			<t> For 0-RTT data to be sent, the QUIC server must
+			record the values of:</t>
+
+			<t><list style="symbols">
+				<t>initial_max_data</t>
+				<t>initial_max_stream_data_bidi_local</t>
+				<t>initial_max_stream_data_bidi_remote</t>
+				<t>initial_max_stream_data_uni</t>
+				<t>initial_max_streams_bidi</t>
+				<t>initial_max_streams_uni</t>
+			</list></t>
+
+			<t> These values set the flow control limits that a
+			connection must operation within. The server has to
+			store these parameters so that a client resuming during
+			0-RTT is able to send data. The stored values are used
+			for any data that is transmitted before the handshake
+			has completed and 1-RTT data is able to be sent on the
+			connection.  Once the handshake has completed these
+			values are discarded and the values established during
+			the handshake are used.</t>
+
+			<t>This document proposes an extension to the transport
+			parameters that are shared during the 0-RTT phase to
+			allow resumption using transport and connection
+			properties that were discovered in previous
+			connections. These additional parameters aim to provide
+			faster startup of flows and better buffer management.
+			The BDP metadata extension is proposed and candidate
+			parameters are discussed in <xref
+			target="sec:bdp_metadata"></xref>.</t>
 		</section>
 
 		<section anchor="sec:rationale" title="Motivation">
-			<t>Egress acceleration like 0-RTT "initial_max_data" alone does not improve the time-to-service. While "initial_max_data" improves the egress time to server, the BDP metadata extension aims at improving ingress traffic delivery.</t>
-			<!-- <t>QUIC encryption of transport headers prevents the adding of Performance-enhancing proxy (PEP). The BDP metadata extension may be a substitute to PEP proxy <xref target="RFC2488"></xref> <xref target="RFC3135"></xref> when time-to-service improvement requires acceleration of the refilling of client application buffers.</t> -->
-			<!-- <t>There are reconnection situation where the time-to-service depends only on server data arrival because the service logic does not requires any additional information from the client.</t> -->
-			<t>Currently each side has its proprietary solution to measure and to store path characteristics. Recalling the parameters of a previous connection would:<list style="symbols">
-					<t>allow server and client to immediately recover parameters that do not need to be negociated or estimated again (minRTT, MTU, bottleneck capacity, etc.)</t>
-					<t>allow the client to prepare the right resources</t>
-					<t>allow server side adaptation to non-default path characteristics</t></list></t>
-			<!-- <t>Avoid peers to compute the same path characteristics and decide opposed strategies: When the BDP is high the server may decide to increase the data on the flight while a resource-limited client will decide, as the ingress is expected to be slow, to reduce the resources.</t> -->
-			<!-- <t>Having a symmetrical optimization reduces ossification. Having the server to share the path characteristics avoid duplicate works and allows resource-limited client to save resources like CPU, memory and power. Tune the default transport parameters of network paths which have path characteristics that increase the time-to-service.</t> -->
+			<t> Reducing the number of round-trips required to
+			start a connection is an important way to reduce setup
+			time and lower overall connection latency. 0-RTT
+			mechanisms that allow a client to get feed requests to
+			a server in the first RTT do not alone improve the
+			total time-to-service. The BDP extension described in
+			this document aims to improve traffic delivery by
+			allowing the connection to short cut slow RTT based
+			processes that grow connection parameters.</t>
+
+			<t>Currently each side has its proprietary solution to
+			measure and to store path characteristics. Recalling
+			the parameters of a previous connection would allow:
+			<list style="symbols">
+					<t>Server and client can re-initialise
+					the state from previously established
+					parameters (i.e., minRTT, MTU,
+					bottleneck capacity, etc.)</t>
+
+					<t>The client to prepare the
+					right resources</t>
+
+					<t>Server side adaptation to
+					non-default path
+					characteristics</t>
+			</list></t>
 		</section>
 				
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
-			<t>Acording to <xref target="I-D.ietf-quic-transport"></xref>, both endpoints store the value of the server transport parameters from a connection and apply them to any 0-RTT packets that are sent in subsequent connections to that peer. Amongst the six mandatory initial parameters that section 7.3.1 of <xref target="I-D.ietf-quic-transport"></xref> defines, only initial_max_data improves the time-to-service of the 0-RTT connection. The BDP metadata extension augments the list of server transport parameters that are shared with the client to improve the time-to-service and save resource like CPU, memory and power.</t>
-			<t>Parameters listed below migh be exchanged as transport parameter:<list style="symbols">
-				<t>recon_bytes_in_flight (0x000X): The bytes in flight measured on the previous connection by the server. It is an integer in unit of bytes. Using the bytes_in_flight defined in <xref target="I-D.ietf-quic-recovery"></xref>, recon_bytes_in_flight can be set to bytes_in_flight.</t>
-				<t>recon_min_rtt (0x000X): The minimum RTT measured on the previous connection by the server. It is an integer in unit of milliseconds. Using the min_rtt defined in <xref target="I-D.ietf-quic-recovery"></xref>, recon_min_rtt can be set to min_rtt.</t>
-				<t>recon_max_pkt_number (0x000X): The maximum amount of packets that the server is allowed to send when reconnecting. It is an integer in unit of packets.</t></list></t>
+			<t>Section 7.3.1 of <xref
+			target="I-D.ietf-quic-transport"></xref> describes the
+			parameters that must be remembered if a client wants to
+			send 0-RTT data.  Both endpoints store the value of the
+			server transport parameters from a connection and apply
+			them to any 0-RTT packets that are sent in subsequent
+			connections to that peer. Of the six mandatory
+			parameters, only initial_max_data improves the
+			time-to-service of the 0-RTT connection. The BDP
+			metadata extension augments the list of server
+			transport parameters that are shared with the client to
+			improve the time-to-service and save resource such as
+			CPU, memory and power.</t>
+
+			<t>The BDP extension proposes three new parameters that
+			help a connection startup in aminimal number of
+			RTTs:<list style="symbols">
+
+				<t>recon_bytes_in_flight (0x000X): The bytes in
+				flight measured on the previous connection by
+				the server. Integer number of bytes.
+				Using the bytes_in_flight defined in <xref
+				target="I-D.ietf-quic-recovery"></xref>,
+				recon_bytes_in_flight can be set to
+				bytes_in_flight.</t>
+
+				<t>recon_min_rtt (0x000X): The minimum RTT
+				measured on the previous connection by the
+				server. Integer number of milliseconds. Using
+				the min_rtt defined in <xref
+				target="I-D.ietf-quic-recovery"></xref>,
+				recon_min_rtt can be set to min_rtt.</t>
+
+				<t>recon_max_pkt_number (0x000X): The maximum
+				amount of packets that the server is allowed to
+				send when reconnecting. It is an integer in
+				unit of packets.</t>
+			</list></t>
 		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
-			<t>BDP extension is protected by the mechanism which protect the exchange of the 0-RTT transport parameters. Currently, in section 7.3.1 of <xref target="I-D.ietf-quic-transport"></xref>, a client which activates 0-RTT sends back the transport parameters (initial_max_data ...) received from the server during the previous connection.</t>
-			<t>The client MUST read the parameters in the BDP metadata extension but can not change them.</t>
-			<t>Accept: A client which activates ingress optimization must send back the transport parameters of the BDP metadata extension that it received from the server during the previous connection.</t>
-			<!-- <t>Tune: A client may send back a value lower than the recon_max_pkt_number received from the server.</t> -->
-			<t>Refuse: A client which does support ingress optimisation drop the extension signal. A client which disagrees with the extension parameters received from the server refuses the optimization. A limited-resource client ignores the extension.</t>
+			<t>The BDP extension is protected by the same mechanism
+			that protects the exchange of the 0-RTT transport
+			parameters.  A client that activates 0-RTT data sends
+			back the transport parameters received from the server
+			during the previous connection (see Section 7.3.1 of
+			<xref target="I-D.ietf-quic-transport"></xref>).  </t>
+
+			<t>The client MUST read the parameters in the BDP
+			metadata extension but can not change them.</t>
+
+			<t>Accept: A client that activates ingress optimization
+			SHOULD send back the transport parameters of the BDP
+			metadata extension that it received from the server
+			during the previous connection.</t>
+
+			<t>Refuse: A client which does not support ingress
+			optimisation drops the extension signal. A client which
+			disagrees with the extension parameters received from
+			the server refuses the optimization.</t>
 		</section>
 
 		<section anchor="sec:other_parameter" title="Discussion">
-			<t>The recon_bytes_in_flight parameter is higher than the actual BDP since it may include bytes in buffers along the path. The recon_bytes_in_flight parameter is still a indication of the end-to-end BDP that is experienced by the congestion control. If the recon_bytes_in_flight is high, the server may decide to increase the maximum amount of packets it will send when reconnecting using the recon_max_pkt_number parameter. The maximum number of initial data packets that can be sent without acknowledgement needs to be chosen to avoid congestion collapse. An example of a server solution is proposed in <xref target="appendix-server"></xref>. In short:<list style="symbols">
-				<t>recon_bytes_in_flight indicates the characteristics of the network underneath to both peers that can adapt their buffer sizes or parameter tuning.</t>
-				<t>recon_min_rtt lets both client and server know the minimum RTT of the previous connection. Parameters can then be adapted (e.g. adapt how kInitialRtt is used in the "Setting the Loss Detection Timer" section of <xref target="I-D.ietf-quic-recovery"></xref>).</t>
-				<t>recon_max_pkt_number lets the server warn the client that it may increase the amount of packets that it expects to send when reconnecting. This value is negotiated with the client and result in better buffer management and reduced flow start up.</t></list></t>
+			<t>The recon_bytes_in_flight parameter is higher than
+			the number of bytes in the actual BDP since it may
+			include bytes in buffers along the path. </t>
+
+			<t>The recon_bytes_in_flight parameter is
+			an indication of the end-to-end BDP that is
+			experienced by the congestion control. If the
+			recon_bytes_in_flight is high, the server may decide to
+			increase the maximum amount of packets it will send
+			when reconnecting using the recon_max_pkt_number
+			parameter. </t>
+
+			<t>The maximum number of initial data packets
+			that can be sent without acknowledgement needs to be
+			chosen to avoid congestion collapse. An example of a
+			server solution is proposed in <xref
+			target="appendix-server"></xref>. In short:
+			<list style="symbols">
+				<t>recon_bytes_in_flight indicates the
+				characteristics of the network underneath to
+				both peers that can adapt their buffer sizes or
+				parameter tuning.</t>
+
+				<t>recon_min_rtt lets both client and server
+				know the minimum RTT of the previous
+				connection. Parameters can then be adapted
+				(e.g. adapt how kInitialRtt is used in the
+				"Setting the Loss Detection Timer" section of
+				<xref
+				target="I-D.ietf-quic-recovery"></xref>).</t>
+
+				<t>recon_max_pkt_number lets the server warn
+				the client that it may increase the amount of
+				packets that it expects to send when
+				reconnecting. This value is negotiated with the
+				client and result in better buffer management
+				and reduced flow start up.</t>
+			</list></t>
+
+			<t>Other parameters can contribute to the optimization
+			of 0-RTT connection. There are good candidates, like
+			max_ack_delay, in the Appendix of <xref
+			target="I-D.ietf-quic-recovery"></xref>. </t>
+
 		<!-- <t>Another paramater that could be added to the BDP metadata extension could be the ack_ratio.<list style="symbols">
 				<t>ack_ratio (0x000X): The acknowledgment ratio that has been used at the end of the previous connection by the server. It is an integer in unit of packets.</t></list></t> 
 			<t>Starting with a high ACK ratio may induce bursts of packet in a potentially congested network. That being said, keeping a low ack_ratio may limit performance in case of asymmetry <xref target="PANRG106"></xref>. The server may want to be recalled the ACK ratio that had been used at the end of the connection but not use it when starting the 0-RTT conection.</t> --> 
-			<t>Other parameters can contribute to the optimization of 0-RTT connection. There are good candidates, like max_ack_delay, in the Appendix of <xref target="I-D.ietf-quic-recovery"></xref>. </t>
 		</section>
 		
 		<section anchor="sec:acknowledgements" title="Acknowledgements">
