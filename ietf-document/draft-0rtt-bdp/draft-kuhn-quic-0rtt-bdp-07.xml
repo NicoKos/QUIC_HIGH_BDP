@@ -110,7 +110,7 @@
 			modes, after the transport handshake has completed,
 			1-RTT mode, and sending data along with handshake
 			packets, 0-RTT mode.  By using 0-RTT data an
-			application is able to send data with the handshake
+			application is able to send transport parameters with the handshake
 			packets, making it possible to reduce the latency
 			of the connection setup. </t>
 
