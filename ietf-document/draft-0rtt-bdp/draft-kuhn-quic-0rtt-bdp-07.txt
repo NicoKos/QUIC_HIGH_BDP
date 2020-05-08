@@ -101,10 +101,10 @@ Table of Contents
    setup.
 
    A QUIC server must store a copy of a number of flow control related
-   transport parameters to enable the use of 0-RTT data.  Due to the
-   nature of flow control in QUIC it is possible that by omitting or
-   setting one of these parameter to zero a connection will be created,
-   but it will not be possible for any data to be sent.
+   transport parameters to enable the use of 0-RTT data.  The setting or
+   omission of one of these parameters can result in QUIC creating a
+   connection, but flow control prevening any data being sent by the
+   client.
 
 
 
