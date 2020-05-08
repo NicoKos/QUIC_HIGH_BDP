@@ -183,13 +183,14 @@
 			
 			<t>
 			There is an interest in sharing transport information
-			across multiple connections. Indeed, our proposal is
-			inline with the motivation of <xref
-				target="I-D.ietf-tcpm-2140bis"></xref>.  While
-			our proposal aims at improving 0-RTT mechanisms, <xref
+			across multiple connections.
+			As one example, <xref
 				target="I-D.ietf-tcpm-2140bis"></xref>
 			considers the sharing of transport parameters between
-			connections sharing the same host.
+			connections originating from the same host. The proposal
+			in this document has the advantage of storing the 
+			information at the client and not requiring the server to
+			retain additional state for each client. 
 			</t>
 
 		</section>

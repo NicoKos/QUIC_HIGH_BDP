@@ -73,7 +73,7 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Motivation  . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  BDP metadata parameters . . . . . . . . . . . . . . . . . . .   4
-   4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   4
+   4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   5
    5.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   5
    6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   6
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
@@ -175,10 +175,11 @@ Internet-Draft             Transport for 0-RTT                  May 2020
    o  Server side adaptation to non-default path characteristics
 
    There is an interest in sharing transport information across multiple
-   connections.  Indeed, our proposal is inline with the motivation of
-   [I-D.ietf-tcpm-2140bis].  While our proposal aims at improving 0-RTT
-   mechanisms, [I-D.ietf-tcpm-2140bis] considers the sharing of
-   transport parameters between connections sharing the same host.
+   connections.  As one example, [I-D.ietf-tcpm-2140bis] considers the
+   sharing of transport parameters between connections originating from
+   the same host.  The proposal in this document has the advantage of
+   storing the information at the client and not requiring the server to
+   retain additional state for each client.
 
 3.  BDP metadata parameters
 
@@ -213,11 +214,10 @@ Internet-Draft             Transport for 0-RTT                  May 2020
       the server is allowed to send when reconnecting.  Integer unit of
       packets.
 
-4.  Extension activation
 
-   The BDP extension is protected by the same mechanism that protects
-   the exchange of the 0-RTT transport parameters.  A client that
-   activates 0-RTT data sends back the transport parameters received
+
+
+
 
 
 
@@ -226,6 +226,11 @@ Kuhn, et al.            Expires November 9, 2020                [Page 4]
 Internet-Draft             Transport for 0-RTT                  May 2020
 
 
+4.  Extension activation
+
+   The BDP extension is protected by the same mechanism that protects
+   the exchange of the 0-RTT transport parameters.  A client that
+   activates 0-RTT data sends back the transport parameters received
    from the server during the previous connection (see Section 7.3.1 of
    [I-D.ietf-quic-transport]).
 
@@ -269,11 +274,6 @@ Internet-Draft             Transport for 0-RTT                  May 2020
 
    o  recon_max_pkt_number lets the server warn the client that it may
       increase the amount of packets that it expects to send when
-      reconnecting.  This value is negotiated with the client and result
-      in better buffer management and reduced flow start up.
-
-
-
 
 
 
@@ -281,6 +281,9 @@ Kuhn, et al.            Expires November 9, 2020                [Page 5]
 
 Internet-Draft             Transport for 0-RTT                  May 2020
 
+
+      reconnecting.  This value is negotiated with the client and result
+      in better buffer management and reduced flow start up.
 
    Other parameters can contribute to the optimization of 0-RTT
    connection.  There are good candidates, like max_ack_delay, in the
@@ -326,9 +329,6 @@ Internet-Draft             Transport for 0-RTT                  May 2020
    [I-D.ietf-quic-tls]
               Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
               draft-ietf-quic-tls-27 (work in progress), February 2020.
-
-
-
 
 
 
