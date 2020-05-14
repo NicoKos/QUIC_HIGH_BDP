@@ -5,10 +5,10 @@
 Internet Engineering Task Force                             N. Kuhn, Ed.
 Internet-Draft                                                      CNES
 Intended status: Informational                           E. Stephan, Ed.
-Expires: October 1, 2020                                          Orange
+Expires: November 9, 2020                                         Orange
                                                        G. Fairhurst, Ed.
                                                   University of Aberdeen
-                                                          March 30, 2020
+                                                             May 8, 2020
 
 
                Transport parameters for 0-RTT connections
@@ -16,9 +16,17 @@ Expires: October 1, 2020                                          Orange
 
 Abstract
 
-   0-RTT improves egress traffic when reconnecting.  This memo proposes
-   the sharing of additional transport parameters to improve ingress
-   traffic when reconnecting.
+   0-RTT mechanisms reduce the time it takes for the first bytes of
+   application data to be processed in a transport connection and can
+   greatly reduce connection latency during setup.  The 0-RTT transport
+   features described by quic-transport help clients establish secure
+   connections with a minimal number of round-trips.
+
+   This document describes a generic method to exchange path parameters
+   relating to transport.  The additional transport parameters can help
+   a connection that continues after an interruption or restarts by
+   sharing connection properties.  They can be used to increase the
+   performance for a path with large RTT.
 
 Status of This Memo
 
@@ -35,12 +43,20 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 1, 2020.
+   This Internet-Draft will expire on November 9, 2020.
 
 Copyright Notice
 
    Copyright (c) 2020 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
+
+
+
+
+Kuhn, et al.            Expires November 9, 2020                [Page 1]
+
+Internet-Draft             Transport for 0-RTT                  May 2020
+
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
@@ -49,144 +65,203 @@ Copyright Notice
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
-
-
-
-
-Kuhn, et al.             Expires October 1, 2020                [Page 1]
-
-Internet-Draft             Transport for 0-RTT                March 2020
-
-
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Motivation  . . . . . . . . . . . . . . . . . . . . . . . . .   2
-   3.  BDP metadata parameters . . . . . . . . . . . . . . . . . . .   3
-   4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   3
-   5.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   4
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   4
-   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   4
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
-   9.  Informative References  . . . . . . . . . . . . . . . . . . .   5
-   Appendix A.  Example of server solution . . . . . . . . . . . . .   5
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
+   2.  Motivation  . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  BDP metadata parameters . . . . . . . . . . . . . . . . . . .   4
+   4.  Extension activation  . . . . . . . . . . . . . . . . . . . .   5
+   5.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   6
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   9.  Informative References  . . . . . . . . . . . . . . . . . . .   6
+   Appendix A.  Example of server solution . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
 
-   Currently, QUIC 0-RTT relies on the sharing of the "initial_max_data"
-   transport parameter between peers.  It indicates to the client the
-   number of bytes it is allowed to send in the first packet of the
-   0-RTT connection.  This allows a faster startup of flows and enables
-   adaptated buffer sizes at the server.  The traffic that the client
-   sends, i.e. the egress trafic, is improved.
+   Each transport connection typically starts without knowledge of the
+   path between the endpoints.  Transport protocols use implicit signals
+   from the network to discover the properties of the path.  This
+   information is used to adapt the transport mechanisms to the network
+   path.  For example, an Internet transport endpoint is unable to
+   determine a safe rate at which to start or continue their
+   transmission, and uses slow-start to determine a safe rate.  This
+   applies to the 1-RTT mode of QUIC.
 
-   This memo proposes the sharing of additional transport parameters to
-   provide a faster startup of flows and a better buffer management for
-   the data that the client receives, i.e. the ingress traffic.  To do
-   so, an extension, 'BDP metadata', is proposed.  Candidate transport
-   parameters are discussed in Section 3.
+   QUIC supports the sending of data in two different modes, after the
+   transport handshake has completed, 1-RTT mode, and sending data along
+   with handshake packets, 0-RTT mode.  By using 0-RTT data an
+   application is able to send transport parameters with the handshake
+   packets, making it possible to reduce the latency of the connection
+   setup.
+
+   A QUIC server must store a copy of a number of flow control related
+   transport parameters to enable the use of 0-RTT data.  The setting or
+   omission of one of these parameters can result in QUIC creating a
+   connection, but flow control prevening any data being sent by the
+   client.
+
+
+
+
+Kuhn, et al.            Expires November 9, 2020                [Page 2]
+
+Internet-Draft             Transport for 0-RTT                  May 2020
+
+
+   For 0-RTT data to be sent, the QUIC server must record the values of:
+
+   o  initial_max_data
+
+   o  initial_max_stream_data_bidi_local
+
+   o  initial_max_stream_data_bidi_remote
+
+   o  initial_max_stream_data_uni
+
+   o  initial_max_streams_bidi
+
+   o  initial_max_streams_uni
+
+   These values set the flow control limits that a connection must
+   operation within.  The server has to store these parameters so that a
+   client resuming during 0-RTT is able to send data.  The stored values
+   are used for any data that is transmitted before the handshake has
+   completed and 1-RTT data is able to be sent on the connection.  Once
+   the handshake has completed these values are discarded and the values
+   established during the handshake are used.
+
+   This document proposes an extension to the transport parameters that
+   are shared during the 0-RTT phase to allow resumption using transport
+   and connection properties that were discovered in previous
+   connections.  These additional parameters aim to provide faster
+   startup of flows and better buffer management.  The BDP metadata
+   extension is proposed and candidate parameters are discussed in
+   Section 3.
 
 2.  Motivation
 
-   Egress acceleration like 0-RTT "initial_max_data" alone does not
-   improve the time-to-service.  While "initial_max_data" improves the
-   egress time to server, the BDP metadata extension aims at improving
-   ingress traffic delivery.
+   Reducing the number of round-trips required to start a connection is
+   an important way to reduce setup time and lower overall connection
+   latency. 0-RTT mechanisms that allow a client to get feed requests to
+   a server in the first RTT do not alone improve the total time-to-
+   service.  The BDP extension described in this document aims to
+   improve traffic delivery by allowing the connection to short cut slow
+   RTT based processes that grow connection parameters.
 
    Currently each side has its proprietary solution to measure and to
    store path characteristics.  Recalling the parameters of a previous
-   connection would:
+   connection would allow:
 
-   o  allow server and client to immediately recover parameters that do
-      not need to be negociated or estimated again (minRTT, MTU,
-      bottleneck capacity, etc.)
-
-   o  allow the client to prepare the right resources
+   o  Server and client can re-initialise the state from previously
+      established parameters (i.e., minRTT, MTU, bottleneck capacity,
+      etc.)
 
 
 
-Kuhn, et al.             Expires October 1, 2020                [Page 2]
+
+Kuhn, et al.            Expires November 9, 2020                [Page 3]
 
-Internet-Draft             Transport for 0-RTT                March 2020
+Internet-Draft             Transport for 0-RTT                  May 2020
 
 
-   o  allow server side adaptation to non-default path characteristics
+   o  The client to prepare the right resources
+
+   o  Server side adaptation to non-default path characteristics
+
+   There is an interest in sharing transport information across multiple
+   connections.  As one example, [I-D.ietf-tcpm-2140bis] considers the
+   sharing of transport parameters between connections originating from
+   the same host.  The proposal in this document has the advantage of
+   storing the information at the client and not requiring the server to
+   retain additional state for each client.
 
 3.  BDP metadata parameters
 
-   Acording to [I-D.ietf-quic-transport], both endpoints store the value
-   of the server transport parameters from a connection and apply them
-   to any 0-RTT packets that are sent in subsequent connections to that
-   peer.  Amongst the six mandatory initial parameters that section
-   7.3.1 of [I-D.ietf-quic-transport] defines, only initial_max_data
-   improves the time-to-service of the 0-RTT connection.  The BDP
-   metadata extension augments the list of server transport parameters
-   that are shared with the client to improve the time-to-service and
-   save resource like CPU, memory and power.
+   Section 7.3.1 of [I-D.ietf-quic-transport] describes the parameters
+   that must be remembered if a client wants to send 0-RTT data.  Both
+   endpoints store the value of the server transport parameters from a
+   connection and apply them to any 0-RTT packets that are sent in
+   subsequent connections to that peer.  Of the six mandatory
+   parameters, only initial_max_data improves the time-to-service of the
+   0-RTT connection.  The BDP metadata extension augments the list of
+   server transport parameters that are shared with the client to
+   improve the time-to-service and save resource such as CPU, memory and
+   power.
 
-   Parameters listed below migh be exchanged as transport parameter:
+   The BDP extension proposes three new parameters that help a
+   connection startup in a minimal number of RTTs:
 
    o  recon_bytes_in_flight (0x000X): The bytes in flight measured on
-      the previous connection by the server.  It is an integer in unit
-      of bytes.  Using the bytes_in_flight defined in
-      [I-D.ietf-quic-recovery], recon_bytes_in_flight can be set to
-      bytes_in_flight.
+      the previous connection by the server.  Integer number of bytes.
+      Using the bytes_in_flight defined in [I-D.ietf-quic-recovery],
+      recon_bytes_in_flight can be set to bytes_in_flight.
 
    o  recon_min_rtt (0x000X): The minimum RTT measured on the previous
-      connection by the server.  It is an integer in unit of
-      milliseconds.  Using the min_rtt defined in
-      [I-D.ietf-quic-recovery], recon_min_rtt can be set to min_rtt.
+      connection by the server.  Integer number of milliseconds.  Using
+      the min_rtt defined in [I-D.ietf-quic-recovery], recon_min_rtt can
+      be set to min_rtt.  The min_rtt parameter may not track a
+      decreasing RTT: the min_rtt that is reported here may not be the
+      actual minimum RTT measured during the 1-RTT connection but still
+      reflects the characteristics of the latency on the network.
 
    o  recon_max_pkt_number (0x000X): The maximum amount of packets that
-      the server is allowed to send when reconnecting.  It is an integer
-      in unit of packets.
+      the server is allowed to send when reconnecting.  Integer unit of
+      packets.
+
+
+
+
+
+
+
+
+Kuhn, et al.            Expires November 9, 2020                [Page 4]
+
+Internet-Draft             Transport for 0-RTT                  May 2020
+
 
 4.  Extension activation
 
-   BDP extension is protected by the mechanism which protect the
-   exchange of the 0-RTT transport parameters.
+   The BDP extension is protected by the same mechanism that protects
+   the exchange of the 0-RTT transport parameters.  A client that
+   activates 0-RTT data sends back the transport parameters received
+   from the server during the previous connection (see Section 7.3.1 of
+   [I-D.ietf-quic-transport]).
 
-   Currently, in section 7.3.1 of [I-D.ietf-quic-transport], a client
-   which activates 0-RTT sends back the transport parameters
-   (initial_max_data ...) received from the server during the previous
-   connection.
+   The client reads the parameters in the BDP metadata extension but can
+   not change them.
 
-   The client MUST read the parameters in the BDP metadata extension but
-   can not change them.
+   Accept: A client MAY use the extension parameters.  Then, it
+   activates ingress optimization sends back the transport parameters of
+   the BDP metadata extension that it received from the server during
+   the previous connection.
 
-   Accept: A client which activates ingress optimization must send back
-   the transport parameters of the BDP metadata extension that it
-   received from the server during the previous connection.
-
-
-
-
-Kuhn, et al.             Expires October 1, 2020                [Page 3]
-
-Internet-Draft             Transport for 0-RTT                March 2020
-
-
-   Refuse: A client which does support ingress optimisation drop the
-   extension signal.  A client which disagrees with the extension
-   parameters received from the server refuses the optimization.  A
-   limited-resource client ignores the extension.
+   Refuse: A client could choose not to use there parameters.  Then, it
+   does not support ingress optimisation drops the extension signal.  A
+   client which disagrees with the extension parameters received from
+   the server refuses the optimization.
 
 5.  Discussion
 
-   The recon_bytes_in_flight parameter is higher than the actual BDP
-   since it may include bytes in buffers along the path.  The
-   recon_bytes_in_flight parameter is still a indication of the end-to-
-   end BDP that is experienced by the congestion control.  If the
-   recon_bytes_in_flight is high, the server may decide to increase the
-   maximum amount of packets it will send when reconnecting using the
-   recon_max_pkt_number parameter.  The maximum number of initial data
-   packets that can be sent without acknowledgement needs to be chosen
-   to avoid congestion collapse.  An example of a server solution is
-   proposed in Appendix A.  In short:
+   The recon_bytes_in_flight parameter is higher than the number of
+   bytes in the actual BDP since it may include bytes in buffers along
+   the path.
+
+   The recon_bytes_in_flight parameter is an indication of the end-to-
+   end BDP that is experienced by the congestion and flow control.  If
+   the recon_bytes_in_flight is high, the server may decide to increase
+   the maximum amount of packets it will send when reconnecting using
+   the recon_max_pkt_number parameter.
+
+   The maximum number of initial data packets that can be sent without
+   acknowledgment needs to be chosen to avoid congestion collapse.  An
+   example of a server solution is proposed in Appendix A.  In short:
 
    o  recon_bytes_in_flight indicates the characteristics of the network
       underneath to both peers that can adapt their buffer sizes or
@@ -199,6 +274,14 @@ Internet-Draft             Transport for 0-RTT                March 2020
 
    o  recon_max_pkt_number lets the server warn the client that it may
       increase the amount of packets that it expects to send when
+
+
+
+Kuhn, et al.            Expires November 9, 2020                [Page 5]
+
+Internet-Draft             Transport for 0-RTT                  May 2020
+
+
       reconnecting.  This value is negotiated with the client and result
       in better buffer management and reduced flow start up.
 
@@ -206,25 +289,17 @@ Internet-Draft             Transport for 0-RTT                March 2020
    connection.  There are good candidates, like max_ack_delay, in the
    Appendix of [I-D.ietf-quic-recovery].
 
-6.  Acknowledgements
+6.  Acknowledgments
 
    The authors would like to thank Gabriel Montenegro, Patrick McManus,
-   Ian Swett, Igor Lubashev and Christian Huitema for their fruitful
-   comments on earlier versions of this document.
+   Ian Swett, Igor Lubashev, Christian Huitema and Tom Jones for their
+   fruitful comments on earlier versions of this document.
 
 7.  IANA Considerations
 
    TBD: text is required to register the extension BDP_metadata field.
    Parameters are registered using the procedure defined in
    [I-D.ietf-quic-transport].
-
-
-
-
-Kuhn, et al.             Expires October 1, 2020                [Page 4]
-
-Internet-Draft             Transport for 0-RTT                March 2020
-
 
 8.  Security Considerations
 
@@ -241,6 +316,11 @@ Internet-Draft             Transport for 0-RTT                March 2020
 
 9.  Informative References
 
+   [I-D.cardwell-iccrg-bbr-congestion-control]
+              Cardwell, N., Cheng, Y., Yeganeh, S., and V. Jacobson,
+              "BBR Congestion Control", draft-cardwell-iccrg-bbr-
+              congestion-control-00 (work in progress), July 2017.
+
    [I-D.ietf-quic-recovery]
               Iyengar, J. and I. Swett, "QUIC Loss Detection and
               Congestion Control", draft-ietf-quic-recovery-27 (work in
@@ -250,10 +330,31 @@ Internet-Draft             Transport for 0-RTT                March 2020
               Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
               draft-ietf-quic-tls-27 (work in progress), February 2020.
 
+
+
+
+Kuhn, et al.            Expires November 9, 2020                [Page 6]
+
+Internet-Draft             Transport for 0-RTT                  May 2020
+
+
    [I-D.ietf-quic-transport]
               Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
               and Secure Transport", draft-ietf-quic-transport-27 (work
               in progress), February 2020.
+
+   [I-D.ietf-tcpm-2140bis]
+              Touch, J., Welzl, M., and S. Islam, "TCP Control Block
+              Interdependence", draft-ietf-tcpm-2140bis-05 (work in
+              progress), April 2020.
+
+   [RFC2914]  Floyd, S., "Congestion Control Principles", BCP 41,
+              RFC 2914, DOI 10.17487/RFC2914, September 2000,
+              <https://www.rfc-editor.org/info/rfc2914>.
+
+   [RFC4782]  Floyd, S., Allman, M., Jain, A., and P. Sarolahti, "Quick-
+              Start for TCP and IP", RFC 4782, DOI 10.17487/RFC4782,
+              January 2007, <https://www.rfc-editor.org/info/rfc4782>.
 
 Appendix A.  Example of server solution
 
@@ -261,26 +362,46 @@ Appendix A.  Example of server solution
    maximum amount of packets that the server sends when receiving a
    0-RTT packet from a client.
 
-   The server keeps a standard initial window to avoid adding congestion
-   to a congested network.  After the reception of the acknowledgments
-   for the last packet of the initial window, the server checks that the
-   min_rtt is consistent.  It then adapts the congestion window to a
-   higher value that must be paced out.  The recon_max_pkt_number is
-   then the amount of data that the server sends during the two firsts
-   RTT.
+   The initial window is considered a safe starting point for an unknown
+   path to avoid adding congestion to a congested network.  The general
+   assumption is that a path does not currently suffer persistent
+   congestion, and therefore the initial window is applicable until
+   feedback about the path is received.  The resulting initial sending
+   rate is tentative until the capacity is confirmed to be available.
+   If there is loss within this initial transmission, then this could be
+   evidence that the path is congested, and the sender needs to adjust
+   to the congestion.
+
+   Significant loss could be an indication of congestion collapse - i.e.
+   persistent loss, requiring back-off of the sending rate.
+
+   If however, the transmission of IW is confirmed in the first RTT of
+   data, and also the path is determined to be also similar to that of a
+   recent previous session (e.g., similar RTT), the method permits the
+   sender to use the previous path information as an input to help it
+   now determine a safe rate.  One possibility is to immediately jump to
+   a new sending rate that is derived from the previously sustained
+   rate.  This follows the ideas of
+   [I-D.cardwell-iccrg-bbr-congestion-control] and [RFC4782].
+
+   The QoS mechanisms that are deployed in the networks should help in
+   preventing the congestion collapse from occurring.  However, the
+
+
+
+Kuhn, et al.            Expires November 9, 2020                [Page 7]
+
+Internet-Draft             Transport for 0-RTT                  May 2020
+
+
+   sender must provide a significant reduction if there is evidence of
+   potential congestion collapse [RFC2914] from his point of view.
+   Precautions can be taken to guarantee that it is reasonably safe to
+   jump to a high sending rate : measuring that network conditions did
+   not change, allowing some space for other flows that have started and
+   pace packets.
 
 Authors' Addresses
-
-
-
-
-
-
-
-Kuhn, et al.             Expires October 1, 2020                [Page 5]
-
-Internet-Draft             Transport for 0-RTT                March 2020
-
 
    Nicolas Kuhn (editor)
    CNES
@@ -324,13 +445,4 @@ Internet-Draft             Transport for 0-RTT                March 2020
 
 
 
-
-
-
-
-
-
-
-
-
-Kuhn, et al.             Expires October 1, 2020                [Page 6]
+Kuhn, et al.            Expires November 9, 2020                [Page 8]

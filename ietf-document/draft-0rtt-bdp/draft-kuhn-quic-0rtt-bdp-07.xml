@@ -76,14 +76,16 @@
 		<t>
 		0-RTT mechanisms reduce the time it takes for the first bytes
 		of application data to be processed in a transport connection
-		and can greatly reduce connection latency during setup. </t>
-
-		<t>The 0-RTT transport features described by quic-transport help
+		and can greatly reduce connection latency during setup.
+		The 0-RTT transport features described by quic-transport help
 		clients establish secure connections with a minimal number of
-		round-trips.  This document describes additional transport
-		parameters that can help a connection that continues after
-		an interuption by caching and sharing connection properties
-		for use when the connection resumes.
+		round-trips.
+		</t>
+		<t>
+		This document describes a generic method to exchange path parameters relating to transport.
+		The additional transport parameters can help a connection that continues after
+		an interruption or restarts by sharing connection properties.
+		They can be used to increase the performance for a path with large RTT.
 		</t>
 	</abstract>
 	</front>
@@ -91,20 +93,31 @@
 	<middle>
 
 		<section anchor="sec:introduction" title="Introduction">
+			<t>
+			Each transport connection typically starts without
+			knowledge of the path between the endpoints. Transport
+			protocols use implicit signals from the network to
+			discover the properties of the path. This information
+			is used to adapt the transport mechanisms to the
+			network path. For example, an Internet transport
+			endpoint is unable to determine a safe rate at which to
+			start or continue their transmission, and uses
+			slow-start to determine a safe rate. This applies to the 
+			1-RTT mode of QUIC.
+			</t>
+
 			<t> QUIC supports the sending of data in two different
 			modes, after the transport handshake has completed,
 			1-RTT mode, and sending data along with handshake
 			packets, 0-RTT mode.  By using 0-RTT data an
-			application is able to send data with the handshake
+			application is able to send transport parameters with the handshake
 			packets, making it possible to reduce the latency
 			of the connection setup. </t>
 
 			<t> A QUIC server must store a copy of a number of flow
 			control related transport parameters to enable the use
-			of 0-RTT data. Due to the nature of flow control in
-			QUIC it is possible that by omitting or setting one of
-			these parameter to zero a connection will be created,
-			but it will not be possible for any data to be sent.
+			of 0-RTT data. 
+			The setting or omission of one of these parameters can result in QUIC creating a connection, but flow control prevening any data being sent by the client. 
 			</t>
 
 			<t> For 0-RTT data to be sent, the QUIC server must
@@ -167,6 +180,19 @@
 					non-default path
 					characteristics</t>
 			</list></t>
+			
+			<t>
+			There is an interest in sharing transport information
+			across multiple connections.
+			As one example, <xref
+				target="I-D.ietf-tcpm-2140bis"></xref>
+			considers the sharing of transport parameters between
+			connections originating from the same host. The proposal
+			in this document has the advantage of storing the 
+			information at the client and not requiring the server to
+			retain additional state for each client. 
+			</t>
+
 		</section>
 				
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
@@ -185,7 +211,7 @@
 			CPU, memory and power.</t>
 
 			<t>The BDP extension proposes three new parameters that
-			help a connection startup in aminimal number of
+			help a connection startup in a minimal number of
 			RTTs:<list style="symbols">
 
 				<t>recon_bytes_in_flight (0x000X): The bytes in
@@ -201,11 +227,17 @@
 				server. Integer number of milliseconds. Using
 				the min_rtt defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
-				recon_min_rtt can be set to min_rtt.</t>
+				recon_min_rtt can be set to min_rtt. The min_rtt 
+				parameter may not track a decreasing RTT: the 
+				min_rtt that is reported here may not be the 
+				actual minimum RTT measured during the 1-RTT 
+				connection but still reflects the characteristics 
+				of the latency on the network.
+				</t>
 
 				<t>recon_max_pkt_number (0x000X): The maximum
 				amount of packets that the server is allowed to
-				send when reconnecting. It is an integer in
+				send when reconnecting. Integer 
 				unit of packets.</t>
 			</list></t>
 		</section>
@@ -218,15 +250,17 @@
 			during the previous connection (see Section 7.3.1 of
 			<xref target="I-D.ietf-quic-transport"></xref>).  </t>
 
-			<t>The client MUST read the parameters in the BDP
+			<t>The client reads the parameters in the BDP
 			metadata extension but can not change them.</t>
 
-			<t>Accept: A client that activates ingress optimization
-			SHOULD send back the transport parameters of the BDP
+			<t>Accept: A client MAY use the extension parameters. 
+			Then, it activates ingress optimization 
+			sends back the transport parameters of the BDP
 			metadata extension that it received from the server
 			during the previous connection.</t>
 
-			<t>Refuse: A client which does not support ingress
+			<t>Refuse: A client could choose not to use there parameters. 
+			Then, it does not support ingress
 			optimisation drops the extension signal. A client which
 			disagrees with the extension parameters received from
 			the server refuses the optimization.</t>
@@ -239,14 +273,14 @@
 
 			<t>The recon_bytes_in_flight parameter is
 			an indication of the end-to-end BDP that is
-			experienced by the congestion control. If the
+			experienced by the congestion and flow control. If the
 			recon_bytes_in_flight is high, the server may decide to
 			increase the maximum amount of packets it will send
 			when reconnecting using the recon_max_pkt_number
 			parameter. </t>
 
 			<t>The maximum number of initial data packets
-			that can be sent without acknowledgement needs to be
+			that can be sent without acknowledgment needs to be
 			chosen to avoid congestion collapse. An example of a
 			server solution is proposed in <xref
 			target="appendix-server"></xref>. In short:
@@ -282,8 +316,8 @@
 			<t>Starting with a high ACK ratio may induce bursts of packet in a potentially congested network. That being said, keeping a low ack_ratio may limit performance in case of asymmetry <xref target="PANRG106"></xref>. The server may want to be recalled the ACK ratio that had been used at the end of the connection but not use it when starting the 0-RTT conection.</t> --> 
 		</section>
 		
-		<section anchor="sec:acknowledgements" title="Acknowledgements">
-			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev and Christian Huitema for their fruitful comments on earlier versions of this document.</t>
+		<section anchor="sec:acknowledgments" title="Acknowledgments">
+			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema and Tom Jones for their fruitful comments on earlier versions of this document.</t>
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
@@ -324,6 +358,10 @@
 			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
 			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
 			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
+			<?rfc include="reference.I-D.ietf-tcpm-2140bis.xml"?>
+			<?rfc include="reference.RFC.4782.xml"?>
+			<?rfc include="reference.RFC.2914.xml"?>
+			<?rfc include="reference.I-D.cardwell-iccrg-bbr-congestion-control.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
 			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
@@ -409,7 +447,49 @@
 		</references>
 		<section anchor="appendix-server" title="Example of server solution">
 			<t>This section details a solution at the server to safely increase the maximum amount of packets that the server sends when receiving a 0-RTT packet from a client.</t>
-			<t>The server keeps a standard initial window to avoid adding congestion to a congested network. After the reception of the acknowledgments for the last packet of the initial window, the server checks that the min_rtt is consistent. It then adapts the congestion window to a higher value that must be paced out. The recon_max_pkt_number is then the amount of data that the server sends during the two firsts RTT.</t>
+			<t>
+			The initial window is considered a safe starting point
+			for an unknown path to avoid adding congestion to a
+			congested network. The general assumption is that a
+			path does not currently suffer persistent congestion,
+			and therefore the initial window is applicable until
+			feedback about the path is received. The resulting
+			initial sending rate is tentative until the capacity is
+			confirmed to be available. If there is loss within this
+			initial transmission, then this could be evidence that
+			the path is congested, and the sender needs to adjust
+			to the congestion.
+			</t>
+			<t>
+			Significant loss could be an indication of congestion
+			collapse - i.e. persistent loss, requiring back-off of
+			the sending rate.
+			</t>
+			<t>
+			If however, the transmission of IW is confirmed in the
+			first RTT of data, and also the path is determined to
+			be also similar to that of a recent previous session
+			(e.g., similar RTT), the method permits the sender to
+			use the previous path information as an input to help
+			it now determine a safe rate. One possibility is to
+			immediately jump to a new sending rate that is derived
+			from the previously sustained rate. This follows the
+			ideas of <xref
+				target="I-D.cardwell-iccrg-bbr-congestion-control"></xref>
+			and <xref target="RFC4782"></xref>.  
+			</t>
+			<t>
+			The QoS mechanisms that are deployed in the networks
+			should help in preventing the congestion collapse from
+			occurring. However, the sender must provide a
+			significant reduction if there is evidence of potential
+			congestion collapse <xref target="RFC2914"></xref> from
+			his point of view. Precautions can be taken to
+			guarantee that it is reasonably safe to jump to a high
+			sending rate : measuring that network conditions did
+			not change, allowing some space for other flows that
+			have started and pace packets.   
+			</t>
 		</section>
 	</back>
 </rfc>
