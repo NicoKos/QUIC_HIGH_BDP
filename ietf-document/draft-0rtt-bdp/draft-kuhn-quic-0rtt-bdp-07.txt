@@ -100,8 +100,9 @@ Table of Contents
    packets, making it possible to reduce the latency of the connection
    setup.
 
-   A QUIC server must store a copy of a number of flow control related
-   transport parameters to enable the use of 0-RTT data.  The setting or
+   In 0-RTT mode a QUIC server must store a copy of a number of flow control related
+   transport parameters, or receives an integrity-protected copy of
+   these values in the ticket the client includes in the first message of the handshake, to enable the use of 0-RTT data.  The setting or
    omission of one of these parameters can result in QUIC creating a
    connection, but flow control prevening any data being sent by the
    client.
@@ -137,7 +138,7 @@ Internet-Draft             Transport for 0-RTT                  May 2020
    established during the handshake are used.
 
    This document proposes an extension to the transport parameters that
-   are shared during the 0-RTT phase to allow resumption using transport
+   are shared during the 0-RTT phase to allow resumption using additionnal transport
    and connection properties that were discovered in previous
    connections.  These additional parameters aim to provide faster
    startup of flows and better buffer management.  The BDP metadata
