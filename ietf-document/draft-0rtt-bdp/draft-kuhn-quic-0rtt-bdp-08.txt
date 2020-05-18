@@ -13,7 +13,7 @@ Expires: November 19, 2020                                        Orange
 
 
                Transport parameters for 0-RTT connections
-                      draft-kuhn-quic-0rtt-bdp-07
+                      draft-kuhn-quic-0rtt-bdp-08
 
 Abstract
 
