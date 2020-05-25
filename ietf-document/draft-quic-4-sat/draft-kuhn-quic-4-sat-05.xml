@@ -239,7 +239,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB. Then, after 10 seconds, repeat the transmission of 100 MB on the download path where the downloading time of 2 MB, 10 MB and 100 MB.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB. Then, after 10 seconds, repeat the transmission of 100 MB on the download path where the downloading times of 2 MB, 10 MB and 100 MB are recorded.</t>
 		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
 			<t>3 s for the first downloading 2 MB</t>
 			<t>5 s for the first downloading 10 MB</t>
@@ -351,7 +351,7 @@
 		<?rfc include="reference.RFC.3135.xml"?>
 		<?rfc include="reference.RFC.3449.xml"?>
 		<!-- <?rfc include="reference.RFC.6349.xml"?> -->
-		<?rfc include="reference.RFC.6534.xml"?>
+		<!-- <?rfc include="reference.RFC.6534.xml"?> -->
 		<?rfc include="reference.RFC.6928.xml"?>
 		<!-- <?rfc include="reference.RFC.7928.xml"?> -->
 		<!-- <?rfc include="reference.RFC.8446.xml"?> -->
