@@ -159,7 +159,7 @@
 		<t>Upload path: from the host to Internet</t>
 	</list></t>
 	
-	<section anchor="sec:quic-4-sat-regression-static-small" title="Small public satellite broadband access">
+	<!-- <section anchor="sec:quic-4-sat-regression-static-small" title="Small public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
 			<t>Satellite downlink path: 10 Mbps</t>
 			<t>Satellite uplink path: 2 Mbps</t>
@@ -176,7 +176,7 @@
 			<t>50 s for uploading 10 MB</t>
 			<t>420 s for uploading 100 MB</t>
 		</list></t>
-	</section>
+	</section> -->
 
 	<section anchor="sec:quic-4-sat-regression-static-medium" title="Medium public satellite broadband access">
 		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
@@ -186,11 +186,48 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the uploading and the downloading time of 2 MB, 10 MB and 100 MB.</t>
 		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
 			<t>3 s for downloading 2 MB</t>
 			<t>5 s for downloading 10 MB</t>
 			<t>20 s for downloading 100 MB</t>
+			<t>TBD s for uploading 2 MB</t>
+			<t>TBD s for uploading 10 MB</t>
+			<t>TBD s for uploading 100 MB</t>
+		</list></t>
+	</section>
+
+	<section anchor="sec:quic-4-sat-regression-static-medium-cong" title="Congested medium public satellite broadband access">
+		<t>There are cases where the uplink path is congested or where the capacity of the uplink path is not guaranteed.</t>
+		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+			<t>Satellite downlink path: 50 Mbps</t>
+			<t>Satellite uplink path: 0.5 Mbps</t>
+			<t>No emulated packet loss</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+			<t>TBD s for downloading 2 MB</t>
+			<t>TBD s for downloading 10 MB</t>
+			<t>TBD s for downloading 100 MB</t>
+		</list></t>
+	</section>
+
+	<section anchor="sec:quic-4-sat-regression-static-medium-vari" title="Variable medium public satellite broadband access">
+		<t>There are cases where the downlink path is congested or where, due to link layer adaptations to rain fading, the capacity of the downlink path is variable.</t>
+		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+			<t>Satellite downlink path: 50 Mbps - wait 5s - 10 Mbps</t>
+			<t>Satellite uplink path: 10 Mbps</t>
+			<t>No emulated packet loss</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+			<t>TBD s for downloading 2 MB</t>
+			<t>TBD s for downloading 10 MB</t>
+			<t>TBD s for downloading 100 MB</t>
 		</list></t>
 	</section>
 		
@@ -202,11 +239,14 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB. Then, after 10 seconds, repeat the transmission of 100 MB on the download path where the downloading times of 2 MB, 10 MB and 100 MB are recorded.</t>
 		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
-			<t>3 s for downloading 2 MB</t>
-			<t>5 s for downloading 10 MB</t>
-			<t>8 s for downloading 100 MB</t>
+			<t>3 s for the first downloading 2 MB</t>
+			<t>5 s for the first downloading 10 MB</t>
+			<t>8 s for the first downloading 100 MB</t>
+			<t>TBD s for the second downloading 2 MB</t>
+			<t>TBD s for the second downloading 10 MB</t>
+			<t>TBD s for the second downloading 100 MB</t>
 		</list></t>
 	</section>
 		
@@ -311,7 +351,7 @@
 		<?rfc include="reference.RFC.3135.xml"?>
 		<?rfc include="reference.RFC.3449.xml"?>
 		<!-- <?rfc include="reference.RFC.6349.xml"?> -->
-		<?rfc include="reference.RFC.6534.xml"?>
+		<!-- <?rfc include="reference.RFC.6534.xml"?> -->
 		<?rfc include="reference.RFC.6928.xml"?>
 		<!-- <?rfc include="reference.RFC.7928.xml"?> -->
 		<!-- <?rfc include="reference.RFC.8446.xml"?> -->
