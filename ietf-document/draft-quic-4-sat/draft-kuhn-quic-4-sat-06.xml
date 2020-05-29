@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="yes" ?>
+<?rfc toc="yes"?>
+<?rfc tocdepth="4"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<?rfc compact="yes" ?>
+<?rfc subcompact="no" ?>
+<rfc 
+	category="info" 
+        docName="draft-kuhn-quic-4-sat-06"
+	ipr="trust200902">
+  <!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     they will automatically be output with "(if approved)" -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+         full title is longer than 39 characters -->
+
+    <title abbrev="QUIC 4 SAT">QUIC for SATCOM</title>
+  
+    <author fullname="Nicolas Kuhn" initials="N" surname="Kuhn">
+      <organization>CNES</organization>
+      <address>
+        <email>nicolas.kuhn@cnes.fr</email>
+      </address>
+    </author>
+
+    <author fullname="Godred Fairhurst" initials="G" surname="Fairhurst">
+      <organization>University of Aberdeen</organization>
+      <address>
+        <email>gorry@erg.abdn.ac.uk</email>
+      </address>
+    </author>
+
+    <author fullname="John Border" initials="J" surname="Border">
+      <organization>Hughes Network Systems, LLC</organization>
+      <address>
+        <email>border@hns.com</email>
+      </address>
+    </author>
+
+
+    <author fullname="Emile Stephan" initials="E" surname="Stephan">
+      <organization>Orange</organization>
+      <address>
+        <email>emile.stephan@orange.com</email>
+      </address>
+    </author>
+ 
+    <date year="2020" />
+
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+         in the current day for you. If only the current year is specified, xml2rfc will fill 
+	 in the current day and month for you. If the year is not the current one, it is 
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	 specify just the year. -->
+
+    <!-- Meta-data Declarations -->
+
+    <area>Transport</area>
+
+    <workgroup>Internet Engineering Task Force</workgroup>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.  
+	 If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+    <keyword>QUIC, SATCOM, Transport</keyword>
+
+    <!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Head of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+	<abstract>
+	<t>QUIC has been designed for use across Internet paths.  Initial designs of QUIC focused on common deployment scenarios for web traffic. This document focuses on the performance when using a path with a large Bandwidth-Delay Product (BDP).</t>
+	<t>A large BDP path can result from using a satellite communication (SATCOM) system. The BDP is also high for paths where a satellite network segment is combined with other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc), resulting in more complex characteristics.  These path characteristics have implications on the efficiency of the network traffic and unless considered in a design can impact the end-to-end quality of experience by the transport service.</t>
+        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol.  It proposes regression tests to evaluate QUIC over SATCOM links.  It discusses how to ensure acceptable protocol performance.</t>
+	</abstract>
+  </front>
+
+  <middle>
+
+	<section anchor="sec:introduction" title="Introduction">
+	<t>The end-to-end performance of an application using an Internet path can be impacted by the Bandwidth-Delay Product (BDP) of the links and network devices forming the path. For instance, the page load time for a complex page can be much larger when the path includes a satellite link. A significant contribution to this reduced performance arises from the initialisation and design of transport mechanisms. QUIC's default congestion control is based on TCP NewReno <xref target="I-D.ietf-quic-recovery"></xref> and the recommended initial window is defined by <xref target="RFC6928"></xref>. Although QUIC's Congestion Control (CC) and recovery have been designed for use across Internet Paths, the initial design could not optimise for the wide diversity of path characteristics that can occur. This document therefore considers the specific implications of paths with a significant BDP.</t>
+	<t>Satellite communications (SATCOM) systems have long been used to support point-to-point links and specialised networks. The predominate current use is as a link-layer for Internet Protocols. Typical example applications include: use as an access technology for remote locations, backup and rapid deployment of new services, transit networks and backhaul of various types of IP networks, and provision to mobile (maritime, aircraft, etc.). In most scenarios, the satellite IP network segment usually only forms one part of the end-to-end path. This means user traffic can experience a path that includes satellite link together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc). Although a user can sometimes know the presence of the satellite service, a typical user does not deploy special software or applications because they expect a satellite network is being used. Often a user is unaware of the technologies underpinning the links forming the network path.</t> 
+        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol. It proposes regression tests to evaluate QUIC over SATCOM links. It discusses how to ensure acceptable protocol performance.</t>
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Body of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:large_bdp_connection" title="Operating over a path with a large BDP">
+
+	<t>Satellite communications systems have been deployed using many space orbits, including low earth orbit, medium earth orbits, geosynchronous orbits, elliptical orbits and more. This document focuses on Geosynchronous Earth Orbit (GEO) satellite systems.</t>
+	<t>The characteristics of systems using Geosynchronous Earth Orbit (GEO) satellites differ from paths only using terrestrial links in their path characteristics:<list style="symbols">
+		<t>A large propagation delay of at least 250ms one-way delay;</t>
+		<!-- <t>Some systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link);</t> -->
+		<t>Employ radio resource management (often using techniques similar to cellular mobile or DOCSIS cable networks, but differing to accommodate the satellite propagation delay);</t>
+		<t>Links can be highly asymmetric (in terms of capacity, one-way delay and in their cost of operation).</t>
+	</list></t>
+	<t>Many systems use the DVB-S2 specifications, published by the European Telecomunications Standards Institute (ETSI), where the key concept is to ensure both a good usage of the satellite resource and a Quasi Error Free (QEF) link.  These systems typically monitor the link quality in real-time, with the help of known symbol sequences, included along with regular packets, which enable an estimation of the current signal-to-noise ratio.  This estimation is then feedback allowing the transmitting link to adapt its coding rate and modulation to the actual transmission conditions.</t>
+	<t>It is common to consider the satellite network segment composed of a forward link and a return link. The two links can have different capacities and employ different technologies to carry the IP packets.</t>
+	<t>On the forward link, the satellite gateway often uses all the available bandwidth, possibly with several carriers, to communicate with a set of remote terminals.  A carrier is a single Time-Division-Multiplexing channel that multiplexes packets addressed to specific terminals.  On the return link, satellite resource is shared among the terminals.  Two access methods can be distinguished: on-demand access or contention access.  In the former, a terminal receives dedicated transmission resources (usually to send to the gateway). In the latter, some resources are reserved for contention access, where a set of terminals are allowed to compete to obtain transmission resource. Dedicated access, which is more common in currently deployed systems, can be through a Demand Assigned Multiple Access (DAMA) mechanism, while contention access techniques are usually based on Slotted Aloha (SA) and its numerous derivatives.  More information on satellite links characteristics can be found in <xref target="RFC2488"></xref><xref target="IJSCN17"></xref>.</t>
+		
+	<t>Beyond that, even for characteristics shared with terrestrial links, the impact on a satellite link could be more and can be amplified by the large path RTT. For example, paths using a satellite system can also exhibit a high loss-rate (e.g., a mobile user or a user behind a Wi-Fi link), where additional delay can impact transport mechanisms.<list style="symbols">
+		<t>Transport initialization: the 3-way handshake takes a longer time to complete, delaying the time to send data (several transport protocol exchanges may be needed, such as TLS);</t>
+		<t>Size of windows required: to fully exploit the bottleneck capacity, a high BDP requires a larger number of in-flight packets;</t>
+		<t>Reliability: packet loss detection and correction is slow (the performance of end-to-end retransmission is also impacted when using a high RTT path);</t>
+		<t>Getting up to speed: many congestion control methods employ an exponential increase in the sending rate during slow start (for path capacity probing), a high RTT will increase the time to reach a specific rate;</t>
+		<t>Asymmetry : when the links are asymmetric, for various reasons, the the return path may modify the rate and/timing of transport acknowledgment traffic, potentially changing behaviour (e.g., limiting the forward sending rate).</t>
+	</list></t>
+
+	</section>
+
+        <!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:tcp_split_solution" title="TCP Split Solution">
+
+	<t>High BDP networks commonly break the TCP end-to-end paradigm to adapt the transport protocol. Splitting a TCP connection allows adaptation for a specific use-case and to address the issues discussed in section <xref target="sec:large_bdp_connection"></xref>. Satellite communications commonly deploy Performance Enhancement Proxy (PEP) for compression, caching and TCP acceleration services <xref target ="RFC3135"></xref>. Their deployment can result in significant performance improvement (e.g., a 50% page load time reduction in a SATCOM use-case <xref target="ICCRG100"></xref>.</t>
+
+	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functions of a SATCOM TCP split solution. For traffic originated at a gateway to an endpoint connected via a satellite terminal, the TCP split proxy intercepts TCP SYN packets, acting on behalf of the endpoint and adapts the sending rate to the SATCOM scenario.  The split solution can specifically tune TCP parameters to the satellite link (latency, available capacity).</t>
+		
+	<t>When a proxy is used on each side of the satellite link, the transport protocol can be replace by a protocol other than TCP, optimized for the satellite link.  This can be tuned using a priori information about the satellite system and/or by measuring the properties of the network segment that includes the satellite system.</t>
+
+	<t> Split connections can also recover from packet loss that is local to the part of the connection on which the packet losses occur.  This eliminates the need for end-to-end recovery of lost packets.</t>
+		
+	<t>One important advantage of a TCP split solution is that it does not require any end-to-end modification and is independent of both the client and server sides.  This comes with a drawback: TCP splitters are often unable to track end-to-end improvements in protocol mechanisms (e.g., RACK, ECN, TCP Fast Open support). Methods configured in the split proxy usually continue to be used until a split solution is finally updated.  This can delay/negate the benefit of any end-to-end improvements, contributing to ossification of the transport system.</t> 
+
+	</section>
+
+  	<!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:quic-4-sat-regression" title="Regression tests">
+	
+	<t>This section proposes a set of regression tests for QUIC that consider high BDP scenarios. We define by:<list style="symbols">
+		<t>Download path: from Internet to the client endpoint;</t>
+		<t>Upload path: from the client endpoint to a server (e.g., in the Internet).</t>
+	</list></t>
+	
+	<!-- <section anchor="sec:quic-4-sat-regression-static-small" title="Small public satellite broadband access">
+		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+			<t>Satellite downlink path: 10 Mbps</t>
+			<t>Satellite uplink path: 2 Mbps</t>
+			<t>No emulated packet loss</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on both download and upload paths, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+			<t>3 s for downloading 2 MB</t>
+			<t>10 s for downloading 10 MB</t>
+			<t>85 s for downloading 100 MB</t>
+			<t>10 s for uploading 2 MB</t>
+			<t>50 s for uploading 10 MB</t>
+			<t>420 s for uploading 100 MB</t>
+		</list></t>
+	</section> -->
+
+	<section anchor="sec:quic-4-sat-regression-static-medium" title="Medium public satellite broadband access">
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
+			<t>Satellite downlink path: 50 Mbps</t>
+			<t>Satellite uplink path: 10 Mbps</t>
+			<t>No emulated packet loss</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on both download and upload paths, the test should report the upload and the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
+			<t>3 s for downloading 2 MB</t>
+			<t>5 s for downloading 10 MB</t>
+			<t>20 s for downloading 100 MB</t>
+			<t>TBD s for uploading 2 MB</t>
+			<t>TBD s for uploading 10 MB</t>
+			<t>TBD s for uploading 100 MB</t>
+		</list></t>
+	</section>
+
+	<section anchor="sec:quic-4-sat-regression-static-medium-cong" title="Congested medium public satellite broadband access">
+		<t>There are cases where the uplink path is congested or where the capacity of the uplink path is not guaranteed.</t>
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
+			<t>Satellite downlink path: 50 Mbps</t>
+			<t>Satellite uplink path: 0.5 Mbps</t>
+			<t>No emulated packet loss</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
+			<t>TBD s for downloading 2 MB</t>
+			<t>TBD s for downloading 10 MB</t>
+			<t>TBD s for downloading 100 MB</t>
+		</list></t>
+	</section>
+
+	<section anchor="sec:quic-4-sat-regression-static-medium-vari" title="Variable medium public satellite broadband access">
+		<t>There are cases where the downlink path is congested or where, due to link layer adaptations to rain fading, the capacity of the downlink path is variable.</t>
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
+			<t>Satellite downlink path: 50 Mbps - wait 5s - 10 Mbps</t>
+			<t>Satellite uplink path: 10 Mbps</t>
+			<t>No emulated packet loss</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
+			<t>TBD s for downloading 2 MB</t>
+			<t>TBD s for downloading 10 MB</t>
+			<t>TBD s for downloading 100 MB</t>
+		</list></t>
+	</section>
+		
+	<section anchor="sec:quic-4-sat-regression-static-large" title="Loss-free large public satellite broadband access">
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
+			<t>Satellite downlink path: 250 Mbps</t>
+			<t>Satellite uplink path: 3 Mbps</t>
+			<t>No emulated packet loss</t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB. Then, after 10 seconds, repeat the transmission of 100 MB on the download path where the download time for 2 MB, 10 MB and 100 MB is recorded.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
+			<t>3 s for the first downloading 2 MB</t>
+			<t>5 s for the first downloading 10 MB</t>
+			<t>8 s for the first downloading 100 MB</t>
+			<t>TBD s for the second downloading 2 MB</t>
+			<t>TBD s for the second downloading 10 MB</t>
+			<t>TBD s for the second downloading 100 MB</t>
+		</list></t>
+	</section>
+		
+	<section anchor="sec:quic-4-sat-regression-static-large-loss" title="Lossy large public satellite broadband access">
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
+			<t>Satellite downlink path: 250 Mbps</t>
+			<t>Satellite uplink path: 3 Mbps</t>
+			<t>Emulated packet loss on both downlink and uplink paths:<list style="symbols">
+				<t>Uniform random transmission link losses: 1% </t>
+				<!-- <t>Bursty losses, including transmission and congestion losses: P(g|g)= 0.982, P(g|b)= 0.645, P(b|b)= 0.355, P(b|g)= 0.018 (see <xref target="RFC6534"></xref> for more details)</t> -->
+				</list></t>
+			<t>RTT: 650 ms</t>
+			<t>Buffer size : BDP</t>
+		</list></t>
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
+			<t>3 s for downloading 2 MB (uniform transmission link losses)</t>
+			<t>6 s for downloading 10 MB (uniform transmission link losses)</t>
+			<t>10 s for downloading 100 MB (uniform transmission link losses)</t>
+			<!-- <t>TBD s for downloading 2 MB (bursty transmission and congestion losses)</t>
+			<t>TBD s for downloading 10 MB (bursty transmission and congestion losses)</t>
+			<t>TBD s for downloading 100 MB (bursty transmission and congestion losses)</t> -->
+		</list></t>
+	</section>
+		
+	</section>
+	  
+	<!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:quic-4-sat" title="Mechanisms that improve the performance of QUIC for SATCOM">
+
+		<section anchor="sec:quic-4-sat-ss" title="Getting up to speed">
+		<t>QUIC has an advantage that the TLS and TCP negotiations can be completed during the transport connection handshake. This can reduce the time to transmit the first data. Results of <xref target="IJSCN19"></xref> illustrate that it can still take many RTTs for a CC to increase the sending rate to fill the bottleneck capacity. The delay in getting up to speed can dominate performance for a path with a large RTT, and requires the congestion and flow controls to accommodate the impact of path delay.</t>
+		<t>One relevant solution is tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref>, which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>. Such a solution requires using sender pacing to avoid generating bursts of packets in a network.</t>	
+		</section>
+
+		<section anchor="sec:quic-4-sat-max-window" title="Maximum window">
+		<t>The number of in-flight packets required to fill a bottleneck capacity, is dependent on the BDP. Default values of maximum windows may not be suitable for a SATCOM context.</t>
+		<t>Such as presented in <xref target="PANRG105"></xref>, only increasing the initial congestion window is not the only way that can improve QUIC performance in a SATCOM context: increasing maximum congestion windows can also result in much better performance. Other protocol mechanisms also need to be considered, such as flow control at the stream level in QUIC.</t>
+		</section>
+		
+		<section anchor="sec:quic-4-sat-loss" title="Reliability">
+		<t>Packet loss detection and loss repair will consume additional time on paths with a larger RTT. The RTT also determines the time needed by a server to react to a congestion event. Both can impact the user experience. For example, when a user uses a Wi-Fi link to access the Internet via SATCOM terminal.</t>
+		<t> End-to-end packet Forward Error Correction offers an alternative to retransmission with different tradeoffs in terms of utilised capacity and repair capability.</t>
+		<t>Network coding as proposed in <xref target="I-D.swett-nwcrg-coding-for-quic"></xref> and <xref target="I-D.roca-nwcrg-rlc-fec-scheme-for-quic"></xref> could help QUIC recover from link or congestion loss. Another approach could utilise QUIC tunnels <xref target="I-D.schinazi-masque"></xref> to apply FEC to all or a part of the end-to-end path.</t>
+		<t>The benefits of introducing FEC need to weighed against the additional capacity introduced by end-to-end FEC and the opportunity to use link-local ARQ and/or link-adaptive FEC. A transport connections can suffer link-related losses from a particular link (e.g., Wi-Fi), but also congestion loss (e.g. router buffer overflow in a satellite operator ground segment or along an Internet path).  Mechanisms have been proposed in <xref target="I-D.ferrieux-hamchaoui-quic-lossbits"></xref>, to identify congestion losses in the ground segment.</t>
+		</section>
+
+		<section anchor="sec:quic-4-sat-ack-ratio" title="ACK ratio">
+		<t>Asymmetry in capacity (or in the way capacity is granted to a flow) can lead to cases where the transmission in one direction of communication is restricted by the transmission of the acknowledgment traffic flowing in the opposite direction. A network segment could present limitations in the volume of acknowledgment traffic (e.g., limited available return path capacity) or in the number of acknowledgment packets (e.g., when a radio-resource management system has to track channel usage), or both.</t>
+		<t>TCP Performance Implications of Network Path Asymmetry <xref target="RFC3449"></xref> describes a range of mechanisms that have been used to mitigate the impact of path asymmetry, primarily targeting operation of TCP. </t>
+		<t>Many mitigations have been deployed in satellite systems, often as a mechanism within a PEP. Despite their benefits over paths with high asymmetry, most mechanisms rely on being able to inspect and/or modify the transport layer header information of TCP ACK packets. This is not possible when the transport layer information is encrypted (e.g., using an IP VPN).</t>
+		<t> One simple mitigation is for the remote endpoint to send compound acknowledgments less frequently. A rate of one ACK every RTT/4 can significantly reduce this traffic. The QUIC transport specification may evolve to allow the ACK Ratio to be adjusted. </t>
+		</section>
+
+	</section>
+
+	<!-- ######################################################-->
+        <!-- New section -->
+        <!-- ######################################################-->
+        
+        <section anchor="sec:discussion" title="Discussion">
+	<t>Many of the issues identified for high BDP paths already exist when using an encrypted transport service over a path that employs encryption at the IP layer. This includes endpoints that utilise IPsec at the network layer, or use VPN technology over a satellite network segment. These uses are unable to benefit from enhancement within the satellite network segment, and often the user is unaware of the presence of the satellite link on their path, except through observing the impact it has on the performance they experience.</t>
+	<t>One solution would be to provide PEP functions at the termination of the security association (e.g., in a VPN client). Another solution could be to fall-back to using TCP (possibly with TLS or similar methods being used on the transport payload). A different solution could be to deploy and maintain a bespoke protocol tailored to high BDP environments. In the future, we anticipate that fall-back to TCP will become less desirable, and methods that rely upon bespoke configurations or protocols will be unattractive. In parallel, new methods such as QUIC will become widely deployed. The opportunity therefore exists to ensure that the new generation of protocols offer acceptable performance over high BDP paths without requiring operating tuning or specific updates by users.</t>
+	</section>
+
+        <!-- ######################################################-->
+        <!-- ######################################################-->
+        <!-- Tail of the document -->
+        <!-- ######################################################--> 
+        <!-- ######################################################--> 
+
+	<section anchor="sec:acknowledgments" title="Acknowledgments">
+	<t>The authors would like to thank Christian Huitema, Igor Lubashev, Alexandre Ferrieux, Francois Michel, Emmanuel Lochin and the participants of the IETF106 side-meeting on QUIC for high BDP for their useful feedbacks.</t>
+	</section>
+
+	<section anchor="sec:ecurity" title="Security Considerations">
+	<t>This document does not propose changes to the security functions provided by the QUIC protocol. QUIC uses TLS encryption to protect the transport header and its payload. Security is considered in the "Security Considerations" of cited IETF documents.</t>
+	</section>
+	</middle>
+
+	<!--  *****BACK MATTER ***** -->
+	<back>
+	<!-- References split into informative and normative -->
+	<!-- There are 2 ways to insert reference entries from the citation libraries:
+	1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+	2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+	(for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+	Both are cited textually in the same manner: by using xref elements.
+	If you use the PI option, xml2rfc will, by default, try to find included files in the same
+	directory as the including file. You can also define the XML_LIBRARY environment variable
+	with a value containing a set of directories to search.  These can be either in the local
+	filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+	<!-- <references title="Normative References">
+		&RFC2119;
+	</references> -->
+
+	<references title="Informative References">
+		<?rfc include="reference.RFC.2488.xml"?>
+		<?rfc include="reference.RFC.3135.xml"?>
+		<?rfc include="reference.RFC.3449.xml"?>
+		<!-- <?rfc include="reference.RFC.6349.xml"?> -->
+		<!-- <?rfc include="reference.RFC.6534.xml"?> -->
+		<?rfc include="reference.RFC.6928.xml"?>
+		<!-- <?rfc include="reference.RFC.7928.xml"?> -->
+		<!-- <?rfc include="reference.RFC.8446.xml"?> -->
+		<?rfc include="reference.I-D.swett-nwcrg-coding-for-quic.xml"?> 
+		<?rfc include="reference.I-D.roca-nwcrg-rlc-fec-scheme-for-quic.xml"?>
+		<?rfc include="reference.I-D.schinazi-masque.xml"?>
+		<?rfc include="reference.I-D.ferrieux-hamchaoui-quic-lossbits.xml"?> 
+		<!-- <?rfc include="reference.I-D.ietf-quic-tls.xml"?> -->
+		<!-- <?rfc include="reference.I-D.ietf-quic-transport.xml"?> -->
+		<?rfc include="reference.I-D.ietf-quic-recovery.xml"?> 
+		<!-- <?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?> -->
+		<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
+                <reference anchor="PANRG105">
+                    <front>
+                    <title>QUIC Over In-sequence Paths with Different Characteristics</title>
+                    <author initials="N" surname="Kuhn">
+                    </author>
+	 	    <author initials="E" surname="Stephan">
+                    </author>
+		    <author initials="J" surname="Border">
+                    </author>
+	 	    <author initials="G" surname="Fairhurst">
+                    </author>
+                    <date year="2019" />
+                    </front>
+                    <seriesInfo name="IRTF PANRG" value="105" />
+                </reference>
+		<reference anchor="ICCRG100">
+                    <front>
+                    <title>MPTCP and BBR performance over Internet satellite paths</title>
+                    <author initials="N" surname="Kuhn">
+                    </author>
+                    <date year="2017" />
+                    </front>
+                    <seriesInfo name="IETF ICCRG" value="100" />
+                </reference>
+		<reference anchor="IJSCN17">
+                    <front>
+                    <title>Software-defined satellite cloud RAN</title>
+                    <author initials="T" surname="Ahmed">
+                    </author>
+                    <author initials="E" surname="Dubois">
+                    </author>
+		    <author initials="JB" surname="Dupe">
+                    </author>
+		    <author initials="R" surname="Ferrus">
+                    </author>
+	            <author initials="P" surname="Gelard">
+                    </author>
+                    <author initials="N" surname="Kuhn">
+		    </author>
+                    <date year="2017" />
+                    </front>
+                    <seriesInfo name="International Journal of Satellite Communications and Networking" value="" />
+		</reference>
+		 <reference anchor="IJSCN19">
+                    <front>
+                    <title>Google QUIC performance over a public SATCOM access</title>
+                    <author initials="L" surname="Thomas">
+                    </author>
+                    <author initials="E" surname="Dubois">
+                    </author>
+                    <author initials="N" surname="Kuhn">
+                    </author>
+                    <author initials="E" surname="Lochin">
+                    </author>
+                    <date year="2019" />
+                    </front>
+                    <seriesInfo name="International Journal of Satellite Communications and Networking" value="" />
+                </reference>
+                <reference anchor="CONEXT15">
+                    <front>
+                    <title>Halfback: Running Short Flows Quickly and Safely</title>
+		    <author initials="Q" surname="Li">
+                    </author>
+		    <author initials="M" surname="Dong">
+                    </author>
+		    <author initials="P B" surname="Godfrey">
+                    </author>
+                    <date year="2015" />
+                    </front>
+                    <seriesInfo name="ACM CoNEXT" value="" />
+                </reference>
+                <reference anchor="NCT13">
+                    <front>
+                    <title>A new survey on improving TCP performances over geostationary satellite link</title>
+                    <author initials="A" surname="Pirovano">
+                    </author>
+                    <author initials="F" surname="Garcia">
+                    </author>
+                    <date year="2013" />
+                    </front>
+                    <seriesInfo name="Network and Communication Technologies" value=""/>
+                </reference>
+                <reference anchor="ICC16">
+                    <front>
+                    <title>Reducing web latency through TCP IW: Be smart</title>
+                    <author initials="R" surname="Sallantin">
+                    </author>
+                    <author initials="C" surname="Baudoin">
+                    </author>
+                    <author initials="E" surname="Chaput">
+                    </author>
+                    <author initials="F" surname="Arnal">
+                    </author>
+                    <author initials="E" surname="Dubois">
+                    </author>
+                    <author initials="A-L" surname="Beylot">
+                    </author>
+                    <date year="2016" />
+                    </front>
+                    <seriesInfo name="IEEE ICC" value=""/>
+                </reference>
+       	</references>
+	</back>
+</rfc>

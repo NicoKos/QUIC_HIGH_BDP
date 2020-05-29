@@ -14,7 +14,7 @@ Expires: November 30, 2020                        University of Aberdeen
 
 
                             QUIC for SATCOM
-                        draft-kuhn-quic-4-sat-05
+                        draft-kuhn-quic-4-sat-06
 
 Abstract
 
