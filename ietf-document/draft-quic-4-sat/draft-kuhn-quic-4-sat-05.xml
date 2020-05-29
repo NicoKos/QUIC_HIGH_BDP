@@ -89,8 +89,9 @@
         <!-- ######################################################--> 
         <!-- ######################################################--> 
 	<abstract>
-	<t>QUIC has been designed for use across Internet paths. Initial designs of QUIC have focussed on common deployment scenarios for web traffic and have not focussed on the performance when using a path with a large Bandwidth-Delay Product (BDP). A path can combine satellites network segment together with a wide variety of other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc): this complicates the characteristics of the end-to-end path. One example of such a scenario occurs when a satellite communication (SATCOM) system is used to provide all or a part of the end-to-end path. If this is not addressed, the end-to-end quality of experience can be degraded.</t>
-        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol. It proposes regression tests to evaluate QUIC over SATCOM links. It discusses how to ensure acceptable protocol performance.</t>
+	<t>QUIC has been designed for use across Internet paths.  Initial designs of QUIC focussed on common deployment scenarios for web traffic. This document focusses on the performance when using a path with a large Bandwidth-Delay Product (BDP).</t>
+	<t>A large BDP path can result from using a satellite communication (SATCOM) system. The BDP is also high for paths where a satellite network segment is combined with other network technologies (Ethernet, cable modems, WiFi, cellular, radio links, etc), resulting in more complex characteristics.  These path characteristics have implications on the efficiency of the network traffic and unless considered in a design can impact the end-to-end quality of experience by the transport service.</t>
+        <t>This memo identifies the characteristics of a SATCOM link that impact the operation of the QUIC transport protocol.  It proposes regression tests to evaluate QUIC over SATCOM links.  It discusses how to ensure acceptable protocol performance.</t>
 	</abstract>
   </front>
 
@@ -121,15 +122,16 @@
 		<t>Employ radio resource management (often using techniques similar to cellular mobile or DOCSIS cable networks, but differing to accommodate the satellite propagation delay);</t>
 		<t>Links can be highly asymmetric (in terms of capacity, one-way delay and in their cost of operation).</t>
 	</list></t>
-	<t>Many systems use the DVB-S2 specifications, published by the European Telecomunications Standards Institute (ETSI), where the key concept is to ensure both a good usage of the satellite resource and a Quasi Error Free (QEF) link. It consists of monitoring the link quality in real-time, with the help of known symbol sequences, included along with regular packets, on which an estimation of the current signal-to-noise ratio can be done. Then, this estimation is sent back to the transmitter that can adapt its coding rate and modulation in order to best fit the actual transmission conditions.</t>
-	<t>It is common to consider the satellite network segment composed of a forward link and a return link. The two links can have different capacities and employ different technologies to carry the IP packets. On the forward link, the satellite gateway uses all the available bandwidth, possibly with several carriers, to communicate with the remote terminals. A carrier is a single Time-Division-Multiplexing channel where packets addressed to terminals are multiplexed. On the return link, the satellite resource is shared among the users. Two access methods can be distinguished: on-demand access or contention access. In the former, a terminal receives dedicated resources on its own to communicate with the gateway. In the latter, some resources are reserved for contention access, where several terminals can compete to obtain the resource. Dedicated access, which is more common in currently deployed systems, can be through a Demand Assigned Multiple Access (DAMA) mechanism, while contention access techniques are usually based on Slotted Aloha (SA) and its numerous derivatives. More information on satellite links characteristics can be found in <xref target="RFC2488"></xref><xref target="IJSCN17"></xref>.</t>
+	<t>Many systems use the DVB-S2 specifications, published by the European Telecomunications Standards Institute (ETSI), where the key concept is to ensure both a good usage of the satellite resource and a Quasi Error Free (QEF) link.  These systems typically monitor the link quality in real-time, with the help of known symbol sequences, included along with regular packets, which enable an estimation of the current signal-to-noise ratio.  This estimation is then fedback allowing the transmitting link to adapt its coding rate and modulation to the actual transmission conditions.</t>
+	<t>It is common to consider the satellite network segment composed of a forward link and a return link. The two links can have different capacities and employ different technologies to carry the IP packets.</t>
+	<t>On the forward link, the satellite gateway often uses all the available bandwidth, possibly with several carriers, to communicate with a set of remote terminals.  A carrier is a single Time-Division-Multiplexing channel that multiplexes packets addressed to specific terminals.  On the return link, satellite resource is shared among the terminals.  Two access methods can be distinguished: on-demand access or contention access.  In the former, a terminal receives dedicated transmission resources (usually to send to the gateway). In the latter, some resources are reserved for contention access, where a set of terminals are allowed to compete to obtain transmission resource. Dedicated access, which is more common in currently deployed systems, can be through a Demand Assigned Multiple Access (DAMA) mechanism, while contention access techniques are usually based on Slotted Aloha (SA) and its numerous derivatives.  More information on satellite links characteristics can be found in <xref target="RFC2488"></xref><xref target="IJSCN17"></xref>.</t>
 		
-	<t>Beyond that, even for characteristics shared with terrestrial links, the impact on a satellite link could be more and can be amplified by the large RTT. For example, systems can exhibit a high loss-rate (e.g. mobile users or users behind a Wi-Fi link) which would impact loss recovery mechanisms and congestion control reaction to such loss events. The characteristics of a GEO SATCOM system impact the performance of congestion control:<list style="symbols">
-		<t>Transport initialization: the 3-way handshake takes a long time to complete, delaying the time at which actual data can be transmitted (there could be other transport protocol exchanges, such as TLS);</t>
-		<t>Size of windows required: to fully exploit the bottleneck capacity, a high BDP will increase the number of in-flights packets;</t>
+	<t>Beyond that, even for characteristics shared with terrestrial links, the impact on a satellite link could be more and can be amplified by the large RTT. For example, systems can exhibit a high loss-rate (e.g., a mobile user or a user behind a Wi-Fi link), where additional delay can impact transport mechanisms.<list style="symbols">
+		<t>Transport initialization: the 3-way handshake takes a longer time to complete, delaying the time to send data (several transport protocol exchanges may be needed, such as TLS);</t>
+		<t>Size of windows required: to fully exploit the bottleneck capacity, a high BDP requires a larger number of in-flight packets;</t>
 		<t>Reliability: packet loss detection and correction is slow (the performance of end-to-end retransmission is also impacted when using a high RTT path);</t>
-		<t>Getting up to speed: the exponential increase of the data rate during slow start for a channel capacity probing is slowed down when the RTT is high;</t>
-		<t>Asymmetry : when the links are asymmetric, for various reasons, the sizing of the return link may induce modifications of the transport level acknowledgement traffic.</t>
+		<t>Getting up to speed: many congestion control methods employ an exponential increase in the sending rate during slow start (for path capacity probing), a high RTT will increase the time to reach a specific rate;</t>
+		<t>Asymmetry : when the links are asymmetric, for various reasons, the the return path may modify the rate and/timing of transport acknowledgement traffic, potentially changing behaviour (e.g., limiting the forward sending rate).</t>
 	</list></t>
 
 	</section>
@@ -140,11 +142,15 @@
         
         <section anchor="sec:tcp_split_solution" title="TCP Split Solution">
 
-	<t>High BDP networks commonly break the TCP end-to-end paradigm to adapt the transport protocol. Splitting TCP allows adaptations to this specific use-case and assessing the issues discussed in section <xref target="sec:large_bdp_connection"></xref>. Satellite communications commonly deploy Performance Enhancement Proxy (PEP) for compression, caching and TCP acceleration services <xref target ="RFC3135"></xref>. Their deployment can result in 50% page load time reduction in a SATCOM use-case <xref target="ICCRG100"></xref>.</t>
+	<t>High BDP networks commonly break the TCP end-to-end paradigm to adapt the transport protocol. Splitting a TCP connection allows adaptation for a specific use-case and to address the issues discussed in section <xref target="sec:large_bdp_connection"></xref>. Satellite communications commonly deploy Performance Enhancement Proxy (PEP) for compression, caching and TCP acceleration services <xref target ="RFC3135"></xref>. Their deployment can result in significant performance improvement (e.g., a 50% page load time reduction in a SATCOM use-case <xref target="ICCRG100"></xref>.</t>
 
-	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functions of SATCOM TCP split solutions. Shortly, for traffic originated at a gateway to an endpoint connected via a satellite terminal, the TCP split intercepts TCP SYN packets to act on behalf of the endpoint and adapt the data rate transmission to the SATCOM scenario. The split solution specifically tunes the TCP parameters to the context (latency, available capacity) of each link.  When a PEP is used on each side of the satellite link, a protocol other than TCP, optimized for the satellite link, may be used. The tuning can be achieved using a priori information about the satellite system and/or by measuring the properties of the network segment that includes the satellite system. Split connections also allow for recovery from packet losses that is local to the part of the connection on which the packet losses occurred. This eliminates the need for end-to-end recovery of lost packets.</t>
+	<t><xref target="NCT13"></xref> and <xref target="RFC3135"></xref> describe the main functions of SATCOM TCP split solutions. Shortly, for traffic originated at a gateway to an endpoint connected via a satellite terminal, the TCP split proxy intercepts TCP SYN packets, acting on behalf of the endpoint and adapts the sending rate to the SATCOM scenario.  The split solution can specifically tune TCP parameters to the satellite link (latency, available capacity).</t>
+		
+	<t>When a proxy is used on each side of the satellite link, the transport protocol can be replace by a protocol other than TCP, optimized for the satellite link.  This can be tuned using a priori information about the satellite system and/or by measuring the properties of the network segment that includes the satellite system.</t>
 
-	<t>One important advantage of a TCP split solution is that it does not require any end-to-end modifications and is independent for both client and server sides. That being said, this comes with a drawback: TCP splitters often are unable to track the most recent end-to-end improvements in protocol mechanisms (e.g., RACK, ECN, TCP Fast Open support) contributing to ossification of the transport system. The methods configured in the split proxy usually continue to be used until a split solution is finally updated. This can delay/negate the benefit of any end-to-end improvements.</t> 
+	<t> Split connections can also recover from packet loss that is local to the part of the connection on which the packet losses occur.  This eliminates the need for end-to-end recovery of lost packets.</t>
+		
+	<t>One important advantage of a TCP split solution is that it does not require any end-to-end modification and is independent of both the client and server sides.  This comes with a drawback: TCP splitters are often unable to track end-to-end improvements in protocol mechanisms (e.g., RACK, ECN, TCP Fast Open support). Methods configured in the split proxy usually continue to be used until a split solution is finally updated.  This can delay/negate the benefit of any end-to-end improvements, contributing to ossification of the transport system.</t> 
 
 	</section>
 
@@ -154,9 +160,9 @@
         
         <section anchor="sec:quic-4-sat-regression" title="Regression tests">
 	
-	<t>This section proposes regression tests for QUIC. We define by:<list style="symbols">
-		<t>Download path: from Internet to host</t>
-		<t>Upload path: from the host to Internet</t>
+	<t>This section proposes a set of regression tests for QUIC that consider high BDP scenarios. We define by:<list style="symbols">
+		<t>Download path: from Internet to the client endpoint;</t>
+		<t>Upload path: from the client endpoint to a server (e.g., in the Internet).</t>
 	</list></t>
 	
 	<!-- <section anchor="sec:quic-4-sat-regression-static-small" title="Small public satellite broadband access">
@@ -179,15 +185,15 @@
 	</section> -->
 
 	<section anchor="sec:quic-4-sat-regression-static-medium" title="Medium public satellite broadband access">
-		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
 			<t>Satellite downlink path: 50 Mbps</t>
 			<t>Satellite uplink path: 10 Mbps</t>
 			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the uploading and the downloading time of 2 MB, 10 MB and 100 MB.</t>
-		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+		<t>During the transmission of 100 MB on the download path, the test should report the upload and the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
 			<t>3 s for downloading 2 MB</t>
 			<t>5 s for downloading 10 MB</t>
 			<t>20 s for downloading 100 MB</t>
@@ -199,15 +205,15 @@
 
 	<section anchor="sec:quic-4-sat-regression-static-medium-cong" title="Congested medium public satellite broadband access">
 		<t>There are cases where the uplink path is congested or where the capacity of the uplink path is not guaranteed.</t>
-		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
 			<t>Satellite downlink path: 50 Mbps</t>
 			<t>Satellite uplink path: 0.5 Mbps</t>
 			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
-		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
 			<t>TBD s for downloading 2 MB</t>
 			<t>TBD s for downloading 10 MB</t>
 			<t>TBD s for downloading 100 MB</t>
@@ -216,15 +222,15 @@
 
 	<section anchor="sec:quic-4-sat-regression-static-medium-vari" title="Variable medium public satellite broadband access">
 		<t>There are cases where the downlink path is congested or where, due to link layer adaptations to rain fading, the capacity of the downlink path is variable.</t>
-		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
 			<t>Satellite downlink path: 50 Mbps - wait 5s - 10 Mbps</t>
 			<t>Satellite uplink path: 10 Mbps</t>
 			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
-		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
 			<t>TBD s for downloading 2 MB</t>
 			<t>TBD s for downloading 10 MB</t>
 			<t>TBD s for downloading 100 MB</t>
@@ -232,15 +238,15 @@
 	</section>
 		
 	<section anchor="sec:quic-4-sat-regression-static-large" title="Loss-free large public satellite broadband access">
-		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
 			<t>Satellite downlink path: 250 Mbps</t>
 			<t>Satellite uplink path: 3 Mbps</t>
 			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB. Then, after 10 seconds, repeat the transmission of 100 MB on the download path where the downloading times of 2 MB, 10 MB and 100 MB are recorded.</t>
-		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB. Then, after 10 seconds, repeat the transmission of 100 MB on the download path where the download time for 2 MB, 10 MB and 100 MB is recorded.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
 			<t>3 s for the first downloading 2 MB</t>
 			<t>5 s for the first downloading 10 MB</t>
 			<t>8 s for the first downloading 100 MB</t>
@@ -251,7 +257,7 @@
 	</section>
 		
 	<section anchor="sec:quic-4-sat-regression-static-large-loss" title="Lossy large public satellite broadband access">
-		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
 			<t>Satellite downlink path: 250 Mbps</t>
 			<t>Satellite uplink path: 3 Mbps</t>
 			<t>Emulated packet loss on both downlink and uplink paths:<list style="symbols">
@@ -261,8 +267,8 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
-		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
 			<t>3 s for downloading 2 MB (uniform transmission link losses)</t>
 			<t>6 s for downloading 10 MB (uniform transmission link losses)</t>
 			<t>10 s for downloading 100 MB (uniform transmission link losses)</t>
@@ -281,24 +287,27 @@
         <section anchor="sec:quic-4-sat" title="Mechanisms that improve the performance of QUIC for SATCOM">
 
 		<section anchor="sec:quic-4-sat-ss" title="Getting up to speed">
-		<t>The advantage of using QUIC is that it includes the TLS and TCP negotiations that reduce the time at which the data can be transmitted. That being said, results of <xref target="IJSCN19"></xref> illustrate that it will take many RTTs for the congestion controller to increase the rate before it fills the bottleneck capacity. This dominates performance when a path has a large RTT (as in GEO SATCOM networks). There can be an issue in QUIC getting up to speed in a SATCOM context if the congestion and flow controls are not adapted.</t>
-		<t>The tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref> could be a relevant solution. That being said, such solution requires the usage of pacing to avoid important bursts of packets in a network that does not have a large BDP.</t>
+		<t>QUIC has an advantage that the TLS and TCP negotiations can be completed during the transport connection handshake. This can reduce the time to transmit the first data. Results of <xref target="IJSCN19"></xref> illustrate that it can still take many RTTs for a CC to increase the sending rate to fill the bottleneck capacity. The delay in getting up to speed can dominate performance for a path with a large RTT, and requires the congestion and flow controls to accommodate the impact of path delay.</t>
+		<t>One relevant solution is tuning of the initial window described in <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref>, which has been shown to improve performance both for high BDP and more common BDP <xref target="CONEXT15"></xref><xref target="ICC16"></xref>. Such a solution requires using sender pacing to avoid generating bursts of packets in a network.</t>	
 		</section>
 
 		<section anchor="sec:quic-4-sat-max-window" title="Maximum window">
-		<t>A large number of in-flight packets are prewired to fully exploit the bottleneck capacity, when there is a large BDP. Default values of maximum windows may not be suitable for a SATCOM context.</t>
+		<t>The number of in-flight packets required to fill a bottleneck capacity, is dependent on the BDP. Default values of maximum windows may not be suitable for a SATCOM context.</t>
 		<t>Such as presented in <xref target="PANRG105"></xref>, only increasing the initial congestion window is not the only way that can improve QUIC performance in a SATCOM context: increasing maximum congestion windows can also result in much better performance. Other protocol mechanisms also need to be considered, such as flow control at the stream level in QUIC.</t>
 		</section>
 		
 		<section anchor="sec:quic-4-sat-loss" title="Reliability">
-		<t>Packet loss detection and loss repair take additional time on paths with a larger RTT. This increases the time that a server needs to react to a congestion event. Both can impact the user experience. This happens when a user uses a Wi-Fi link to access a SATCOM terminal. Although the benefits need to weighed against the additional capacity in introducing end-to-end FEC and the potential to use link-local ARQ and/or link-adaptive FEC. End-to-end connections may suffer from losses not only in the Wi-Fi segment, but also from congestion losses in the satellite operator ground segment (and even on the Internet itself). Using the mechanisms proposed in <xref target="I-D.ferrieux-hamchaoui-quic-lossbits"></xref>, congestion losses have been identified on the ground segment.</t>
-		<t>Introducing network coding in QUIC such as proposed in <xref target="I-D.swett-nwcrg-coding-for-quic"></xref> and <xref target="I-D.roca-nwcrg-rlc-fec-scheme-for-quic"></xref> could help in recovering from the residual Wi-Fi or congestion losses. Another solution would be the usage of QUIC tunnels <xref target="I-D.schinazi-masque"></xref>.</t>
+		<t>Packet loss detection and loss repair will consume additional time on paths with a larger RTT. The RTT also determines the time needed by a server to react to a congestion event. Both can impact the user experience. For example, when a user uses a Wi-Fi link to access the Internet via SATCOM terminal.</t>
+		<t> End-to-end packet Forward Error Correction offers an alternative to retransmission with different tradeoffs in terms of capacity untilised and repair capability.</t>
+		<t>Network coding as proposed in <xref target="I-D.swett-nwcrg-coding-for-quic"></xref> and <xref target="I-D.roca-nwcrg-rlc-fec-scheme-for-quic"></xref> could help QUIC recover from link or congestion loss. Another approach could utilise QUIC tunnels <xref target="I-D.schinazi-masque"></xref> to apply FEC to all or a part of the end-to-end path.</t>
+		<t>The benefits of introducing FEC need to weighed against the additional capacity introduced by end-to-end FEC and the opportunity to use link-local ARQ and/or link-adaptive FEC. A transport connections can suffer link-related losses from a particular link (e.g., Wi-Fi), but also congestion loss (e.g. router buffer overflow in a satellite operator ground segment or along an Internet path).  Mechanisms have been proposed in <xref target="I-D.ferrieux-hamchaoui-quic-lossbits"></xref>, to identify congestion losses in the ground segment.</.t>
 		</section>
 
 		<section anchor="sec:quic-4-sat-ack-ratio" title="ACK ratio">
-		<t>Asymmetry in capacity (or in the way capacity is granted to a flow) can lead to cases where the throughput in one direction of communication is restricted by the acknowledgement traffic flowing in the opposite direction. The limitations of specific underlying networks could be in terms of the volume of acknowledgement traffic (limited return path capacity) or in the number of acknowledgement packets (e.g., when a radio-resource management system has to track channel usage) or both.</t>
-		<t>TCP Performance Implications of Network Path Asymmetry <xref target="RFC3449"></xref> describes a range of mechanisms that can mitigate the impact of path asymmetry. One simple method is to tell the remote endpoint to send compound acknowledgments less frequently. A rate of one ACK every RTT/4 can significantly reduce this traffic.</t>
-		<t>Many of these mitigations have been deployed in satellite systems, often as a mechanism within a PEP. Despite their benefits over paths with a high asymmetry of capacity, most mechanisms rely on being able to inspect and/or modify the transport layer header information of TCP ACK packets. This is not possible when the transport layer information is encrypted. The QUIC transport specification may evolve to allow the ACK Ratio to be adjusted.</t>
+		<t>Asymmetry in capacity (or in the way capacity is granted to a flow) can lead to cases where the transmission in one direction of communication is restricted by the transmission of the acknowledgement traffic flowing in the opposite direction. A network segment could present limitations in the volume of acknowledgement traffic (e.g., limited available return path capacity) or in the number of acknowledgement packets (e.g., when a radio-resource management system has to track channel usage), or both.</t>
+		<t>TCP Performance Implications of Network Path Asymmetry <xref target="RFC3449"></xref> describes a range of mechanisms that have been used to mitigate the impact of path asymmetry, primarilly targeting operation of TCP. </t>
+		<t>Many mitigations have been deployed in satellite systems, often as a mechanism within a PEP. Despite their benefits over paths with high asymmetry, most mechanisms rely on being able to inspect and/or modify the transport layer header information of TCP ACK packets. This is not possible when the transport layer information is encrypted (e.g., using an IP VPN).</t>
+		<t> One simple mitigation is for the remote endpoint to send compound acknowledgments less frequently. A rate of one ACK every RTT/4 can significantly reduce this traffic. The QUIC transport specification may evolve to allow the ACK Ratio to be adjusted. </t>
 		</section>
 
 	</section>
@@ -308,10 +317,8 @@
         <!-- ######################################################-->
         
         <section anchor="sec:discussion" title="Discussion">
-
-	<t>Many of the issues identified already exist for any encrypted transport service that uses a path that employs encryption at the IP layer. This includes endpoints that utilise IPsec at the network layer, or use VPN technology over the satellite network segment. These uses are unable to benefit from enhancement within the satellite network segment, and often the user is unaware of the presence of the satellite link on their path, except through observing the impact it has on the performance they experience.</t>
-	<t>One solution would be to provide PEP functions at the termination of the security association (e.g., in a VPN client). Another solution could be to fall-back to using TCP (possibly with TLS or similar methods being used on the transport payload). A final solution could be to deploy and maintain a bespoke protocol tailored to high BDP environments. In the future, we anticipate that fall-back will become less desirable, and methods that rely upon bespoke configurations or protocols will be unattractive. In parallel, new methods such as QUIC will become widely deployed. The opportunity therefore exists to ensure that the new generation of protocols offer acceptable performance over high BDP paths without requiring operating tuning or specific updates by users.</t>
-	
+	<t>Many of the issues identified for high BDP paths already exist when using an encrypted transport service over a path that employs encryption at the IP layer. This includes endpoints that utilise IPsec at the network layer, or use VPN technology over a satellite network segment. These uses are unable to benefit from enhancement within the satellite network segment, and often the user is unaware of the presence of the satellite link on their path, except through observing the impact it has on the performance they experience.</t>
+	<t>One solution would be to provide PEP functions at the termination of the security association (e.g., in a VPN client). Another solution could be to fall-back to using TCP (possibly with TLS or similar methods being used on the transport payload). A different solution could be to deploy and maintain a bespoke protocol tailored to high BDP environments. In the future, we anticipate that fall-back to TCP will become less desirable, and methods that rely upon bespoke configurations or protocols will be unattractive. In parallel, new methods such as QUIC will become widely deployed. The opportunity therefore exists to ensure that the new generation of protocols offer acceptable performance over high BDP paths without requiring operating tuning or specific updates by users.</t>
 	</section>
 
         <!-- ######################################################-->
