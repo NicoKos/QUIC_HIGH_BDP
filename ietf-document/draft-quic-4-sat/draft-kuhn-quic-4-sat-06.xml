@@ -165,15 +165,15 @@
 		<t>Upload path: from the client endpoint to a server (e.g., in the Internet).</t>
 	</list></t>
 	
-	<!-- <section anchor="sec:quic-4-sat-regression-static-small" title="Small public satellite broadband access">
-		<t>The characteristics of the architecture under test are the following:<list style="symbols"> 
+	<section anchor="sec:quic-4-sat-regression-static-small" title="Small public satellite broadband access">
+		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
 			<t>Satellite downlink path: 10 Mbps</t>
 			<t>Satellite uplink path: 2 Mbps</t>
 			<t>No emulated packet loss</t>
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on both download and upload paths, the test should report the downloading time of 2 MB, 10 MB and 100 MB.</t>
+		<t>During the transmission of 100 MB on both download and upload paths, the test should report the upload and download time of 2 MB, 10 MB and 100 MB.</t>
 		<t>Initial thoughts of the performance obectives for QUIC are the following:<list style="symbols">
 			<t>3 s for downloading 2 MB</t>
 			<t>10 s for downloading 10 MB</t>
@@ -182,7 +182,7 @@
 			<t>50 s for uploading 10 MB</t>
 			<t>420 s for uploading 100 MB</t>
 		</list></t>
-	</section> -->
+	</section>
 
 	<section anchor="sec:quic-4-sat-regression-static-medium" title="Medium public satellite broadband access">
 		<t>The tested scenario has the following path characteristics:<list style="symbols"> 
@@ -192,14 +192,11 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on both download and upload paths, the test should report the upload and the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
 		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
 			<t>3 s for downloading 2 MB</t>
 			<t>5 s for downloading 10 MB</t>
 			<t>20 s for downloading 100 MB</t>
-			<t>TBD s for uploading 2 MB</t>
-			<t>TBD s for uploading 10 MB</t>
-			<t>TBD s for uploading 100 MB</t>
 		</list></t>
 	</section>
 
