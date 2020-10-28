@@ -192,11 +192,14 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB. Then, to assess the performance of QUIC with the 0-RTT extension and its variants, after 10 seconds, repeat the transmission of 100 MB on the download path where the download time for 2 MB, 10 MB and 100 MB is recorded.</t>
 		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
-			<t>3 s for downloading 2 MB</t>
-			<t>5 s for downloading 10 MB</t>
-			<t>20 s for downloading 100 MB</t>
+			<t>3 s for the first downloading 2 MB</t>
+			<t>5 s for the first downloading 10 MB</t>
+			<t>20 s for the first downloading 100 MB</t>
+			<t>TBD s for the second downloading 2 MB</t>
+			<t>TBD s for the second downloading 10 MB</t>
+			<t>TBD s for the second downloading 100 MB</t>
 		</list></t>
 	</section>
 
@@ -211,29 +214,9 @@
 		</list></t>
 		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB.</t>
 		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
-			<t>3 s for downloading 2 MB (on initial download)</t>
-			<t>5 s for downloading 10 MB (on initial download)</t>
-			<t>20 s for downloading 100 MB (on initial download)</t>
-			<t>TBD s for downloading 2 MB (on the download with 0-RTT extension)</t>
-			<t>TBD s for downloading 10 MB (on initial download with 0-RTT extension)</t>
-			<t>TBD s for downloading 100 MB (on initial download with 0-RTT extension)</t>
-		</list></t>
-	</section>
-
-	<section anchor="sec:quic-4-sat-regression-static-medium-0rtt" title="0-RTT performance over medium public satellite broadband access">
-		<t>0-RTT mechanisms reduce the time it takes for the first bytes of application data to be processed in a transport connection and can greatly reduce connection latency during setup. The 0-RTT transport features described by quic-transport help clients establish secure connections with a minimal number of round-trips. There is a proposal for exchanging path parameters relating to transport <xref target="I-D.kuhn-quic-0rtt-bdp"></xref>.</t>
-		<t>This scenario aims at assessing the performance of QUIC with the 0-RTT extension and its variants. The tested scenario has the following path characteristics:<list style="symbols"> 
-			<t>Satellite downlink path: 50 Mbps</t>
-			<t>Satellite uplink path: 10 Mbps</t>
-			<t>No emulated packet loss</t>
-			<t>RTT: 650 ms</t>
-			<t>Buffer size : BDP</t>
-		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB. After a 5 seconds break, the transmission of 100 MB on the download path is repeated.</t>
-		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
-			<t>TBD s for downloading 2 MB</t>
-			<t>TBD s for downloading 10 MB</t>
-			<t>TBD s for downloading 100 MB</t>
+			<t>3 s for downloading 2 MB</t>
+			<t>5 s for downloading 10 MB</t>
+			<t>20 s for downloading 100 MB</t>
 		</list></t>
 	</section>
 	
@@ -262,7 +245,7 @@
 			<t>RTT: 650 ms</t>
 			<t>Buffer size : BDP</t>
 		</list></t>
-		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB. Then, after 10 seconds, repeat the transmission of 100 MB on the download path where the download time for 2 MB, 10 MB and 100 MB is recorded.</t>
+		<t>During the transmission of 100 MB on the download path, the test should report the download time for 2 MB, 10 MB and 100 MB. Then, to assess the performance of QUIC with the 0-RTT extension and its variants, after 10 seconds, repeat the transmission of 100 MB on the download path where the download time for 2 MB, 10 MB and 100 MB is recorded.</t>
 		<t>Initial thoughts of the performance objectives for QUIC are the following:<list style="symbols">
 			<t>3 s for the first downloading 2 MB</t>
 			<t>5 s for the first downloading 10 MB</t>
@@ -380,7 +363,6 @@
 		<!-- <?rfc include="reference.RFC.7928.xml"?> -->
 		<!-- <?rfc include="reference.RFC.8446.xml"?> -->
 		<?rfc include="reference.I-D.swett-nwcrg-coding-for-quic.xml"?> 
-		<?rfc include="reference.I-D.kuhn-quic-0rtt-bdp.xml"?> 
 		<?rfc include="reference.I-D.roca-nwcrg-rlc-fec-scheme-for-quic.xml"?>
 		<?rfc include="reference.I-D.schinazi-masque.xml"?>
 		<?rfc include="reference.I-D.ferrieux-hamchaoui-quic-lossbits.xml"?> 
