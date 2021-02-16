@@ -150,10 +150,10 @@
 			the handshake are used.</t>
 
 			<t>This document proposes an extension to the transport
-			parameters that are shared during the 0-RTT phase to
-			allow resumption using additionnal transport and connection
+			parameters that are shared during the 1-RTT phase. This
+			allows resumption using additionnal transport and connection
 			properties that were discovered in previous
-			connections. </t>
+			connections during the 0-RTT phase. </t>
 		</section>
 
 		<section anchor="sec:rationale" title="Motivation">

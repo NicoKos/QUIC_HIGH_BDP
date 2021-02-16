@@ -5,11 +5,11 @@
 Internet Engineering Task Force                                  N. Kuhn
 Internet-Draft                                                      CNES
 Intended status: Informational                                E. Stephan
-Expires: August 15, 2021                                          Orange
+Expires: August 20, 2021                                          Orange
                                                             G. Fairhurst
                                                                 T. Jones
                                                   University of Aberdeen
-                                                       February 11, 2021
+                                                       February 16, 2021
 
 
                Transport parameters for 0-RTT connections
@@ -37,14 +37,14 @@ Status of This Memo
    Internet-Drafts are working documents of the Internet Engineering
    Task Force (IETF).  Note that other groups may also distribute
    working documents as Internet-Drafts.  The list of current Internet-
-   Drafts is at https://datatracker.ietf.org/drafts/current/.
+   Drafts is at http://datatracker.ietf.org/drafts/current/.
 
    Internet-Drafts are draft documents valid for a maximum of six months
    and may be updated, replaced, or obsoleted by other documents at any
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 15, 2021.
+   This Internet-Draft will expire on August 20, 2021.
 
 
 
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 1]
+Kuhn, et al.             Expires August 20, 2021                [Page 1]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -65,7 +65,7 @@ Copyright Notice
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
-   (https://trustee.ietf.org/license-info) in effect on the date of
+   (http://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 2]
+Kuhn, et al.             Expires August 20, 2021                [Page 2]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -151,9 +151,9 @@ Internet-Draft             Transport for 0-RTT             February 2021
    established during the handshake are used.
 
    This document proposes an extension to the transport parameters that
-   are shared during the 0-RTT phase to allow resumption using
+   are shared during the 1-RTT phase.  This allows resumption using
    additionnal transport and connection properties that were discovered
-   in previous connections.
+   in previous connections during the 0-RTT phase.
 
 2.  Motivation
 
@@ -165,7 +165,7 @@ Internet-Draft             Transport for 0-RTT             February 2021
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 3]
+Kuhn, et al.             Expires August 20, 2021                [Page 3]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -221,7 +221,7 @@ Internet-Draft             Transport for 0-RTT             February 2021
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 4]
+Kuhn, et al.             Expires August 20, 2021                [Page 4]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -277,7 +277,7 @@ Internet-Draft             Transport for 0-RTT             February 2021
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 5]
+Kuhn, et al.             Expires August 20, 2021                [Page 5]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -333,7 +333,7 @@ Internet-Draft             Transport for 0-RTT             February 2021
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 6]
+Kuhn, et al.             Expires August 20, 2021                [Page 6]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -389,7 +389,7 @@ Internet-Draft             Transport for 0-RTT             February 2021
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 7]
+Kuhn, et al.             Expires August 20, 2021                [Page 7]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -445,7 +445,7 @@ Appendix A.  Example of server solution
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 8]
+Kuhn, et al.             Expires August 20, 2021                [Page 8]
 
 Internet-Draft             Transport for 0-RTT             February 2021
 
@@ -501,4 +501,4 @@ Authors' Addresses
 
 
 
-Kuhn, et al.             Expires August 15, 2021                [Page 9]
+Kuhn, et al.             Expires August 20, 2021                [Page 9]
