@@ -154,6 +154,14 @@
 			allows resumption using additionnal transport and connection
 			properties that were discovered in previous
 			connections during the 0-RTT phase. </t>
+
+			<t>The scenario could be the following:</t>
+			<t><list style="symbols">
+				<t>First connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the BDP extension frame;</t>
+				<t>At the end of the first connection: the server sends the BDP extensions frame to the client - both client and server can read the content of the BDP extension;</t>
+				<t>Second connection with 0-RTT: both client and server can retrieve the values stored in the BDP extension.</t>
+			</list></t>
+
 		</section>
 
 		<section anchor="sec:rationale" title="Motivation">
@@ -263,6 +271,7 @@
 				</t>
 
 			</list></t>
+
 		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
