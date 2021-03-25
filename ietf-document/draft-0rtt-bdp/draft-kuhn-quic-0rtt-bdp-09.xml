@@ -233,7 +233,7 @@
 				
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 			<t>Section 7.3.1 of <xref
-			target="I-D.ietf-quic-transport"></xref> describes the
+			target="I-D.ietf-quic-transport"></xref>describes the 
 			parameters that must be remembered if a client wishes to
 			send 0-RTT data.  Both endpoints store the value of the
 			server transport parameters from a previous connection and apply
