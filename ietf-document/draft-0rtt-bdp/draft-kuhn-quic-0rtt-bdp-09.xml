@@ -291,7 +291,7 @@
 			metadata extension that it received from the server
 			during the previous connection.</t>
 
-			<t>Refuse: A client could choose not to use there parameters. 
+			<t>Refuse: A client could choose not to use these parameters. 
 			Then, it does not support ingress
 			optimisation and drops the extension signal. A client that
 			disagrees with the extension parameters received from
