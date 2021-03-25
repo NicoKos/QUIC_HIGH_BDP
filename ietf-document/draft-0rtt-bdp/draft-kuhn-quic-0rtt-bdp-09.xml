@@ -91,8 +91,9 @@
 		<t>
 		This document describes a generic method to exchange path parameters relating to transport.
 		The additional transport parameters can help a connection that continues after
-		an interruption or restarts by sharing connection properties.
+		an interruption or restarts by sharing connection properties. 
 		They can be used to increase the performance for a path with large RTT.
+		This document discusses safety guidelines that should be considered when deploying this kind of solutions.
 		</t>
 	</abstract>
 	</front>
@@ -112,6 +113,8 @@
 			slow-start to determine a safe rate. This applies to the 
 			1-RTT mode of QUIC.
 			</t>
+
+			<section title="QUIC in 0-RTT mode">
 
 			<t> QUIC supports the sending of data in two different
 			modes, after the transport handshake has completed,
@@ -149,22 +152,16 @@
 			values are discarded and the values established during
 			the handshake are used.</t>
 
+			</section>
+
+			<section title="Motivation and scenario">
+
 			<t>This document proposes an extension to the transport
 			parameters that are shared during the 1-RTT phase. This
 			allows resumption using additionnal transport and connection
 			properties that were discovered in previous
 			connections during the 0-RTT phase. </t>
 
-			<t>The scenario could be the following:</t>
-			<t><list style="symbols">
-				<t>First connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the BDP extension frame;</t>
-				<t>At the end of the first connection: the server sends the BDP extensions frame to the client - both client and server can read the content of the BDP extension;</t>
-				<t>Second connection with 0-RTT: both client and server can retrieve the values stored in the BDP extension.</t>
-			</list></t>
-
-		</section>
-
-		<section anchor="sec:rationale" title="Motivation">
 			<t> Reducing the number of round-trips required to
 			start a connection is an important way to reduce setup
 			time and lower overall connection latency. 0-RTT
@@ -175,65 +172,41 @@
 			allowing the connection to short-cut slow RTT-based
 			processes that grow connection parameters.</t>
 
-			<t>Currently each side has a proprietary solution to
-			measure and to store path characteristics. Recalling
-			the parameters of a previous would allow the use-cases
-			presented in this section.</t> 
+			<t>The scenario could be the following:</t>
+			<t><list style="symbols">
+				<t>First connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the Bandwidth-Delay Product (BDP) extension frame;</t>
+				<t>At the end of the first connection: the server sends the BDP extensions frame to the client - both client and server can read the content of the BDP extension;</t>
+				<t>Second connection with 0-RTT: both client and server can retrieve the values stored in the BDP extension.</t>
+			</list></t>
+			<t>The server could use information from the
+				paths characteristics to adapt to
+				non-default path characteristics.
+				Moreover, some transport parameters may
+				not need to be re-estimated (i.e.
+				minRTT, MTU, bottleneck capacity,
+				etc.).</t>
 
-		<section anchor="subsec:rationale_client" title="Optimizing client's requests">
-				<t>In cases with Dynamic Adaptive Streaming over HTTPS (DASH), clients may encounter issues in knowing the available bandwidth or DASH can encounter issues in reaching the best available video playback quality. The client's requests could be adapted and specific traffic could use information from the paths characteristics (such as trying to impress the client with high quality videos, to fill the buffers and avoid video blocking or to send high quality adds).</t>
-				<t>In other cases, applications may provide additionnal services if clients can know the server's estimation of the path characteristics.</t>
-		</section>
+			</section>
 
-		<section anchor="subsec:rationale_jump" title="Safe jump start">
-				<t>The server could use information from the
-					paths characteristics to adapt to
-					non-default path characteristics.
-					Moreover, some transport parameters ma
-					not need to be re-estimated (i.e.
-					minRTT, MTU, bottleneck capacity,
-					etc.).</t>
-				<t>CDNs currently exploit a very high Initial
-					Window <xref target="TMA18"></xref>.
-					Using the knowledge of previous path
-					characteristics, CDN could:<list
-						style="symbols">
-						<t>adapt these values to save
-							resource at the server
-							and increase safely the
-							initial congestion
-							window such as proposed
-							in <xref
-								target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref><xref
-								target="CONEXT15"></xref>;</t>
-						<t>consider client's limitation
-							if the client decided
-							to reject the
-							extension.</t>
-					</list></t>
+			<section title="BDP and the need for a safe increase">
+
+			<t><xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput.</t>
+			<t>The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. As a result, the estimation of the BDP of the server would include the buffering in the network and would not be accurate. Moreover, network conditions may vary between 1-RTT and 0-RTT connections.</t>
+
+                        <t>
+                                This document discusses how to safely
+                                exploit the measured BDP in the 1-RTT
+                                connection for 0-RTT connections.
+                        </t>
+
+			</section>
 
 		</section>
+	
 
-		<section anchor="subsec:rationale_sharing" title="Sharing transport information accross multiple connections">
-				<t>There is an interest in sharing transport
-				information across multiple
-				connections. <xref
-					target="I-D.ietf-tcpm-2140bis"></xref>
-				considers the sharing of transport
-				parameters between connections
-				originating from the same host. The
-				proposal in this document have the
-				advantage of storing the information at
-				the client and not requiring the server
-				to retain additional state for each
-				client.</t>
-		</section>
-
-		</section>
-				
 		<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 			<t>Section 7.3.1 of <xref
-			target="I-D.ietf-quic-transport"></xref>describes the 
+			target="I-D.ietf-quic-transport"></xref> describes the 
 			parameters that must be remembered if a client wishes to
 			send 0-RTT data.  Both endpoints store the value of the
 			server transport parameters from a previous connection and apply
@@ -298,19 +271,44 @@
 			the server refuses the optimization.</t>
 		</section>
 
-		<section anchor="sec:other_parameter" title="Discussion">
-			<section anchor="subsec:other_param_relevance" title="Relevance of the transport parameter">
-				<t>The recon_bytes_in_flight parameter is
-					higher than the number of bytes in the
-					actual BDP since it may include bytes
-					in buffers along the path. That being
-					said, the recon_bytes_in_fight may be
-					lower than the actual value at the end
-					of a connection since there may be a
-					low amount of data to send to terminate
-					the transmission.</t>
-			</section>
+		<section title="Implementation considerations">
+			<t> TBD </t>
+		</section>
 
+		<section anchor="subsec:rationale_jump" title="Safe jump start">
+
+			<t>The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. The bytes in flight parameter that could be recalled from previous connection may be higher than the number of bytes in the BDP such as defined in <xref target="RFC6349"></xref> since it may include bytes in buffers along the path. Moreover, network conditions may vary between 1-RTT and 0-RTT connections.</t>
+			<t>The previously measured BDP should not be used as-is to avoid congestion collapse. Network conditions may vary between 1-RTT and 0-RTT connections. If the client accept the extension, the server could safely increase the initial congestion window. On a side note, CDNs currently exploit a very high Initial Window <xref target="TMA18"></xref>.</t>
+			
+				<t>The maximum number of initial data packets
+					that can be sent without acknowledgment
+					needs to be chosen to avoid congestion
+					collapse. A mechanism is needed to
+					ensure that the information sent by the
+					server is relevant and that network
+					conditions have not changed. The client
+					cannot change the values of the
+					extension.</t> 
+
+				<t>The initial window is considered a safe
+					starting point for an unknown path to
+					avoid adding congestion to a congested
+					network. If the reception of IW is
+					confirmed for the first RTT of data,
+					and also the path is determined to be
+					similar to that of a recent previous
+					session (e.g., similar RTT), the method
+					permits the sender to use the previous
+					path information as an input to help
+					determine a new safe rate. Another
+					safety net could be the pacing of
+					packets as a function of the estimated
+					RTT. This follows the ideas of <xref
+						target="I-D.cardwell-iccrg-bbr-congestion-control"></xref>
+					and <xref target="RFC4782"></xref>.</t>
+		</section>
+			
+		<section anchor="sec:other_parameter" title="Discussion">
 			<section anchor="subsec:other_param_client_pov" title="The client point-of-view">
 				<t>The client can read the values of the
 					extension. The client may want to
@@ -341,35 +339,29 @@
 					connection.</t>
 			</section>
 
-			<section anchor="subsec:other_param_safety" title="Congestion control safety">
-				<t>The maximum number of initial data packets
-					that can be sent without acknowledgment
-					needs to be chosen to avoid congestion
-					collapse. A mechanism is needed to
-					ensure that the information sent by the
-					server is relevant and that network
-					conditions have not changed. The client
-					cannot change the values of the
-					extension.</t> 
+		<section anchor="sec:rationale" title="Other use-cases">
+	
+			<section anchor="subsec:rationale_client" title="Optimizing client's requests">
+				<t>In cases with Dynamic Adaptive Streaming over HTTPS (DASH), clients may encounter issues in knowing the available bandwidth or DASH can encounter issues in reaching the best available video playback quality. The client's requests could be adapted and specific traffic could use information from the paths characteristics (such as trying to impress the client with high quality videos, to fill the buffers and avoid video blocking or to send high quality adds).</t>
+				<t>In other cases, applications may provide additionnal services if clients can know the server's estimation of the path characteristics.</t>
+		</section>
 
-				<t>The initial window is considered a safe
-					starting point for an unknown path to
-					avoid adding congestion to a congested
-					network. If the reception of IW is
-					confirmed for the first RTT of data,
-					and also the path is determined to be
-					similar to that of a recent previous
-					session (e.g., similar RTT), the method
-					permits the sender to use the previous
-					path information as an input to help
-					determine a new safe rate. Another
-					safety net could be the pacing of
-					packets as a function of the estimated
-					RTT. This follows the ideas of <xref
-						target="I-D.cardwell-iccrg-bbr-congestion-control"></xref>
-					and <xref target="RFC4782"></xref>.</t>
-			</section>
+		<section anchor="subsec:rationale_sharing" title="Sharing transport information accross multiple connections">
+				<t>There is an interest in sharing transport
+				information across multiple
+				connections. <xref
+					target="I-D.ietf-tcpm-2140bis"></xref>
+				considers the sharing of transport
+				parameters between connections
+				originating from the same host. The
+				proposal in this document have the
+				advantage of storing the information at
+				the client and not requiring the server
+				to retain additional state for each
+				client.</t>
+		</section>
 
+		</section>
 		</section>
 		
 		<section anchor="sec:acknowledgments" title="Acknowledgments">
@@ -415,8 +407,9 @@
 			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
 			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
 			<?rfc include="reference.I-D.ietf-tcpm-2140bis.xml"?>
-			<?rfc include="reference.RFC.4782.xml"?>
 			<?rfc include="reference.RFC.2914.xml"?>
+			<?rfc include="reference.RFC.4782.xml"?>
+			<?rfc include="reference.RFC.6349.xml"?>
 			<?rfc include="reference.I-D.cardwell-iccrg-bbr-congestion-control.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
