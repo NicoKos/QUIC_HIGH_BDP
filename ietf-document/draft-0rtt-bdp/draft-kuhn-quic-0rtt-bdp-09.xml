@@ -91,9 +91,9 @@
 		<t>
 		This document describes a generic method to exchange path parameters relating to transport.
 		The additional transport parameters can help a connection that continues after
-		an interruption or restarts by sharing connection properties. 
-		They can be used to increase the performance for a path with large RTT.
-		This document discusses safety guidelines that should be considered when deploying this kind of solutions.
+			an interruption or restarts by sharing connection properties.
+			 This can help servers to adapt to non-default path characteristics and to short-cut slow RTT-based processes.
+		This document discusses safety guidelines that should be considered when using these parameters for increasing egress traffic.
 		</t>
 	</abstract>
 	</front>
@@ -154,7 +154,17 @@
 
 			</section>
 
-			<section title="Motivation and scenario">
+			<section title="Scenario">
+
+			<t>The scenario could be the following:</t>
+			<t><list style="symbols">
+				<t>First connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the Bandwidth-Delay Product (BDP) extension frame;</t>
+				<t>At the end of the first connection: the server sends the BDP extensions frame to the client - both client and server can read the content of the BDP extension;</t>
+				<t>Second connection with 0-RTT: both client and server can retrieve the values stored in the BDP extension.</t>
+			</list></t>
+			</section>
+
+			<section title="Motivation">
 
 			<t>This document proposes an extension to the transport
 			parameters that are shared during the 1-RTT phase. This
@@ -170,21 +180,9 @@
 			total time-to-service. The BDP extension described in
 			this document aims to improve traffic delivery by
 			allowing the connection to short-cut slow RTT-based
-			processes that grow connection parameters.</t>
-
-			<t>The scenario could be the following:</t>
-			<t><list style="symbols">
-				<t>First connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the Bandwidth-Delay Product (BDP) extension frame;</t>
-				<t>At the end of the first connection: the server sends the BDP extensions frame to the client - both client and server can read the content of the BDP extension;</t>
-				<t>Second connection with 0-RTT: both client and server can retrieve the values stored in the BDP extension.</t>
-			</list></t>
-			<t>The server could use information from the
-				paths characteristics to adapt to
-				non-default path characteristics.
-				Moreover, some transport parameters may
-				not need to be re-estimated (i.e.
-				minRTT, MTU, bottleneck capacity,
-				etc.).</t>
+			processes that grow connection parameters. This can
+			result in significant web browsing experience improvement
+			and short file downloading time reduction.</t>
 
 			</section>
 
@@ -277,9 +275,21 @@
 
 		<section anchor="subsec:rationale_jump" title="Safe jump start">
 
-			<t>The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. The bytes in flight parameter that could be recalled from previous connection may be higher than the number of bytes in the BDP such as defined in <xref target="RFC6349"></xref> since it may include bytes in buffers along the path. Moreover, network conditions may vary between 1-RTT and 0-RTT connections.</t>
-			<t>The previously measured BDP should not be used as-is to avoid congestion collapse. Network conditions may vary between 1-RTT and 0-RTT connections. If the client accept the extension, the server could safely increase the initial congestion window. On a side note, CDNs currently exploit a very high Initial Window <xref target="TMA18"></xref>.</t>
-			
+			<section title="Rationale behind the safety guidelines">
+
+				<t>The server should carefully exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. Previously measured BDP should not be used as-is to avoid congestion collapse: <list style="symbols">
+					<t>The bytes in flight parameter that could be recalled from previous connection may be higher than the number of bytes in the BDP such as defined in <xref target="RFC6349"></xref> since it may include bytes in buffers along the path.</t>
+					<t>Network conditions may vary between 1-RTT and 0-RTT connections.</t>
+					</list></t>
+
+				<t>While safety recommandations are necessary, it seems important to note that CDNs currently exploit a very high Initial Window <xref target="TMA18"></xref>.</t>
+
+			</section> 
+
+			<section title="Safety guidelines">
+				<t>If the client accept the extension, the server could increase the initial congestion window. This sections describes safety guidelines on how to securely increase this parameter.</t>
+
+			<t> TBD </t>
 				<t>The maximum number of initial data packets
 					that can be sent without acknowledgment
 					needs to be chosen to avoid congestion
@@ -306,6 +316,7 @@
 					RTT. This follows the ideas of <xref
 						target="I-D.cardwell-iccrg-bbr-congestion-control"></xref>
 					and <xref target="RFC4782"></xref>.</t>
+			</section>
 		</section>
 			
 		<section anchor="sec:other_parameter" title="Discussion">
