@@ -277,10 +277,14 @@
 				<t>Session Ticket</t>
 			</section>
 
-			<section title="Validity of the BDP extension">
-				<t>Time</t>
-				<t>IP</t>
-				<t>Adress validation</t>
+			<section title="Applicability of the BDP extension">
+				<t>This section discusses that applicability of the BDP extension.</t>
+				<t>The following events could make the BDP extension inappropriate:<list style="symbols">
+					<t>IP address changes: If the client changes its IP address, it may exploit a different network to reconnect. The exploited path may not exhibit the same characteristics.</t> 
+					<t>Rate-limitation induced by QUIC: The proposed mechanisms would be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
+					<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the BDP extension may be proposed with a lifetime that could be changed. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
+				</list></t>
+				<t>That being said, exploiting the safety nets proposed in <xref target="safety_guide"></xref> would reduce any harm that could be caused by using inappropriate BDP parameters. This safety guidelines reduce the interests of the proposed approach, but limits the risks to add congestion in a congested network.</t>
 			</section>
 
 			<section anchor="subsec:other_param_bdp_protect" title="BDP extension protected as much as initial_max_data">
@@ -328,8 +332,8 @@
 
 			</section> 
 
-			<section title="Safety guidelines">
-				<t>If the client accept the extension, the server could increase the initial congestion window. The maximum number of initial data packets that can be sent without acknowledgment needs to be chosen to avoid congestion collapse. A mechanism is needed to ensure that the information sent by the server is relevant and does not harm.</t>
+			<section anchor="safety_guide" title="Safety guidelines">
+				<t>If the client accept the extension, the server could increase the initial congestion window. The maximum number of initial data packets that can be sent without acknowledgment needs to be chosen to avoid congestion collapse. A mechanism is needed to ensure that the information sent by the server is relevant and does not harm. The proposed mechanisms would be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
 
 				<t>Different approaches could be envisioned:<list style="numbers">
 						<t>The initial window is considered a safe
@@ -378,7 +382,7 @@
 		</section>
 		
 		<section anchor="sec:acknowledgments" title="Acknowledgments">
-			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema and Tom Jones for their fruitful comments on earlier versions of this document.</t>
+			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema, Robin Marx and Roland Bless for their fruitful comments on earlier versions of this document.</t>
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
@@ -415,7 +419,6 @@
 			<!-- <?rfc include="reference.RFC.6349.xml"?> -->
 			<!-- <?rfc include="reference.RFC.6928.xml"?> -->
 			<!-- <?rfc include="reference.RFC.7413.xml"?> -->
-			<!-- <?rfc include="reference.RFC.8446.xml"?> -->
 			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
 			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
 			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
@@ -423,6 +426,7 @@
 			<?rfc include="reference.RFC.2914.xml"?>
 			<?rfc include="reference.RFC.4782.xml"?>
 			<?rfc include="reference.RFC.6349.xml"?>
+			<?rfc include="reference.RFC.8446.xml"?>
 			<?rfc include="reference.I-D.cardwell-iccrg-bbr-congestion-control.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
