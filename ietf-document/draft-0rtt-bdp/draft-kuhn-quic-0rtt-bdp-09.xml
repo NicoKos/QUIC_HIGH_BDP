@@ -223,10 +223,9 @@
 				<t>recon_bytes_in_flight (0x000X): The bytes in
 				flight measured on the previous connection by
 				the server. Integer number of bytes.
-				Using the bytes_in_flight defined in <xref
+				Using the previous values of bytes_in_flight defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
-				recon_bytes_in_flight can be set to
-				bytes_in_flight.</t>
+					recon_bytes_in_flight could be determined.</t>
 
 				<t>recon_min_rtt (0x000X): The minimum RTT
 				measured on the previous connection by the
@@ -270,7 +269,50 @@
 		</section>
 
 		<section title="Implementation considerations">
-			<t> TBD </t>
+
+			<section title="Implementation solutions">
+				<t>NEW_TOKEN</t>
+				<t>BDP_TOKEN</t>
+				<t>Default</t>
+				<t>Session Ticket</t>
+			</section>
+
+			<section title="Validity of the BDP extension">
+				<t>Time</t>
+				<t>IP</t>
+				<t>Adress validation</t>
+			</section>
+
+			<section anchor="subsec:other_param_bdp_protect" title="BDP extension protected as much as initial_max_data">
+				<t>The BDP metadata parameters are measured by
+					the server during a previous
+					connection. The BDP extension is
+					protected by the mechanism that
+					protects the exchange of the 0-RTT
+					transport parameters. For the version 1
+					of QUIC, the BDP extension is protected
+					using the mechanism that already
+					protects the "initial_max_data"
+					parameter.  This is defined in sections
+					4.5 to 4.7 of <xref
+						target="I-D.ietf-quic-tls"></xref>.
+					It provides the server with a way to
+					check the parameters proposed by the
+					client are those that the server sent
+					to the client during the previous
+					connection.</t>
+			</section>
+
+			<section anchor="subsec:other_param_client_pov" title="The client point-of-view">
+				<t>The client can read the values of the
+					extension. The client may want to
+					reject the extension, to accept and
+					adapt the resource and flow control
+					parameters or adapt requests. The
+					client cannot change the values of the
+					extension.</t>
+			</section>
+
 		</section>
 
 		<section anchor="subsec:rationale_jump" title="Safe jump start">
@@ -311,37 +353,6 @@
 			</section>
 		</section>
 			
-		<section anchor="sec:other_parameter" title="Discussion">
-			<section anchor="subsec:other_param_client_pov" title="The client point-of-view">
-				<t>The client can read the values of the
-					extension. The client may want to
-					reject the extension, to accept and
-					adapt the resource and flow control
-					parameters or adapt requests. The
-					client cannot change the values of the
-					extension.</t>
-			</section>
-
-			<section anchor="subsec:other_param_bdp_protect" title="BDP extension protected as Much as initial_max_data">
-				<t>The BDP metadata parameters are measured by
-					the server during a previous
-					connection. The BDP extension is
-					protected by the mechanism that
-					protects the exchange of the 0-RTT
-					transport parameters. For the version 1
-					of QUIC, the BDP extension is protected
-					using the mechanism that already
-					protects the "initial_max_data"
-					parameter.  This is defined in sections
-					4.5 to 4.7 of <xref
-						target="I-D.ietf-quic-tls"></xref>.
-					It provides the server with a way to
-					check the parameters proposed by the
-					client are those that the server sent
-					to the client during the previous
-					connection.</t>
-			</section>
-
 		<section anchor="sec:rationale" title="Other use-cases">
 	
 			<section anchor="subsec:rationale_client" title="Optimizing client's requests">
@@ -364,7 +375,6 @@
 				client.</t>
 		</section>
 
-		</section>
 		</section>
 		
 		<section anchor="sec:acknowledgments" title="Acknowledgments">
