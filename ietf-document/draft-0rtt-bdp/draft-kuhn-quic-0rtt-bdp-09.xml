@@ -287,35 +287,27 @@
 			</section> 
 
 			<section title="Safety guidelines">
-				<t>If the client accept the extension, the server could increase the initial congestion window. This sections describes safety guidelines on how to securely increase this parameter.</t>
+				<t>If the client accept the extension, the server could increase the initial congestion window. The maximum number of initial data packets that can be sent without acknowledgment needs to be chosen to avoid congestion collapse. A mechanism is needed to ensure that the information sent by the server is relevant and does not harm.</t>
 
-			<t> TBD </t>
-				<t>The maximum number of initial data packets
-					that can be sent without acknowledgment
-					needs to be chosen to avoid congestion
-					collapse. A mechanism is needed to
-					ensure that the information sent by the
-					server is relevant and that network
-					conditions have not changed. The client
-					cannot change the values of the
-					extension.</t> 
-
-				<t>The initial window is considered a safe
+				<t>Different approaches could be envisioned:<list style="numbers">
+						<t>The initial window is considered a safe
 					starting point for an unknown path to
 					avoid adding congestion to a congested
-					network. If the reception of IW is
+							network.</t>
+						<t>If the reception of IW is
 					confirmed for the first RTT of data,
 					and also the path is determined to be
 					similar to that of a recent previous
 					session (e.g., similar RTT), the method
 					permits the sender to use the previous
 					path information as an input to help
-					determine a new safe rate. Another
+							determine a new safe rate.</t>
+						<t>Another
 					safety net could be the pacing of
 					packets as a function of the estimated
-					RTT. This follows the ideas of <xref
-						target="I-D.cardwell-iccrg-bbr-congestion-control"></xref>
-					and <xref target="RFC4782"></xref>.</t>
+							RTT.</t>
+				</list></t>
+				<t>This follows the idea of <xref target="RFC4782"></xref>, <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> and <xref target="CONEXT15"></xref>.</t>
 			</section>
 		</section>
 			
