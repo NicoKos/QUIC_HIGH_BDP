@@ -284,7 +284,7 @@
 <t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
 					<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the BDP extension may be proposed with a lifetime that could be changed. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
 				</list></t>
-<t>That being said, exploiting the safety nets proposed in <xref target="safety_guide"></xref> would reduce any harm that could be caused by using inappropriate BDP parameters. The safety guidelines reduce the potential impact of the proposed approach, but limit the risks of adding congestion in a congested network.</t>
+<t>That being said, exploiting the safety nets proposed in <xref target="safety_guide"></xref> would reduce any harm that could be caused by using inappropriate BDP parameters. The safety guidelines reduce the gains brought by the proposed approach, but limit the risks of adding congestion in a congested network.</t>
 			</section>
 
 			<section anchor="subsec:other_param_bdp_protect" title="BDP extension protected as much as initial_max_data">
