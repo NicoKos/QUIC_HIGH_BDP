@@ -280,7 +280,7 @@
 			<section title="Applicability of the BDP extension">
 				<t>This section discusses that applicability of the BDP extension.</t>
 				<t>The following events could make the BDP extension inappropriate:<list style="symbols">
-					<t>IP address changes: If the client changes its IP address, it may exploit a different network to reconnect. The exploited path may not exhibit the same characteristics.</t> 
+<t>IP address changes: If the client changes its IP address, it may employ a different network to reconnect. The new path may not exhibit the same characteristics as the old one.</t>
 					<t>Rate-limitation induced by QUIC: The proposed mechanisms would be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
 					<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the BDP extension may be proposed with a lifetime that could be changed. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
 				</list></t>
