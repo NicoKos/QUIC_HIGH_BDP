@@ -333,7 +333,7 @@
 			</section> 
 
 			<section anchor="safety_guide" title="Safety guidelines">
-				<t>If the client accept the extension, the server could increase the initial congestion window. The maximum number of initial data packets that can be sent without acknowledgment needs to be chosen to avoid congestion collapse. A mechanism is needed to ensure that the information sent by the server is relevant and does not harm. The proposed mechanisms would be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
+<t>If the client accepts the extension, the server could increase the initial congestion window. The maximum number of packets that can be sent without acknowledgment needs to be chosen to avoid congestion collapse. Additionally, a mechanism is needed to ensure that the information sent by the server is relevant and does not harm. Finally, the proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
 
 				<t>Different approaches could be envisioned:<list style="numbers">
 						<t>The initial window is considered a safe
