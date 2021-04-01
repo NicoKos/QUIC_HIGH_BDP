@@ -121,15 +121,6 @@
 			result in significant web browsing experience improvement
 			and short file downloading time reduction.</t>
 
-			<t>This document proposes an extension to the transport
-			parameters that are shared during the 1-RTT phase. 
-			This
-			allows resumption using additionnal transport and connection
-			properties that were discovered in previous
-				connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). </t>
-
-			<t>Network conditions may vary between 1-RTT and 0-RTT connections. <xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput. The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. As a result, the estimation of the BDP of the server would include the buffering in the network and would not be accurate. Moreover, network conditions may vary between 1-RTT and 0-RTT connections.</t>
-       
 			<t>Section 7.3.1 of <xref
 			target="I-D.ietf-quic-transport"></xref> describes the 
 			parameters that must be remembered if a client wishes to
@@ -138,14 +129,12 @@
 			them to any 0-RTT packets that are sent in subsequent
 			connections to the same peer. Of the six mandatory
 			parameters, only initial_max_data improves the
-			time-to-service of the 0-RTT connection. The BDP
-			metadata extension augments the list of server
-			transport parameters that are shared with the client to
-			improve the time-to-service and save resources such as
-			CPU, memory and power.</t>
+				time-to-service of the 0-RTT connection.</t>
+
+			<t>In addition to these parameters, this document proposes an extension to augment the list of server transport parameters that are shared with the client to improve the time-to-service. This allows resumption using additionnal transport and connection properties that were discovered in previous connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). Network conditions may change during 1-RTT and 0-RTT: safety guidelines on how to safely apply to previously measured parameters to 0-RTT connections.</t>
 
 			<t>
-				This document proposes :<list style="symbols">
+				As a summary, this document proposes :<list style="symbols">
 					<t>QUIC transport parameters to exchange the measured BDP in the 1-RTT	connection for 0-RTT connections;</t>
 					<t>A simple test to 
 						verify whether the previous conditions apply;</t>
@@ -202,6 +191,8 @@
 			<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 
 
+			<t>Network conditions may vary between 1-RTT and 0-RTT connections. <xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput." The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. As a result, the estimation of the BDP of the server would include the buffering in the network and would not be accurate. Moreover, network conditions may vary between 1-RTT and 0-RTT connections.</t>
+       
 			<t>The BDP extension proposes two new parameters
 			<list style="symbols">
 
@@ -326,7 +317,7 @@
 		</section>
 		</section>
 
-		</section>
+			</section>
 		
 		<section anchor="sec:acknowledgments" title="Acknowledgments">
 			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema, Robin Marx and Roland Bless for their fruitful comments on earlier versions of this document.</t>
@@ -370,11 +361,11 @@
 			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
 			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
 			<?rfc include="reference.I-D.ietf-tcpm-2140bis.xml"?>
-			<?rfc include="reference.RFC.2914.xml"?>
+			<!-- <?rfc include="reference.RFC.2914.xml"?> -->
 			<?rfc include="reference.RFC.4782.xml"?>
 			<?rfc include="reference.RFC.6349.xml"?>
 			<?rfc include="reference.RFC.8446.xml"?>
-			<?rfc include="reference.I-D.cardwell-iccrg-bbr-congestion-control.xml"?>
+			<!-- <?rfc include="reference.I-D.cardwell-iccrg-bbr-congestion-control.xml"?> -->
 			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
 			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
@@ -469,55 +460,8 @@
 				<seriesInfo name="IEEE ICC" value=""/>
 			</reference> -->
 		</references>
-		<section anchor="appendix-server" title="Example of server solution">
-			<t>This section details a solution at the server to safely increase the maximum amount of packets that the server sends when receiving a 0-RTT packet from a client.</t>
-			<t>
-			The initial window is considered a safe starting point
-			for an unknown path to avoid adding congestion to a
-			congested network. The general assumption is that a
-			path does not currently suffer persistent congestion,
-			and therefore the initial window is applicable until
-			feedback about the path is received. The resulting
-			initial sending rate is only tentative until the capacity is
-			confirmed to be available. If there is loss within this
-			initial transmission, then this could be evidence that
-			the path is congested, and the sender needs to adjust
-			to this congestion.
-			</t>
-			<t>
-			Significant loss could be an indication of congestion
-			collapse - i.e. persistent loss, requiring back-off of
-			the sending rate.
-			</t>
-			<t>
-			If however, the reception of IW is confirmed for the
-			first RTT of data, and also the path is determined to
-			be similar to that of a recent previous session
-			(e.g., similar RTT), the method permits the sender to
-			use the previous path information as an input to help
-			determine a new safe rate. One possibility is to
-			immediately jump to a new sending rate that is derived
-			from the previously sustained rate. This follows the
-			ideas of <xref
-				target="I-D.cardwell-iccrg-bbr-congestion-control"></xref>
-			and <xref target="RFC4782"></xref>.  
-			</t>
-			<t>
-			The QoS mechanisms that are deployed in the networks
-			can help in prevent the congestion collapse from
-			occurring. However, the sender must provide a
-			significant reduction if there is evidence of potential
-			congestion collapse <xref target="RFC2914"></xref> from
-			his point of view. Precautions can be taken to
-			guarantee that it is reasonably safe to jump to a high
-			sending rate : measuring that network conditions did
-			not change, allowing some space for other flows that
-			have started and pace transmission of packets. 
-		        The sender might need to rapidly reduce its rate, if the 
-		        higher sending rate does not prove to be supported. 
-		        It if is supported, the sender can resume standard 
-		        congestion control. 	
-			</t>
+		<section anchor="appendix-numerical" title="Example">
+			<t> TBD </t>
 		</section>
 	</back>
 </rfc>
