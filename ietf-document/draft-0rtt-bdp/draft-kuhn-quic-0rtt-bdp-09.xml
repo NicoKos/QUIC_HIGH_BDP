@@ -172,40 +172,32 @@
 			<section anchor="safety_guide" title="Safety guidelines">
 <t>If the client accepts the extension, the server could increase the initial congestion window. The proposed mechanisms SHOULD be limited by any rate-limitation mechanisms of QUIC, such as flow control mechanisms or amplification attacks prevention. In particular, the maximum number of packets that can be sent without acknowledgment needs to be chosen to avoid the creation and the increase of congestion to a congested network. Moreover, the extension should not be an opportunity for the current connection to be a vector of an amplification attack. The address validation process, used to prevent amplification attacks, SHOULD be considered <xref target="I-D.ietf-quic-transport"></xref>.</t>
 
-				<t>Different approaches could be envisioned:<list style="numbers">
-						<t>The initial window is considered a safe
-					starting point for an unknown path to
-					avoid adding congestion to a congested
-							network.</t>
-						<t>If the reception of IW is
+			<t>The following scenario is considered:</t>
+			<t><list style="numbers">
+				<t>First connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the Bandwidth-Delay Product (BDP) extension frame;</t>
+				<t>During the first connection: the server sends the BDP extensions frame to the client - both client and server can read the content of the BDP extension;</t>
+				<t>Second connection with 0-RTT: if the client agrees with the parameters, it sends the BDP extension along with 0-RTT packets;</t>
+				<t>Second connection with 0-RTT: the servers sends a standard initial window - this can be considered a safe starting poing for an unknown path to avoid adding congestion to a congested network;</t>
+				<t>Second connection with 0-RTT: if the reception of IW is
 					confirmed for the first RTT of data,
 					and also the path is determined to be
 					similar to that of a recent previous
 					session (e.g., similar RTT), the method
 					permits the sender to use the previous
 					path information as an input to help
-							determine a new safe rate.</t>
-						<t>Another
+					determine a new safe rate;</t>
+							<t>Another
 					safety net could be the pacing of
 					packets as a function of the estimated
 							RTT.</t>
-				</list></t>
+			</list></t>
+
 				<t>This follows the idea of <xref target="RFC4782"></xref>, <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> and <xref target="CONEXT15"></xref>.</t>
 			</section>
 		</section>
 
 		<section title="Implementation considerations">
 		
-			<section title="Scenario">
-
-			<t>The scenario could be the following:</t>
-			<t><list style="symbols">
-				<t>First connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the Bandwidth-Delay Product (BDP) extension frame;</t>
-				<t>At the end of the first connection: the server sends the BDP extensions frame to the client - both client and server can read the content of the BDP extension;</t>
-				<t>Second connection with 0-RTT: both client and server can retrieve the values stored in the BDP extension to ramp up transmission speed. This can help in other scenarios.</t>
-			</list></t>
-
-			</section>
 	
 			<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
 
