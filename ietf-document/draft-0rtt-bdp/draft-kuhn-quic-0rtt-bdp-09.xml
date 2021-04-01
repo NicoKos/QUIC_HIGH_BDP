@@ -102,24 +102,9 @@
 
 		<section anchor="sec:introduction" title="Introduction">
 
-			<t>
-			Each transport connection typically starts without
-			knowledge of the path between the endpoints. Transport
-			protocols use implicit signals from the network to
-			discover the properties of the path. This information
-			is used to adapt the transport mechanisms to the
-			network path. For example, an Internet transport
-			endpoint is unable to determine a safe rate at which to
-			start or continue their transmission, and uses
-			slow-start to determine a safe rate. This applies to the 
-			1-RTT mode of QUIC.
-			</t>
-
 			<t>This document aims to improve traffic delivery by
 			allowing the connection to short-cut slow RTT-based
-			processes that grow connection parameters. This can
-			result in significant web browsing experience improvement
-			and short file downloading time reduction.</t>
+				processes that grow connection parameters for QUIC 0-RTT connections.</t>
 
 			<t>Section 7.3.1 of <xref
 			target="I-D.ietf-quic-transport"></xref> describes the 
