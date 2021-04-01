@@ -80,7 +80,7 @@ Table of Contents
    3.  Discussion on implementation possibilities  . . . . . . . . .   4
      3.1.  BDP metadata parameters . . . . . . . . . . . . . . . . .   4
      3.2.  Extension activation  . . . . . . . . . . . . . . . . . .   5
-     3.3.  Implementation solutions  . . . . . . . . . . . . . . . .   6
+     3.3.  Implementation solutions  . . . . . . . . . . . . . . . .   5
    4.  Safe jump start . . . . . . . . . . . . . . . . . . . . . . .   6
      4.1.  Rationale behind the safety guidelines  . . . . . . . . .   6
      4.2.  Safety guidelines . . . . . . . . . . . . . . . . . . . .   6
@@ -91,7 +91,7 @@ Table of Contents
      5.4.  Other use-cases . . . . . . . . . . . . . . . . . . . . .   8
        5.4.1.  Optimizing client's requests  . . . . . . . . . . . .   8
        5.4.2.  Sharing transport information accross multiple
-               connections . . . . . . . . . . . . . . . . . . . . .   9
+               connections . . . . . . . . . . . . . . . . . . . . .   8
    6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   9
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
@@ -141,14 +141,6 @@ Internet-Draft             Transport for 0-RTT                April 2021
    0-RTT: safety guidelines on how to safely apply to previously
    measured parameters to 0-RTT connections.
 
-   As a summary, this document proposes :
-
-   o  Implementation considerations for QUIC transport parameters to
-      exchange the measured BDP in the 1-RTT connection for 0-RTT
-      connections;
-
-   o  A simple test to verify whether the previous conditions apply;
-
 2.  Scope and structure of the document
 
    The following scenario is considered through the whole document:
@@ -161,15 +153,6 @@ Internet-Draft             Transport for 0-RTT                April 2021
    2.  Safely using previously measured transport parameters in 0-RTT
        connections: Section 4 discusses solutions that can enable a safe
        increase of the transmission rate.  While no standardization is
-
-
-
-
-Kuhn, et al.             Expires October 3, 2021                [Page 3]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
        needed for this, these safety nets SHOULD be implemented if the
        transport parameters are used to increase the transmission rate.
 
@@ -178,6 +161,14 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
    o  Storing and exchanging 1-RTT transport parameters for 0-RTT
       connections:
+
+
+
+
+Kuhn, et al.             Expires October 3, 2021                [Page 3]
+
+Internet-Draft             Transport for 0-RTT                April 2021
+
 
       1.  1-RTT connection without 0-RTT: the server stores parameters
           related to round-trip time and maximum data rate in the
@@ -218,14 +209,6 @@ Internet-Draft             Transport for 0-RTT                April 2021
    [RFC6349] defines the BDP as follows: "Derived from Round-Trip Time
    (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay
    Product (BDP) determines the Send and Received Socket buffer sizes
-
-
-
-Kuhn, et al.             Expires October 3, 2021                [Page 4]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    required to achieve the maximum TCP Throughput."  The 1-RTT
    connection may not reproduce the procedure detailed in [RFC6349] to
    measure the BDP.  The server may exploit internal evaluations of the
@@ -235,6 +218,13 @@ Internet-Draft             Transport for 0-RTT                April 2021
    may vary between 1-RTT and 0-RTT connections.
 
    The BDP extension proposes two new parameters
+
+
+
+Kuhn, et al.             Expires October 3, 2021                [Page 4]
+
+Internet-Draft             Transport for 0-RTT                April 2021
+
 
    o  recon_bytes_in_flight (0x000X): The bytes in flight measured on
       the previous connection by the server.  Integer number of bytes.
@@ -271,6 +261,16 @@ Internet-Draft             Transport for 0-RTT                April 2021
    A client that disagrees with the extension parameters received from
    the server refuses the optimization.
 
+3.3.  Implementation solutions
+
+   NEW_TOKEN
+
+   BDP_TOKEN
+
+   Transport parameters
+
+   Session Ticket
+
 
 
 
@@ -281,16 +281,6 @@ Kuhn, et al.             Expires October 3, 2021                [Page 5]
 
 Internet-Draft             Transport for 0-RTT                April 2021
 
-
-3.3.  Implementation solutions
-
-   NEW_TOKEN
-
-   BDP_TOKEN
-
-   Transport parameters
-
-   Session Ticket
 
 4.  Safe jump start
 
@@ -331,13 +321,6 @@ Internet-Draft             Transport for 0-RTT                April 2021
    o  Comparing the mesured transport parameters of the 0-RTT connection
       with those of the 1-RTT connection;
 
-
-
-Kuhn, et al.             Expires October 3, 2021                [Page 6]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    o  Avoiding sending bursts of packets in the network.
 
    The following mechanisms consider that the process described in
@@ -345,6 +328,15 @@ Internet-Draft             Transport for 0-RTT                April 2021
    measured BDP.  They are in-line with the safety guidelines:
 
    o  Exploiting a standard IW:
+
+
+
+
+
+Kuhn, et al.             Expires October 3, 2021                [Page 6]
+
+Internet-Draft             Transport for 0-RTT                April 2021
+
 
       1.  0-RTT connection: the servers sends the first data packet
           using a standard initial window - this can be considered a
@@ -387,13 +379,6 @@ Internet-Draft             Transport for 0-RTT                April 2021
       employ a different network to reconnect.  The new path may not
       exhibit the same characteristics as the old one.
 
-
-
-Kuhn, et al.             Expires October 3, 2021                [Page 7]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    o  Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be
       limited by other rate-limitation mechanisms of QUIC, such as the
       address validation process that is used to prevent amplification
@@ -401,6 +386,14 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
    o  Lifetime of the extension: Based on experimental feedback and to
       reduce resource utilization at the client, the BDP extension may
+
+
+
+Kuhn, et al.             Expires October 3, 2021                [Page 7]
+
+Internet-Draft             Transport for 0-RTT                April 2021
+
+
       be proposed with a lifetime that could be changed.  This follows
       the idea of NewSessionTicket of TLS [RFC8446].
 
@@ -438,7 +431,14 @@ Internet-Draft             Transport for 0-RTT                April 2021
    In other cases, applications may provide additionnal services if
    clients can know the server's estimation of the path characteristics.
 
+5.4.2.  Sharing transport information accross multiple connections
 
+   There is an interest in sharing transport information across multiple
+   connections.  [I-D.ietf-tcpm-2140bis] considers the sharing of
+   transport parameters between connections originating from the same
+   host.  The proposal in this document have the advantage of storing
+   the information at the client and not requiring the server to retain
+   additional state for each client.
 
 
 
@@ -449,15 +449,6 @@ Kuhn, et al.             Expires October 3, 2021                [Page 8]
 
 Internet-Draft             Transport for 0-RTT                April 2021
 
-
-5.4.2.  Sharing transport information accross multiple connections
-
-   There is an interest in sharing transport information across multiple
-   connections.  [I-D.ietf-tcpm-2140bis] considers the sharing of
-   transport parameters between connections originating from the same
-   host.  The proposal in this document have the advantage of storing
-   the information at the client and not requiring the server to retain
-   additional state for each client.
 
 6.  Acknowledgments
 
@@ -496,6 +487,15 @@ Internet-Draft             Transport for 0-RTT                April 2021
               Congestion Control", draft-ietf-quic-recovery-34 (work in
               progress), January 2021.
 
+   [I-D.ietf-quic-tls]
+              Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
+              draft-ietf-quic-tls-34 (work in progress), January 2021.
+
+   [I-D.ietf-quic-transport]
+              Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
+              and Secure Transport", draft-ietf-quic-transport-34 (work
+              in progress), January 2021.
+
 
 
 
@@ -505,15 +505,6 @@ Kuhn, et al.             Expires October 3, 2021                [Page 9]
 
 Internet-Draft             Transport for 0-RTT                April 2021
 
-
-   [I-D.ietf-quic-tls]
-              Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
-              draft-ietf-quic-tls-34 (work in progress), January 2021.
-
-   [I-D.ietf-quic-transport]
-              Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", draft-ietf-quic-transport-34 (work
-              in progress), January 2021.
 
    [I-D.ietf-tcpm-2140bis]
               Touch, J., Welzl, M., and S. Islam, "TCP Control Block
@@ -551,17 +542,6 @@ Appendix A.  Example
 
 Authors' Addresses
 
-
-
-
-
-
-
-Kuhn, et al.             Expires October 3, 2021               [Page 10]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    Nicolas Kuhn
    CNES
 
@@ -574,6 +554,14 @@ Internet-Draft             Transport for 0-RTT                April 2021
    Email: emile.stephan@orange.com
 
 
+
+
+
+Kuhn, et al.             Expires October 3, 2021               [Page 10]
+
+Internet-Draft             Transport for 0-RTT                April 2021
+
+
    Gorry Fairhurst
    University of Aberdeen
 
@@ -584,6 +572,18 @@ Internet-Draft             Transport for 0-RTT                April 2021
    University of Aberdeen
 
    Email: tom@erg.abdn.ac.uk
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

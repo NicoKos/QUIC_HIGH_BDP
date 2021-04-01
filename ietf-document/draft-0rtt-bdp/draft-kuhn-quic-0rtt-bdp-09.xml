@@ -133,15 +133,6 @@
 
 			<t>In addition to these parameters, this document proposes an extension to augment the list of server transport parameters that are shared with the client to improve the time-to-service. This allows resumption using additionnal transport and connection properties that were discovered in previous connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). Network conditions may change during 1-RTT and 0-RTT: safety guidelines on how to safely apply to previously measured parameters to 0-RTT connections.</t>
 
-			<t>
-				As a summary, this document proposes :<list style="symbols">
-					<t>Implementation considerations for QUIC transport parameters to exchange the measured BDP in the 1-RTT connection for 0-RTT connections;</t>
-					<t>A simple test to 
-						verify whether the previous conditions apply;</t>
-				</list> 
-                        </t>
-
-		
 		</section>
 
 		<section anchor="subsec:scope" title="Scope and structure of the document">
