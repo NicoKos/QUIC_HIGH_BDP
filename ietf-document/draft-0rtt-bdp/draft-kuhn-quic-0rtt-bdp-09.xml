@@ -82,7 +82,7 @@
 	<abstract>
 		<t>
 		QUIC 0-RTT transport features currently
-		focuses on egress traffic optimization. This draft proposes an extension
+		focuses on egress traffic optimization. This draft proposes a QUIC extension
 		that improves the performance of ingress traffic. 
 		</t>
 	</abstract>
@@ -93,9 +93,24 @@
 		<section anchor="sec:introduction" title="Introduction">
 		<t>
 		QUIC 0-RTT transport features currently
-		focuses on egress traffic optimization. This draft proposes an extension
+		focuses on egress traffic optimization. This draft proposes a QUIC extension
 		to improve the performance of ingress traffic. 
 		</t>
+		
+		<section anchor="sec:terms_def" title="Notations and terms">
+	
+			<t><xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput." The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. This draft considers the BDP as the Bandwidth-Delay Product as estimated by the server and woululd include the buffering in the network.</t>
+
+		</section>
+
+		<section anchor="sec:req_language" title="Requirements Language">
+			<t>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"></xref><xref target="RFC8174"></xref> when, and only when, they appear in all  capitals, as shown here.</t>
+		</section>
+		</section>
+
+
+		<section anchor="sec:motivation" title="Motivation">
+	
 			<t>This document improves traffic delivery by
 			allowing the connection to short-cut slow RTT-based
 				processes that grow connection parameters for QUIC 0-RTT connections.</t>
@@ -110,7 +125,7 @@
 			parameters, only initial_max_data improves the
 				time-to-service of the 0-RTT connection.</t>
 
-			<t>In addition to these parameters, this document proposes an extension to augment the list of server transport parameters that are shared with the client to improve the time-to-service. This allows resumption using additional transport and connection properties that were discovered in previous connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). Network conditions may change during 1-RTT and 0-RTT: this document proposes safety guidelines on how to safely apply to previously measured parameters to 0-RTT connections.</t>
+			<t>In addition to these parameters, this document proposes a QUIC extension to augment the list of server transport parameters that are shared with the client to improve the time-to-service. This allows resumption using additional transport and connection properties that were discovered in previous connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). Network conditions may change during 1-RTT and 0-RTT: this document proposes safety guidelines on how to safely apply to previously measured parameters to 0-RTT connections.</t>
 
 		</section>
 
@@ -121,7 +136,7 @@
 				<t>Safely using previously measured transport parameters in 0-RTT connections: <xref target="subsec:rationale_jump"></xref> discusses solutions that can enable a safe increase of the transmission rate. These safety nets SHOULD be implemented when the transport parameters are used to increase the ingress initial transmission rate.</t>
 			</list></t>
 
-			<t>The following example could be proposed by using the different approaches described in <xref target="sec:implem"></xref> and <xref target="subsec:rationale_jump"></xref>:<list style="symbols">
+			<t>The following design can result in the exploitation of the solution proposed in <xref target="sec:implem"></xref> and <xref target="subsec:rationale_jump"></xref>:<list style="symbols">
 					<t>Sharing 1-RTT transport parameters for 0-RTT connections:<list style="numbers">
 						<t>1-RTT connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the Bandwidth-Delay Product (BDP) extension frame;</t>
 						<t>During the 1-RTT connection: the server sends the BDP extensions frame to the client;</t>
@@ -147,25 +162,38 @@
 
 		</section> 
 
-		<section anchor="sec:implem" title="Discussion on implementation possibilities">
+		<section anchor="sec:implem" title="Implementation considerations">
+			<section anchor="sec:bdp_frame" title="Rationale behind the choice of a BDP frame">
 		
-	
-			<section anchor="sec:bdp_metadata" title="BDP metadata parameters">
+			<t>The client can read the values of the extension which constraints the implementation possibilities. This could be done by adapting the NewSessionTicket messages of TLS for the client to read the added parameters. The sole extension currently defined in TLS1.3 that can be seen by the client is max_early_data_size (see section 4.6.1 of <xref target="RFC8446"></xref>). However, in the general design of QUIC, TLS sessions are managed by the TLS stacks. Instead of exploiting a specific implementation of TLS, it is more adequate to propose an extension frame for carrying BDP metadata.</t>
+			<t>The client can not read the content of NEW_TOKEN frames (see section 19.7 of <xref target="I-D.ietf-quic-transport"></xref>). The draft proposes the exploitation of a new frame, BDP frame.</t>
+			<t>The BDP frame MUST be contained in Initial or 0-RTT packets if sent by the client. The BDP frame MUST be containted in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits.</t>
 
+		</section>
 
-			<t>Network conditions may vary between 1-RTT and 0-RTT connections. <xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput." The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. As a result, the estimation of the BDP of the server would include the buffering in the network and would not be accurate. Moreover, network conditions may vary between 1-RTT and 0-RTT connections.</t>
+			<section anchor="sec:bdp_metadata" title="BDP Frame">
+
        
-			<t>The BDP extension proposes two new parameters
-			<list style="symbols">
+				<t>The BDP frames are formated as shown in <xref target="fig:bdp_frame_format"></xref>.</t>
+	<figure anchor="fig:bdp_frame_format" title="BDP Frame Format">
+        <artwork>
+BDP Frame {
+   Type (i) = 0xXXX,
+   Reconnection Bytes In Flight (i),
+   Reconnection Minimum RTT (i),
+}
+        </artwork>
+        </figure>
+				<t>The BDP frames contain the following fields: <list style="symbols">
 
-				<t>recon_bytes_in_flight (0x000X): The bytes in
+				<t>Reconnection Bytes in Flight (recon_bytes_in_flight): The bytes in
 				flight measured on the previous connection by
 				the server. An integer number of bytes.
 				Using the previous values of bytes_in_flight defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
 					recon_bytes_in_flight could be determined.</t>
 
-				<t>recon_min_rtt (0x000X): The minimum RTT
+				<t>Reconnection Minimum RTT (recon_min_rtt): The minimum RTT
 				measured on the previous connection by the
 				server. An integer number of milliseconds. Using
 				the min_rtt defined in <xref
@@ -183,16 +211,8 @@
 		</section>
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
-			<t>The BDP extension is protected by the same mechanism
-			that protects the exchange of the 0-RTT transport
-			parameters.  A client that activates 0-RTT data sends
-			back the transport parameters received from the server
-			during the previous connection (see Section 7.3.1 of
-			<xref target="I-D.ietf-quic-transport"></xref>).  </t>
-
-			<t>The client reads the parameters in the BDP
-			metadata extension, but can not change them.</t>
-
+			<t>The client can accept the transmission of BDP frames from the server by using the following enable_bdp transport extension.</t>
+			<t>enable_bdp (0xTBD): the client indicates to the server that it wishes to receive BDP frames.</t>
 			<t>Accept: A client MAY use the extension parameters. 
 			Then, it activates ingress optimization 
 			and sends back the transport parameters of the BDP
@@ -206,12 +226,7 @@
 			the server refuses the optimization.</t>
 		</section>
 
-			<section title="Implementation solutions">
-				<t>NEW_TOKEN</t>
-				<t>BDP_TOKEN</t>
-				<t>Transport parameters</t>
-				<t>Session Ticket</t>
-			</section>
+
 		</section>
 
 		<section anchor="subsec:rationale_jump" title="Safe jump start">
@@ -262,8 +277,7 @@
 			</section>
 		</section>
 
-		<section title="Discussion">
-
+		<section anchor="sec:discuss" title="Discussion">
 
 		<section title="Applicability of the BDP extension">
 				<t>The following events could make use of the BDP extension inappropriate:<list style="symbols">
@@ -334,12 +348,11 @@
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
-			<t>TBD: Text is required to register the extension BDP_metadata field. Parameters are registered using the procedure defined in <xref target="I-D.ietf-quic-transport"></xref>.</t>
+			<t>TBD: Text is required to register the BDP frame and the enable_bdp transport paramter. Parameters are registered using the procedure defined in <xref target="I-D.ietf-quic-transport"></xref>.</t>
 		</section>
 
 		<section anchor="sec:security" title="Security Considerations">
-			<t> The BDP metadata parameters are measured by the server during a previous connection.</t>
-			<t> The BDP extension is protected by the mechanism that protects the exchange of the 0-RTT transport parameters. For the version 1 of QUIC, the BDP extension is protected using the mechanism that already protects the "initial_max_data" parameter. This is defined in sections 4.5 to 4.7 of <xref target="I-D.ietf-quic-tls"></xref>. It provides the server with a way to check the parameters proposed by the client are those that the server sent to the client during the previous connection.</t> 
+			<t>Security considerations are discussed in <xref target="sec:discuss"></xref> and in <xref target="safety_guide"></xref>.</t>
 		</section>
 	</middle>
 
@@ -356,31 +369,20 @@
 	with a value containing a set of directories to search.  These can be either in the local
 	filing system or remote ones accessed by http (http://domain/dir/... ).-->
 
-		<!-- <references title="Normative References">
-			&RFC2119;
-		</references> -->
-
-		<references title="Informative References">
-			<!-- <?rfc include="reference.RFC.2488.xml"?> -->
-			<!-- <?rfc include="reference.RFC.3135.xml"?> -->
-			<!-- <?rfc include="reference.RFC.6347.xml"?> -->
-			<!-- <?rfc include="reference.RFC.6349.xml"?> -->
-			<!-- <?rfc include="reference.RFC.6928.xml"?> -->
-			<!-- <?rfc include="reference.RFC.7413.xml"?> -->
-			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
-			<!-- <?rfc include="reference.I-D.kuehlewind-quic-substrate.xml"?> -->
-			<!-- <?rfc include="reference.I-D.pauly-quic-datagram.xml"?> -->
-			<?rfc include="reference.I-D.ietf-tcpm-2140bis.xml"?>
-			<!-- <?rfc include="reference.RFC.2914.xml"?> -->
+		<references title="Normative References">		
+			<?rfc include="reference.RFC.2119.xml"?>
 			<?rfc include="reference.RFC.4782.xml"?>
 			<?rfc include="reference.RFC.6349.xml"?>
+			<?rfc include="reference.RFC.8174.xml"?>
 			<?rfc include="reference.RFC.8446.xml"?>
-			<!-- <?rfc include="reference.I-D.cardwell-iccrg-bbr-congestion-control.xml"?> -->
+			<?rfc include="reference.I-D.ietf-tcpm-2140bis.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-tls.xml"?>
 			<?rfc include="reference.I-D.ietf-quic-transport.xml"?>
-			<!-- <?rfc include="reference.I-D.ietf-quic-http.xml"?> -->
 			<?rfc include="reference.I-D.ietf-quic-recovery.xml"?>
-			<!-- <?rfc include="reference.I-D.ietf-tls-ticketrequests.xml"?> -->
+		</references>
+			
+		<references title="Informative References">
+		
 			<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
 			<reference anchor="TMA18">
 				<front>
@@ -393,39 +395,6 @@
 				</front>
 				<seriesInfo name="2018 Network Traffic Measurement and Analysis Conference (TMA)" value=""/>
 			</reference>
-			<!-- <reference anchor="PANRG106">
-				<front>
-					<title>Impact of Asymmetric Path Characteristics</title>
-					<author initials="G" surname="Fairhurst">
-					</author>
-					<date year="2019"/>
-				</front>
-				<seriesInfo name="IETF PANRG" value="106"/>
-			</reference> -->
-			<!-- <reference anchor="ICCRG100">
-				<front>
-					<title>MPTCP and BBR performance over Internet satellite paths</title>
-					<author initials="N" surname="Kuhn">
-					</author>
-					<date year="2017"/>
-				</front>
-				<seriesInfo name="IETF ICCRG" value="100"/>
-			</reference> -->
-			<!-- <reference anchor="IJSCN19">
-				<front>
-					<title>Google QUIC performance over a public SATCOM access</title>
-					<author initials="L" surname="Thomas">
-					</author>
-					<author initials="E" surname="Dubois">
-					</author>
-					<author initials="N" surname="Kuhn">
-					</author>
-					<author initials="E" surname="Lochin">
-					</author>
-					<date year="2019"/>
-				</front>
-				<seriesInfo name="International Journal of Satellite Communications and Networking" value=""/>
-			</reference> -->
 			<reference anchor="CONEXT15">
 				<front>
 					<title>Halfback: Running Short Flows Quickly and Safely</title>
@@ -439,36 +408,6 @@
 				</front>
 				<seriesInfo name="ACM CoNEXT" value=""/>
 			</reference>
-			<!-- <reference anchor="NCT13">
-				<front>
-					<title>A new survey on improving TCP performances over geostationary satellite link</title>
-					<author initials="A" surname="Pirovano">
-					</author>
-					<author initials="F" surname="Garcia">
-					</author>
-					<date year="2013"/>
-				</front>
-				<seriesInfo name="Network and Communication Technologies" value=""/>
-			</reference> -->
-			<!-- <reference anchor="ICC16">
-				<front>
-					<title>Reducing web latency through TCP IW: Be smart</title>
-					<author initials="R" surname="Sallantin">
-					</author>
-					<author initials="C" surname="Baudoin">
-					</author>
-					<author initials="E" surname="Chaput">
-					</author>
-					<author initials="F" surname="Arnal">
-					</author>
-					<author initials="E" surname="Dubois">
-					</author>
-					<author initials="A-L" surname="Beylot">
-					</author>
-					<date year="2016"/>
-				</front>
-				<seriesInfo name="IEEE ICC" value=""/>
-			</reference> -->
 		</references>
 		<section anchor="appendix-numerical" title="Example">
 			<t> TBD </t>
