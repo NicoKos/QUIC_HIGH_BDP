@@ -99,7 +99,7 @@
 		
 		<section anchor="sec:terms_def" title="Notations and terms">
 	
-			<t><xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput." The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. This draft considers the BDP as the Bandwidth-Delay Product as estimated by the server and woululd include the buffering in the network.</t>
+			<t><xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput." The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. This draft considers the BDP as the Bandwidth-Delay Product as estimated by the server and would include the buffering in the network.</t>
 
 		</section>
 
@@ -167,35 +167,37 @@
 		
 			<t>The client can read the values of the extension which constraints the implementation possibilities. This could be done by adapting the NewSessionTicket messages of TLS for the client to read the added parameters. The sole extension currently defined in TLS1.3 that can be seen by the client is max_early_data_size (see section 4.6.1 of <xref target="RFC8446"></xref>). However, in the general design of QUIC, TLS sessions are managed by the TLS stacks. Instead of exploiting a specific implementation of TLS, it is more adequate to propose an extension frame for carrying BDP metadata.</t>
 			<t>The client can not read the content of NEW_TOKEN frames (see section 19.7 of <xref target="I-D.ietf-quic-transport"></xref>). The draft proposes the exploitation of a new frame, BDP frame.</t>
-			<t>The BDP frame MUST be contained in Initial or 0-RTT packets if sent by the client. The BDP frame MUST be containted in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits.</t>
+			<t>The BDP frame MUST be contained in Initial or 0-RTT packets if sent by the client. The BDP frame MUST be contained in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits. The server MAY send multiple BDP frames in both 1-RTT and 0-RTT connections. The client MUST NOT send BDP frames during 1-RTT connections.</t>
 
 		</section>
 
 			<section anchor="sec:bdp_metadata" title="BDP Frame">
 
        
-				<t>The BDP frames are formated as shown in <xref target="fig:bdp_frame_format"></xref>.</t>
+				<t>The BDP frames are formatted as shown in <xref target="fig:bdp_frame_format"></xref>.</t>
 	<figure anchor="fig:bdp_frame_format" title="BDP Frame Format">
         <artwork>
 BDP Frame {
-   Type (i) = 0xXXX,
-   Reconnection Bytes In Flight (i),
-   Reconnection Minimum RTT (i),
+  Type (i) = 0xXXX,
+  Lifetime (i),
+  Reconnection Bytes In Flight (i),
+  Reconnection Minimum RTT (i),
 }
         </artwork>
         </figure>
 				<t>The BDP frames contain the following fields: <list style="symbols">
 
-				<t>Reconnection Bytes in Flight (recon_bytes_in_flight): The bytes in
+				<t>Lifetime (extension_lifetime): The extension_lifetime is a value in milliseconds that is encoded as an integer. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>. This represents the validity in time of the extension.</t> 
+
+				<t>Reconnection Bytes in Flight (recon_bytes_in_flight): The recon_bytes_in_flight is a value in bytes that is encoded as an integer. The bytes in
 				flight measured on the previous connection by
-				the server. An integer number of bytes.
+				the server.
 				Using the previous values of bytes_in_flight defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
 					recon_bytes_in_flight could be determined.</t>
 
-				<t>Reconnection Minimum RTT (recon_min_rtt): The minimum RTT
-				measured on the previous connection by the
-				server. An integer number of milliseconds. Using
+				<t>Reconnection Minimum RTT (recon_min_rtt): The recon_min_rtt is a value in milliseconds that is encoded as an integer. 
+				Using
 				the min_rtt defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
 				recon_min_rtt can be set to min_rtt. The min_rtt 
@@ -212,18 +214,15 @@ BDP Frame {
 
 		<section anchor="sec:bdp_activation" title="Extension activation">
 			<t>The client can accept the transmission of BDP frames from the server by using the following enable_bdp transport extension.</t>
-			<t>enable_bdp (0xTBD): the client indicates to the server that it wishes to receive BDP frames.</t>
-			<t>Accept: A client MAY use the extension parameters. 
-			Then, it activates ingress optimization 
-			and sends back the transport parameters of the BDP
-			metadata extension that it received from the server
-			during the previous connection.</t>
+			<t>enable_bdp (0xTBD): the client indicates to the server that it wishes to receive BDP frames. Default value is 0. Values strictly above 3 are invalid, and receipt of these values MUST be treated as a connection error of type TRANSPORT_PARAMETER_ERROR.</t>
+			<t><list style="symbols">
+					<t>0: Default value. If the client does not send this parameter, the server considers that the client does not support or does not wish to activate the BDP extension.</t>
+					<t>1: The client indicate to the server that it wishes to receive BDP frame and activate the ingress optimization for the 0-RTT connection.</t>
+					<t>2: The client does not wish to receive BDP frames.</t>
+					<t>3: The client indicate to the server that it wishes to receive BDP frame, activate the ingress optimization for the 0-RTT connection and receive new BDP frames in the 0-RTT connection.</t>
+			</list></t>
+		<t>This Transport Parameter is encoded as per Section 18 of <xref target="I-D.ietf-quic-transport"></xref>.</t>
 
-			<t>Refuse: A client could choose not to use these parameters. 
-			Then, it does not support ingress
-			optimization and drops the extension signal. A client that
-			disagrees with the extension parameters received from
-			the server refuses the optimization.</t>
 		</section>
 
 
@@ -267,7 +266,7 @@ BDP Frame {
                                                         RTT.</t>
 			</list></t>
 	<t>Identify a relevant pacing rhythm:<list style="numbers">
-                                <t>0-RTT connection: the servers estimates the pacing rhythm using the previously measured BDP - the interpacket transmission time is determined by the minimum between (1) the ratio between the current maxium message size (MPS) used for packets and the bottleneck throughput (2) a tunable safety margin that avoids sending more than a recommended maximum initial window;</t>
+                                <t>0-RTT connection: the servers estimates the pacing rhythm using the previously measured BDP - the interpacket transmission time is determined by the minimum between (1) the ratio between the current maximum message size (MSS) used for packets and the bottleneck throughput (2) a tunable safety margin that avoids sending more than a recommended maximum initial window;</t>
 				<t>0-RTT connection: the servers estimates an IW based on the pacing rhythms and the RTT;</t>
 				<t>0-RTT connection: when the estimated IW is acknowledged, the server falls back to a standard slow-start mechanism.</t>
 			</list></t>
@@ -283,7 +282,7 @@ BDP Frame {
 				<t>The following events could make use of the BDP extension inappropriate:<list style="symbols">
 <t>IP address changes: If the client changes its IP address, it may employ a different network to reconnect. The new path may not exhibit the same characteristics as the old one.</t>
 <t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
-					<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the BDP extension could be proposed with a lifetime that could be changed. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
+<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the server can tune the extension_lifetime parameter. Clients MUST NOT send a BDP frame if the timer has expired. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
 				</list></t>
 		</section>
 	
@@ -316,12 +315,13 @@ BDP Frame {
 					parameters; or adapt its requests. The
 					client cannot change the values of the
 					extension.</t>
+				<t>Clients MUST NOT send a BDP frame if the extension_lifetime has expired.</t>
 			</section>
 
 			<section anchor="sec:rationale" title="Other use-cases">
 	
 			<section anchor="subsec:rationale_client" title="Optimizing client's requests">
-				<t>In a case with Dynamic Adaptive Streaming over HTTPS (DASH), clients might encounter issues in knowing the available path capacity or DASH can encounter issues in reaching the best available video playback quality. The client requests could then be adapted and specific traffic could utilise information from the path characteristics (such as encouraging the client to increase the quality of video chunks, to fill the buffers and avoid video blocking or to send high quality adds).</t>
+				<t>In a case with Dynamic Adaptive Streaming over HTTPS (DASH), clients might encounter issues in knowing the available path capacity or DASH can encounter issues in reaching the best available video playback quality. The client requests could then be adapted and specific traffic could utilize information from the path characteristics (such as encouraging the client to increase the quality of video chunks, to fill the buffers and avoid video blocking or to send high quality adds).</t>
 				<t>In other cases, applications may provide additional services if clients can know the server's estimation of the path characteristics.</t>
 		</section>
 
@@ -348,7 +348,7 @@ BDP Frame {
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
-			<t>TBD: Text is required to register the BDP frame and the enable_bdp transport paramter. Parameters are registered using the procedure defined in <xref target="I-D.ietf-quic-transport"></xref>.</t>
+			<t>TBD: Text is required to register the BDP frame and the enable_bdp transport parameter. Parameters are registered using the procedure defined in <xref target="I-D.ietf-quic-transport"></xref>.</t>
 		</section>
 
 		<section anchor="sec:security" title="Security Considerations">
