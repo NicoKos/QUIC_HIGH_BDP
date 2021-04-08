@@ -141,7 +141,7 @@
 						<t>1-RTT connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate in the Bandwidth-Delay Product (BDP) extension frame;</t>
 						<t>During the 1-RTT connection: the server sends the BDP extensions frame to the client;</t>
 						<t>0-RTT connection: if the client agrees with the parameters of the BDP extension, it sends the BDP extension along with 0-RTT CHO packets;</t>
-						<t>0-RTT connection: the server checks the authenticity of the received BDP extension.</t>
+						<t>0-RTT connection: the server checks the authenticity and validity of the received BDP extension.</t>
 					</list></t>
 					<t>Safely using previously measured transport parameters in 0-RTT connections:<list style="numbers">
 				<t>0-RTT connection: the servers sends the first data packet using a standard initial window;</t>
@@ -165,9 +165,11 @@
 		<section anchor="sec:implem" title="Implementation considerations">
 			<section anchor="sec:bdp_frame" title="Rationale behind the choice of a BDP frame">
 		
-			<t>The client can read the values of the extension which constraints the implementation possibilities. This could be done by adapting the NewSessionTicket messages of TLS for the client to read the added parameters. The sole extension currently defined in TLS1.3 that can be seen by the client is max_early_data_size (see section 4.6.1 of <xref target="RFC8446"></xref>). However, in the general design of QUIC, TLS sessions are managed by the TLS stacks. Instead of exploiting a specific implementation of TLS, it is more adequate to propose an extension frame for carrying BDP metadata.</t>
-			<t>The client can not read the content of NEW_TOKEN frames (see section 19.7 of <xref target="I-D.ietf-quic-transport"></xref>). The draft proposes the exploitation of a new frame, BDP frame.</t>
-			<t>The BDP frame MUST be contained in Initial or 0-RTT packets if sent by the client. The BDP frame MUST be contained in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits. The server MAY send multiple BDP frames in both 1-RTT and 0-RTT connections. The client MUST NOT send BDP frames during 1-RTT connections.</t>
+			<t>The client can read the values of the extension which constraints the implementation possibilities.<list style="symbols">
+				<t>Using NewSessionTickets messages of TLS: a solution could have been to add a 'bdp_metada' field in the NewSessionTickets that the client could read. The sole extension currently defined in TLS1.3 that can be seen by the client is max_early_data_size (see section 4.6.1 of <xref target="RFC8446"></xref>). However, in the general design of QUIC, TLS sessions are managed by the TLS stacks.</t>
+				<t>Using NEW_TOKEN frames: a solution could have been to send a token to the client through a NEW_TOKEN frame. The token is an opaque blob and the client can not read its content (see section 19.7 of <xref target="I-D.ietf-quic-transport"></xref>).</t>
+	</list></t>
+	<t>The draft proposes the exploitation of a new frame, BDP frame. The BDP frame MUST be contained in 0-RTT packets if sent by the client. The BDP frame MUST be contained in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits. The server MAY send multiple BDP frames in both 1-RTT and 0-RTT connections. The client MUST NOT send BDP frames during 1-RTT connections.</t>
 
 		</section>
 
@@ -187,16 +189,16 @@ BDP Frame {
         </figure>
 				<t>The BDP frames contain the following fields: <list style="symbols">
 
-				<t>Lifetime (extension_lifetime): The extension_lifetime is a value in milliseconds that is encoded as an integer. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>. This represents the validity in time of the extension.</t> 
+				<t>Lifetime (extension_lifetime): The extension_lifetime is a value in milliseconds that is encoded as a variable length integer. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>. This represents the validity in time of the extension.</t> 
 
-				<t>Reconnection Bytes in Flight (recon_bytes_in_flight): The recon_bytes_in_flight is a value in bytes that is encoded as an integer. The bytes in
+				<t>Reconnection Bytes in Flight (recon_bytes_in_flight): The recon_bytes_in_flight is a value in bytes that is encoded as a variable length integer. The bytes in
 				flight measured on the previous connection by
 				the server.
 				Using the previous values of bytes_in_flight defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
 					recon_bytes_in_flight could be determined.</t>
 
-				<t>Reconnection Minimum RTT (recon_min_rtt): The recon_min_rtt is a value in milliseconds that is encoded as an integer. 
+				<t>Reconnection Minimum RTT (recon_min_rtt): The recon_min_rtt is a value in milliseconds that is encoded as a variable length integer. 
 				Using
 				the min_rtt defined in <xref
 				target="I-D.ietf-quic-recovery"></xref>,
@@ -217,18 +219,27 @@ BDP Frame {
 			<t>enable_bdp (0xTBD): the client indicates to the server that it wishes to receive BDP frames. Default value is 0. Values strictly above 3 are invalid, and receipt of these values MUST be treated as a connection error of type TRANSPORT_PARAMETER_ERROR.</t>
 			<t><list style="symbols">
 					<t>0: Default value. If the client does not send this parameter, the server considers that the client does not support or does not wish to activate the BDP extension.</t>
-					<t>1: The client indicate to the server that it wishes to receive BDP frame and activate the ingress optimization for the 0-RTT connection.</t>
-					<t>2: The client does not wish to receive BDP frames.</t>
-					<t>3: The client indicate to the server that it wishes to receive BDP frame, activate the ingress optimization for the 0-RTT connection and receive new BDP frames in the 0-RTT connection.</t>
+					<t>1: The client indicates to the server that it wishes to receive BDP frame and activates the ingress optimization for the 0-RTT connection.</t>
+					<t>2: The client indicates that it does not wish to receive BDP frames but activates ingress optimization.</t>
+					<t>3: The client indicates that it wishes to receive BDP frames but does not activate ingress optimization.</t>
 			</list></t>
 		<t>This Transport Parameter is encoded as per Section 18 of <xref target="I-D.ietf-quic-transport"></xref>.</t>
 
 		</section>
 
+		<section title="Authenticity and validity of the BDP extension">
+			<t>The server MUST check the authenticity and validity of the received BDP extension.</t>
+			<t>The following events could make use of the BDP extension inappropriate:<list style="symbols">
+<t>IP address changes: If the client changes its IP address, it may employ a different network to reconnect. The new path may not exhibit the same characteristics as the old one.</t>
+<t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
+<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the server can tune the extension_lifetime parameter. Clients MUST NOT send a BDP frame if the timer has expired. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
+				</list></t>
+		</section>
+	
 
 		</section>
 
-		<section anchor="subsec:rationale_jump" title="Safe jump start">
+		<section anchor="subsec:rationale_jump" title="Safe jump start and usage of the BDP frame for 0-RTT connections">
 
 			<section title="Rationale behind the safety guidelines">
 
@@ -278,14 +289,6 @@ BDP Frame {
 
 		<section anchor="sec:discuss" title="Discussion">
 
-		<section title="Applicability of the BDP extension">
-				<t>The following events could make use of the BDP extension inappropriate:<list style="symbols">
-<t>IP address changes: If the client changes its IP address, it may employ a different network to reconnect. The new path may not exhibit the same characteristics as the old one.</t>
-<t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
-<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the server can tune the extension_lifetime parameter. Clients MUST NOT send a BDP frame if the timer has expired. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
-				</list></t>
-		</section>
-	
 
 			<section anchor="subsec:other_param_bdp_protect" title="BDP extension protected as much as initial_max_data">
 				<t>The BDP metadata parameters are measured by
@@ -344,7 +347,7 @@ BDP Frame {
 			</section>
 		
 		<section anchor="sec:acknowledgments" title="Acknowledgments">
-			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema, Robin Marx and Roland Bless for their fruitful comments on earlier versions of this document.</t>
+			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema, Robin Marx, Roland Bless and Franklin Simo for their fruitful comments on earlier versions of this document.</t>
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
