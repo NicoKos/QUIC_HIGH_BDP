@@ -141,11 +141,10 @@
 						<t>1-RTT connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate;</t>
 						<t>During the 1-RTT connection: the server sends the BDP extension frames (containing round-trip time and maximum data-rate) to the client;</t>
 						<t>0-RTT connection: if the client agrees with the parameters of the BDP extension, it sends the BDP extension along with 0-RTT CHO packets;</t>
-						<t>0-RTT connection: the server checks the authenticity and validity of the received BDP extension.</t>
+						<t>0-RTT connection: the server checks the authenticity and validity of the received BDP extension and run address validation for future connection described in Section 8.1.3 of <xref target="I-D.ietf-quic-transport"></xref>.</t>
 					</list></t>
 					<t>Safely using previously measured transport parameters in 0-RTT connections:<list style="numbers">
 				<t>0-RTT connection: the server sends the first data packet using a standard initial window;</t>
-				<t>0-RTT connection: the server runs the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>;</t>
 				<t>0-RTT connection: if the reception of IW is
 					exhibits characteristics 
 					similar to that of a recent previous
