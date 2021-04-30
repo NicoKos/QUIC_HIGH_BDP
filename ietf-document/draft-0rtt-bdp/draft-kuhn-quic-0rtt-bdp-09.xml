@@ -125,14 +125,14 @@
 			parameters, only initial_max_data improves the
 				time-to-service of the 0-RTT connection.</t>
 
-			<t>In addition to these parameters, this document proposes a QUIC extension to augment the list of server transport parameters that are shared with the client to improve the time-to-service. This allows resumption using additional transport and connection properties that were discovered in previous connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). Network conditions may change during 1-RTT and 0-RTT: this document proposes safety guidelines on how to safely apply to previously measured parameters to 0-RTT connections.</t>
+			<t>In addition to these parameters, this document proposes to augment the list of server transport parameters that are shared with the client to improve the time-to-service. This allows resumption using additional transport and connection properties that were discovered in previous connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). Network conditions may change during 1-RTT and 0-RTT: this document proposes safety guidelines on how to safely apply to previously measured parameters to 0-RTT connections.</t>
 
 		</section>
 
 		<section anchor="subsec:scope" title="Scope and structure of the document">
 
 			<t> The following scenario is considered through the whole document:<list style="numbers">
-				<t>Sharing 1-RTT transport parameters for 0-RTT connections : <xref target="sec:implem"></xref> discusses ways of implementing this in QUIC. Interoperability is required for this transport parameter exchange.</t>
+				<t>Sharing 1-RTT transport parameters for 0-RTT connections : <xref target="sec:implem"></xref> discusses ways of implementing this in QUIC.</t>
 				<t>Safely using previously measured transport parameters in 0-RTT connections: <xref target="subsec:rationale_jump"></xref> discusses solutions that can enable a safe increase of the transmission rate. These safety nets SHOULD be implemented when the transport parameters are used to increase the ingress initial transmission rate.</t>
 			</list></t>
 
@@ -162,19 +162,31 @@
 		</section> 
 
 		<section anchor="sec:implem" title="Implementation considerations">
-			<section anchor="sec:bdp_frame" title="Rationale behind the choice of a BDP frame">
+			<section anchor="sec:bdp_frame" title="Rationale behind the choice of a BDP frame or local storage">
 		
 			<t>The client can read the values of the extension which constraints the implementation possibilities.<list style="symbols">
 				<t>Using NewSessionTickets messages of TLS: a solution could have been to add a 'bdp_metada' field in the NewSessionTickets that the client could read. The sole extension currently defined in TLS1.3 that can be seen by the client is max_early_data_size (see section 4.6.1 of <xref target="RFC8446"></xref>). However, in the general design of QUIC, TLS sessions are managed by the TLS stacks.</t>
 				<t>Using NEW_TOKEN frames: a solution could have been to send a token to the client through a NEW_TOKEN frame. The token is an opaque blob and the client can not read its content (see section 19.7 of <xref target="I-D.ietf-quic-transport"></xref>).</t>
 	</list></t>
-	<t>The draft proposes the exploitation of a new frame, BDP frame. The BDP frame MUST be contained in 0-RTT packets if sent by the client. The BDP frame MUST be contained in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits. The server MAY send multiple BDP frames in both 1-RTT and 0-RTT connections. The client MUST NOT send BDP frames during 1-RTT connections.</t>
+
+	<t>This draft presents two distinct approaches: enable a local storage of BDP related values (see <xref target="sec:local_storage"></xref>) and a BDP Frame extension (see <xref target="sec:bdp_frame_section"></xref>). This draft also proposes a discussion on the advantages and drawbacks of both approaches.</t>
 
 		</section>
 
-			<section anchor="sec:bdp_metadata" title="BDP Frame">
+			<section anchor="sec:local_storage" title="Independent local storage of values">
+				<t>This approach lets both client and server remember their BDP parameters independently:<list style="symbols">
+	<t>During a 1RTT session, the client stores the client side RTT and CWIN together with the session resume ticket obtained from the server. The client also store the IP address of the server.</t>
+	<t>The server maintains a table of previously issued tickets, indexed by the same random ticket identifier that is used to guarantee uniqueness of the AEAD encryption. Old tokens are removed from the table using LRU logic. For each ticket identifier, the table holds the RTT and CWIN, and also the IP address of the client.</t>
+	</list></t>
 
+	<t>During the 0-RTT session, the nodes wait for the first RTT measurement from the peer's IP address to verify that the parameters have not changed. If the RTT matches expectation, the CWIN is set to the remembered value.</t>
+			</section>
+				
+			<section anchor="sec:bdp_frame_section" title="BDP Frame">
+
+				<t>This section proposes the exploitation of a new frame, BDP frame. The BDP frame MUST be contained in 0-RTT packets if sent by the client. The BDP frame MUST be contained in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits. The server MAY send multiple BDP frames in both 1-RTT and 0-RTT connections. The client MUST NOT send BDP frames during 1-RTT connections.</t>
        
+				<section anchor="sec:bdp_metadata" title="BDP Frame Format">
 				<t>The BDP frames are formatted as shown in <xref target="fig:bdp_frame_format"></xref>.</t>
 	<figure anchor="fig:bdp_frame_format" title="BDP Frame Format">
         <artwork>
@@ -233,6 +245,13 @@ BDP Frame {
 <t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
 <t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the server can tune the extension_lifetime parameter. Clients MUST NOT send a BDP frame if the timer has expired. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
 				</list></t>
+			</section>
+
+		<section anchor="sec:discuss_bdp_default" title="Discussion on BDP Frame extension and local storage of values">
+			<t>TBD</t>
+		</section>
+
+
 		</section>
 	
 
