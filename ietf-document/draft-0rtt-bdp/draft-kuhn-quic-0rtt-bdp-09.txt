@@ -5,11 +5,13 @@
 Internet Engineering Task Force                                  N. Kuhn
 Internet-Draft                                                      CNES
 Intended status: Informational                                E. Stephan
-Expires: November 1, 2021                                         Orange
+Expires: November 5, 2021                                         Orange
                                                             G. Fairhurst
                                                                 T. Jones
                                                   University of Aberdeen
-                                                          April 30, 2021
+                                                              C. Huitema
+                                                    Private Octopus Inc.
+                                                             May 4, 2021
 
 
                Transport parameters for 0-RTT connections
@@ -36,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on November 1, 2021.
+   This Internet-Draft will expire on November 5, 2021.
 
 Copyright Notice
 
@@ -48,22 +50,22 @@ Copyright Notice
    (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
+
+
+
+Kuhn, et al.            Expires November 5, 2021                [Page 1]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
+
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
-
-
-
-Kuhn, et al.            Expires November 1, 2021                [Page 1]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
      1.1.  Notations and terms . . . . . . . . . . . . . . . . . . .   3
      1.2.  Requirements Language . . . . . . . . . . . . . . . . . .   3
    2.  Motivation  . . . . . . . . . . . . . . . . . . . . . . . . .   3
@@ -78,41 +80,45 @@ Table of Contents
        4.3.3.  Authenticity and validity of the BDP extension  . . .   7
        4.3.4.  Discussion on BDP Frame extension and local storage
                of values . . . . . . . . . . . . . . . . . . . . . .   8
+         4.3.4.1.  Security aspects  . . . . . . . . . . . . . . . .   8
+         4.3.4.2.  Interoperability and use-cases  . . . . . . . . .   8
+         4.3.4.3.  Summary . . . . . . . . . . . . . . . . . . . . .   9
    5.  Safe jump start and usage of the BDP frame for 0-RTT
-       connections . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     5.1.  Rationale behind the safety guidelines  . . . . . . . . .   8
-     5.2.  Safety guidelines . . . . . . . . . . . . . . . . . . . .   8
-   6.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+       connections . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     5.1.  Rationale behind the safety guidelines  . . . . . . . . .   9
+     5.2.  Safety guidelines . . . . . . . . . . . . . . . . . . . .   9
+   6.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      6.1.  BDP extension protected as much as initial_max_data . . .  10
-     6.2.  The client point-of-view  . . . . . . . . . . . . . . . .  10
-     6.3.  Other use-cases . . . . . . . . . . . . . . . . . . . . .  10
-       6.3.1.  Optimizing client's requests  . . . . . . . . . . . .  10
+     6.2.  The client point-of-view  . . . . . . . . . . . . . . . .  11
+     6.3.  Other use-cases . . . . . . . . . . . . . . . . . . . . .  11
+       6.3.1.  Optimizing client's requests  . . . . . . . . . . . .  11
        6.3.2.  Sharing transport information across multiple
-               connections . . . . . . . . . . . . . . . . . . . . .  10
+               connections . . . . . . . . . . . . . . . . . . . . .  11
    7.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .  11
-     10.2.  Informative References . . . . . . . . . . . . . . . . .  12
-   Appendix A.  Example  . . . . . . . . . . . . . . . . . . . . . .  12
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  12
+     10.2.  Informative References . . . . . . . . . . . . . . . . .  13
+   Appendix A.  Example  . . . . . . . . . . . . . . . . . . . . . .  13
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
+
+
+
+
+
+
+
+Kuhn, et al.            Expires November 5, 2021                [Page 2]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
 
 1.  Introduction
 
    QUIC 0-RTT transport features currently focuses on egress traffic
    optimization.  This draft proposes a QUIC extension to improve the
    performance of ingress traffic.
-
-
-
-
-
-
-Kuhn, et al.            Expires November 1, 2021                [Page 2]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
 
 1.1.  Notations and terms
 
@@ -155,20 +161,17 @@ Internet-Draft             Transport for 0-RTT                April 2021
    in previous connections during the 0-RTT phase.  Candidate parameters
    are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB).
    Network conditions may change during 1-RTT and 0-RTT: this document
+
+
+
+
+Kuhn, et al.            Expires November 5, 2021                [Page 3]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
+
    proposes safety guidelines on how to safely apply to previously
    measured parameters to 0-RTT connections.
-
-
-
-
-
-
-
-
-Kuhn, et al.            Expires November 1, 2021                [Page 3]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
 
 3.  Scope and structure of the document
 
@@ -216,15 +219,15 @@ Internet-Draft             Transport for 0-RTT                April 2021
           sender to use the previous path information as an input to
           help determine a new safe rate;
 
+
+
+Kuhn, et al.            Expires November 5, 2021                [Page 4]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
+
       3.  Pacing of packets as a function of the estimated RTT could
           provide additional safety.
-
-
-
-Kuhn, et al.            Expires November 1, 2021                [Page 4]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
 
 4.  Implementation considerations
 
@@ -274,12 +277,9 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
 
 
-
-
-
-Kuhn, et al.            Expires November 1, 2021                [Page 5]
+Kuhn, et al.            Expires November 5, 2021                [Page 5]
 
-Internet-Draft             Transport for 0-RTT                April 2021
+Internet-Draft             Transport for 0-RTT                  May 2021
 
 
 4.3.  BDP Frame
@@ -333,9 +333,9 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
 
 
-Kuhn, et al.            Expires November 1, 2021                [Page 6]
+Kuhn, et al.            Expires November 5, 2021                [Page 6]
 
-Internet-Draft             Transport for 0-RTT                April 2021
+Internet-Draft             Transport for 0-RTT                  May 2021
 
 
 4.3.2.  Extension activation
@@ -389,9 +389,9 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
 
 
-Kuhn, et al.            Expires November 1, 2021                [Page 7]
+Kuhn, et al.            Expires November 5, 2021                [Page 7]
 
-Internet-Draft             Transport for 0-RTT                April 2021
+Internet-Draft             Transport for 0-RTT                  May 2021
 
 
       if the timer has expired.  This follows the idea of
@@ -399,7 +399,62 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
 4.3.4.  Discussion on BDP Frame extension and local storage of values
 
-   TBD
+   This section proposes a discussion on the advantages and drawbacks of
+   both implementation options that are described in this draft.
+
+4.3.4.1.  Security aspects
+
+   The client may send information related to the BDP to the server with
+   the BDP Frame extension.  However, the server may not trust the
+   client.  Indeed, even if 0-RTT packets containing the BDP Frame are
+   encrypted, a client may modify the values within the extension and
+   ecrypt the 0-RTT packet.  Authentification mechanisms may not
+   guarantee that the values are safe.  The server may then need to
+   store the BDP parameters as well.
+
+   The server should then introduce safety guidelines, such as described
+   in Section 5.  Using these algorithms, the server may check that part
+   of the information provided by the client are valid.  Also, this
+   would reduce the harms caused by a client that would have modified
+   the BDP parameters.  A supplementary check could be not to accept to
+   use values that would be higher than those currently used by CDNs
+   [TMA18].
+
+   Anyway, storing the BDP parameters locally at the server reduces the
+   risks associated by allowing the client to transmit information
+   related to the BDP of the network.
+
+4.3.4.2.  Interoperability and use-cases
+
+   If the server ends up storing a resumption ticket for each client to
+   protect against replay on a third party IP, it may as well store the
+   IP address and BDP parameters of the client.  In cases where the BDP
+   Frame extension is exploited, the approach of storing the BDP
+   parameters locally at the server can be used for cross-checking the
+   BDP parameters sent by a client.  Anyway the server could enable safe
+   jump start but without the BDP Frame extension, the client does not
+   have the choice of accepting it or not.
+
+   While storing locally values related to the BDP would help in
+   improving the ingress for 0-RTT connections, not using a BDP Frame
+   extension may reduce the interest of the approach where (1) the
+   client knows the BDP estimations done at the server, (2) the client
+   decides to accept or reject ingress optimization, (3) the client
+   tunes application level requests.
+
+
+
+
+Kuhn, et al.            Expires November 5, 2021                [Page 8]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
+
+4.3.4.3.  Summary
+
+   As a summary, the approach of local storage of values is more secure
+   and the BDP Frame extension provides more information to the client
+   and more interoperability.
 
 5.  Safe jump start and usage of the BDP frame for 0-RTT connections
 
@@ -440,19 +495,16 @@ Internet-Draft             Transport for 0-RTT                April 2021
    o  The server SHOULD compare the measured transport parameters of the
       0-RTT connection with those of the 1-RTT connection;
 
-
-
-
-
-
-Kuhn, et al.            Expires November 1, 2021                [Page 8]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    o  The server MUST NOT send more than a recommended maximum initial
       window in the first transmission of data.  This value could be
       based on [TMA18].
+
+
+
+Kuhn, et al.            Expires November 5, 2021                [Page 9]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
 
    The following mechanisms consider that the process described in
    Section 4, and that both the server and the client know the
@@ -495,17 +547,6 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
 6.  Discussion
 
-
-
-
-
-
-
-Kuhn, et al.            Expires November 1, 2021                [Page 9]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
 6.1.  BDP extension protected as much as initial_max_data
 
    The BDP metadata parameters are measured by the server during a
@@ -513,6 +554,14 @@ Internet-Draft             Transport for 0-RTT                April 2021
    that protects the exchange of the 0-RTT transport parameters.  For
    version 1 of QUIC, the BDP extension is protected using the mechanism
    that already protects the "initial_max_data" parameter.  This is
+
+
+
+Kuhn, et al.            Expires November 5, 2021               [Page 10]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
+
    defined in sections 4.5 to 4.7 of [I-D.ietf-quic-tls].  This provides
    the server with a way to verify that the parameters proposed by the
    client are the same as those that the server sent to the client
@@ -553,21 +602,21 @@ Internet-Draft             Transport for 0-RTT                April 2021
    server-generated information at the client and not requiring the
    server to retain additional state for each client.
 
-
-
-
-
-Kuhn, et al.            Expires November 1, 2021               [Page 10]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
 7.  Acknowledgments
 
    The authors would like to thank Gabriel Montenegro, Patrick McManus,
    Ian Swett, Igor Lubashev, Christian Huitema, Robin Marx, Roland Bless
    and Franklin Simo for their fruitful comments on earlier versions of
    this document.
+
+
+
+
+
+Kuhn, et al.            Expires November 5, 2021               [Page 11]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
 
 8.  IANA Considerations
 
@@ -608,16 +657,6 @@ Internet-Draft             Transport for 0-RTT                April 2021
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-
-
-
-
-
-Kuhn, et al.            Expires November 1, 2021               [Page 11]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    [RFC4782]  Floyd, S., Allman, M., Jain, A., and P. Sarolahti, "Quick-
               Start for TCP and IP", RFC 4782, DOI 10.17487/RFC4782,
               January 2007, <https://www.rfc-editor.org/info/rfc4782>.
@@ -626,6 +665,14 @@ Internet-Draft             Transport for 0-RTT                April 2021
               "Framework for TCP Throughput Testing", RFC 6349,
               DOI 10.17487/RFC6349, August 2011,
               <https://www.rfc-editor.org/info/rfc6349>.
+
+
+
+
+Kuhn, et al.            Expires November 5, 2021               [Page 12]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -665,15 +712,6 @@ Authors' Addresses
    Email: nicolas.kuhn@cnes.fr
 
 
-
-
-
-
-Kuhn, et al.            Expires November 1, 2021               [Page 12]
-
-Internet-Draft             Transport for 0-RTT                April 2021
-
-
    Emile Stephan
    Orange
 
@@ -686,12 +724,22 @@ Internet-Draft             Transport for 0-RTT                April 2021
    Email: gorry@erg.abdn.ac.uk
 
 
+
+Kuhn, et al.            Expires November 5, 2021               [Page 13]
+
+Internet-Draft             Transport for 0-RTT                  May 2021
+
+
    Tom Jones
    University of Aberdeen
 
    Email: tom@erg.abdn.ac.uk
 
 
+   Christian Huitema
+   Private Octopus Inc.
+
+   Email: huitema@huitema.net
 
 
 
@@ -725,4 +773,12 @@ Internet-Draft             Transport for 0-RTT                April 2021
 
 
 
-Kuhn, et al.            Expires November 1, 2021               [Page 13]
+
+
+
+
+
+
+
+
+Kuhn, et al.            Expires November 5, 2021               [Page 14]

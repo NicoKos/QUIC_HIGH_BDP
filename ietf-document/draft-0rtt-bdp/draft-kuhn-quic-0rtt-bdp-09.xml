@@ -51,7 +51,14 @@
 				<email>tom@erg.abdn.ac.uk</email>
 			</address>
 		</author>
-		
+
+		<author fullname="Christian Huitema" initials="C" surname="Huitema">
+			<organization>Private Octopus Inc.</organization>
+			<address>
+				<email>huitema@huitema.net</email>
+			</address>
+		</author>
+
 		<date year="2021"/>
 
 		<!-- If the month and year are both specified and are the current ones, xml2rfc will fill
@@ -247,8 +254,21 @@ BDP Frame {
 				</list></t>
 			</section>
 
-		<section anchor="sec:discuss_bdp_default" title="Discussion on BDP Frame extension and local storage of values">
-			<t>TBD</t>
+			<section anchor="sec:discuss_bdp_default" title="Discussion on BDP Frame extension and local storage of values">
+			<t>This section proposes a discussion on the advantages and drawbacks of both implementation options that are described in this draft.</t>
+			<section title="Security aspects">
+				<t>The client may send information related to the BDP to the server with the BDP Frame extension. However, the server may not trust the client. Indeed, even if 0-RTT packets containing the BDP Frame are encrypted, a client may modify the values within the extension and ecrypt the 0-RTT packet. Authentification mechanisms may not guarantee that the values are safe. The server may then need to store the BDP parameters as well.</t>
+				<t>The server should then introduce safety guidelines, such as described in <xref target="subsec:rationale_jump"></xref>. Using these algorithms, the server may check that part of the information provided by the client are valid. Also, this would reduce the harms caused by a client that would have modified the BDP parameters. A supplementary check could be not to accept to use values that would be higher than those currently used by CDNs <xref target="TMA18"></xref>.</t>
+				<t>Anyway, storing the BDP parameters locally at the server reduces the risks associated by allowing the client to transmit information related to the BDP of the network.</t>
+			</section>
+
+			<section title="Interoperability and use-cases">
+				<t>If the server ends up storing a resumption ticket for each client to protect against replay on a third party IP, it may as well store the IP address and BDP parameters of the client. In cases where the BDP Frame extension is exploited, the approach of storing the BDP parameters locally at the server can be used for cross-checking the BDP parameters sent by a client. Anyway the server could enable safe jump start but without the BDP Frame extension, the client does not have the choice of accepting it or not.</t>
+				<t>While storing locally values related to the BDP would help in improving the ingress for 0-RTT connections, not using a BDP Frame extension may reduce the interest of the approach where (1) the client knows the BDP estimations done at the server, (2) the client decides to accept or reject ingress optimization, (3) the client tunes application level requests.</t>
+			</section>
+			<section title="Summary">
+			<t>As a summary, the approach of local storage of values is more secure and the BDP Frame extension provides more information to the client and more interoperability.</t>
+			</section>
 		</section>
 
 
