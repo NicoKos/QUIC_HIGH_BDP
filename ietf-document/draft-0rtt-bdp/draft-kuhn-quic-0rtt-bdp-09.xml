@@ -385,7 +385,7 @@ BDP Frame {
 			</section>
 		
 		<section anchor="sec:acknowledgments" title="Acknowledgments">
-			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Christian Huitema, Robin Marx, Roland Bless and Franklin Simo for their fruitful comments on earlier versions of this document.</t>
+			<t>The authors would like to thank Gabriel Montenegro, Patrick McManus, Ian Swett, Igor Lubashev, Robin Marx, Roland Bless and Franklin Simo for their fruitful comments on earlier versions of this document.</t>
 		</section>
 
 		<section anchor="sec:IANA" title="IANA Considerations">
