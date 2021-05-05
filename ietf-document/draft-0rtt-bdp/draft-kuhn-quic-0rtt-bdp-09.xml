@@ -118,22 +118,12 @@
 
 		<section anchor="sec:motivation" title="Motivation">
 	
-			<t>This document improves traffic delivery by
-			allowing the connection to short-cut slow RTT-based
-				processes that grow connection parameters for QUIC 0-RTT connections.</t>
+			<t>There are cases where clients resume a session to post or to get a large document. In these cases, the congestion algorithms will require time to ramp up the packet rate. This document improves traffic delivery by allowing the connection to short-cut slow RTT-based processes by remembering previously used connection parameters. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB).</t>
 
-			<t>Section 7.3.1 of <xref
-			target="I-D.ietf-quic-transport"></xref> describes the 
-			parameters that must be remembered if a client wishes to
-			send 0-RTT data.  Both endpoints store the value of the
-			server transport parameters from a previous connection and apply
-			them to any 0-RTT packets that are sent in subsequent
-			connections to the same peer. Of the six mandatory
-			parameters, only initial_max_data improves the
-				time-to-service of the 0-RTT connection.</t>
+			<t>Previously stored parameters may not be relevant: (1) network conditions may change and using a previously estimated BB may cause congestion; (2) the client may convince a server to use a CWIN much larger than required.</t>
 
-			<t>In addition to these parameters, this document proposes to augment the list of server transport parameters that are shared with the client to improve the time-to-service. This allows resumption using additional transport and connection properties that were discovered in previous connections during the 0-RTT phase. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB). Network conditions may change during 1-RTT and 0-RTT: this document proposes safety guidelines on how to safely apply to previously measured parameters to 0-RTT connections.</t>
-
+			<t>This document proposes safety guidelines on how to safely apply to previously measured parameters to new connections along with security considerations. This applies to resumed connections, wheter 0-RTT connections are exploited or not. The document discusses implementation experience in QUIC.</t>
+			<t><xref target="subsec:rationale_jump"></xref> discusses solutions that can enable a safe increase of the transmission rate. These safety nets SHOULD be implemented when the transport parameters are used to increase the ingress initial transmission rate. <xref target="sec:implem"></xref> discusses ways of implementing this in QUIC.</t>
 		</section>
 
 		<section anchor="subsec:scope" title="Scope and structure of the document">
@@ -143,6 +133,7 @@
 				<t>Safely using previously measured transport parameters in 0-RTT connections: <xref target="subsec:rationale_jump"></xref> discusses solutions that can enable a safe increase of the transmission rate. These safety nets SHOULD be implemented when the transport parameters are used to increase the ingress initial transmission rate.</t>
 			</list></t>
 
+			<!--
 			<t>The following design can result in the exploitation of the solution proposed in <xref target="sec:implem"></xref> and <xref target="subsec:rationale_jump"></xref>:<list style="symbols">
 					<t>Sharing 1-RTT transport parameters for 0-RTT connections:<list style="numbers">
 						<t>1-RTT connection without 0-RTT: the server stores parameters related to round-trip time and maximum data rate;</t>
@@ -165,8 +156,57 @@
 					could provide additional safety.</t>
 					</list></t>
 			</list></t>
-
+			-->
 		</section> 
+
+		<section anchor="subsec:rationale_jump" title="Safe jump start">
+
+			<section title="Rationale behind the safety guidelines">
+
+				<t>The server should carefully exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. Previously measured BDP should not be used as-is to avoid congestion collapse: <list style="symbols">
+					<t>The bytes in flight parameter that could be recalled from previous connection may be higher than the number of bytes in the BDP such as defined in <xref target="RFC6349"></xref> since it may include bytes in buffers along the path.</t>
+					<t>Network conditions may vary between 1-RTT and 0-RTT connections.</t>
+					</list></t>
+
+				<t>While safety recommendations are necessary, it seems important to note that CDNs currently exploit a very high Initial Window <xref target="TMA18"></xref>.</t>
+
+			</section> 
+
+			<section anchor="safety_guide" title="Safety guidelines">
+<t>The proposed mechanisms SHOULD be limited by any rate-limitation mechanisms of QUIC, such as flow control mechanisms or amplification attacks prevention. In particular, the maximum number of packets that can be sent without acknowledgment needs to be chosen to avoid the creation and the increase of congestion to a congested network. Moreover, the extension should not be an opportunity for the current connection to be a vector of an amplification attack. The address validation process, used to prevent amplification attacks, SHOULD be considered <xref target="I-D.ietf-quic-transport"></xref>.</t>
+
+<t>The safety guidelines are designed to guarantee that the server does not add congestion to a congested network. The following mechanisms should help in fulfilling this objective:<list style="symbols">
+	<t>The server SHOULD compare the measured transport parameters of the 0-RTT connection with those of the 1-RTT connection;</t>
+	<t>The server MUST NOT send more than a recommended maximum initial window in the first transmission of data. This value could be based on <xref target="TMA18"></xref>.</t>
+</list></t>
+
+<t>The following mechanisms could be implemented:<list style="symbols">
+	<t>Exploit a standard IW:<list style="numbers">
+                                <t>The server sends the first data packet using a standard initial window - this can be considered a safe starting point for an unknown path, which avoids adding congestion to a congested network;</t>
+                                <t>If the reception of IW is
+                                        confirmed for the first RTT of data,
+                                        and also the path is determined to be
+                                        similar to that of a recent previous
+                                        session (e.g., similar RTT), the method
+                                        permits the sender to use the previous
+                                        path information as an input to help
+                                        determine a new safe rate;</t>
+                                                        <t>Further
+                                        safety could be provided by pacing the
+                                        packets as a function of the estimated
+                                                        RTT.</t>
+			</list></t>
+	<t>Identify a relevant pacing rhythm:<list style="numbers">
+                                <t>The server estimates the pacing rhythm using the previously measured BDP - the interpacket transmission time is determined by the minimum between (1) the ratio between the current maximum message size (MSS) used for packets and the bottleneck throughput (2) a tunable safety margin that avoids sending more than a recommended maximum initial window;</t>
+				<t>The server estimates an IW based on the pacing rhythms and the RTT;</t>
+				<t>When the estimated IW is acknowledged, the server falls back to a standard slow-start mechanism.</t>
+			</list></t>
+</list></t>
+
+				<t>This follows the idea of <xref target="RFC4782"></xref>, <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> and <xref target="CONEXT15"></xref>.</t>
+			</section>
+		</section>
+
 
 		<section anchor="sec:implem" title="Implementation considerations">
 			<section anchor="sec:bdp_frame" title="Rationale behind the choice of a BDP frame or local storage">
@@ -275,54 +315,6 @@ BDP Frame {
 		</section>
 	
 
-		</section>
-
-		<section anchor="subsec:rationale_jump" title="Safe jump start and usage of the BDP frame for 0-RTT connections">
-
-			<section title="Rationale behind the safety guidelines">
-
-				<t>The server should carefully exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. Previously measured BDP should not be used as-is to avoid congestion collapse: <list style="symbols">
-					<t>The bytes in flight parameter that could be recalled from previous connection may be higher than the number of bytes in the BDP such as defined in <xref target="RFC6349"></xref> since it may include bytes in buffers along the path.</t>
-					<t>Network conditions may vary between 1-RTT and 0-RTT connections.</t>
-					</list></t>
-
-				<t>While safety recommendations are necessary, it seems important to note that CDNs currently exploit a very high Initial Window <xref target="TMA18"></xref>.</t>
-
-			</section> 
-
-			<section anchor="safety_guide" title="Safety guidelines">
-<t>If the client accepts the extension, the server could increase the initial congestion window. The proposed mechanisms SHOULD be limited by any rate-limitation mechanisms of QUIC, such as flow control mechanisms or amplification attacks prevention. In particular, the maximum number of packets that can be sent without acknowledgment needs to be chosen to avoid the creation and the increase of congestion to a congested network. Moreover, the extension should not be an opportunity for the current connection to be a vector of an amplification attack. The address validation process, used to prevent amplification attacks, SHOULD be considered <xref target="I-D.ietf-quic-transport"></xref>.</t>
-
-<t>The safety guidelines are designed to guarantee that the server does not add congestion to a congested network. The following mechanisms should help in fulfilling this objective:<list style="symbols">
-	<t>The server SHOULD compare the measured transport parameters of the 0-RTT connection with those of the 1-RTT connection;</t>
-	<t>The server MUST NOT send more than a recommended maximum initial window in the first transmission of data. This value could be based on <xref target="TMA18"></xref>.</t>
-</list></t>
-
-<t>The following mechanisms consider that the process described in <xref target="sec:implem"></xref>, and that both the server and the client know the previously measured BDP. This is in-line with the safety guidelines:<list style="symbols">
-	<t>Exploit a standard IW:<list style="numbers">
-                                <t>0-RTT connection: the server sends the first data packet using a standard initial window - this can be considered a safe starting point for an unknown path, which avoids adding congestion to a congested network;</t>
-                                <t>0-RTT connection: if the reception of IW is
-                                        confirmed for the first RTT of data,
-                                        and also the path is determined to be
-                                        similar to that of a recent previous
-                                        session (e.g., similar RTT), the method
-                                        permits the sender to use the previous
-                                        path information as an input to help
-                                        determine a new safe rate;</t>
-                                                        <t>Further
-                                        safety could be provided by pacing the
-                                        packets as a function of the estimated
-                                                        RTT.</t>
-			</list></t>
-	<t>Identify a relevant pacing rhythm:<list style="numbers">
-                                <t>0-RTT connection: the servers estimates the pacing rhythm using the previously measured BDP - the interpacket transmission time is determined by the minimum between (1) the ratio between the current maximum message size (MSS) used for packets and the bottleneck throughput (2) a tunable safety margin that avoids sending more than a recommended maximum initial window;</t>
-				<t>0-RTT connection: the servers estimates an IW based on the pacing rhythms and the RTT;</t>
-				<t>0-RTT connection: when the estimated IW is acknowledged, the server falls back to a standard slow-start mechanism.</t>
-			</list></t>
-</list></t>
-
-				<t>This follows the idea of <xref target="RFC4782"></xref>, <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> and <xref target="CONEXT15"></xref>.</t>
-			</section>
 		</section>
 
 		<section anchor="sec:discuss" title="Discussion">
