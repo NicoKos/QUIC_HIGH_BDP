@@ -104,6 +104,13 @@
 		to improve the performance of ingress traffic. 
 		</t>
 		
+		<t>There are cases where clients resume a session to post or to get a large document. In these cases, the congestion algorithms will require time to ramp up the packet rate. This document improves traffic delivery by allowing the connection to short-cut slow RTT-based processes by remembering previously used connection parameters. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB).</t>
+
+			<t>Previously stored parameters may not be relevant: (1) network conditions may change and using a previously estimated BB may cause congestion; (2) the client may convince a server to use a CWIN much larger than required.</t>
+
+			<t>This document proposes safety guidelines on how to safely apply previously measured parameters to new connections along with security considerations. This applies to resumed connections, wheter 0-RTT approach is exploited or not. The document discusses implementation experience in QUIC.</t>
+			<t><xref target="subsec:rationale_jump"></xref> discusses solutions that can enable a safe increase of the transmission rate. These safety nets SHOULD be implemented when the transport parameters are used to increase the ingress initial transmission rate. <xref target="sec:implem"></xref> discusses ways of implementing this in QUIC.</t>
+
 		<section anchor="sec:terms_def" title="Notations and terms">
 	
 			<t><xref target="RFC6349"></xref> defines the BDP as follows: "Derived from Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB), the Bandwidth-Delay Product (BDP) determines the Send and Received Socket buffer sizes required to achieve the maximum TCP Throughput." The 1-RTT connection may not reproduce the procedure detailed in <xref target="RFC6349"></xref> to measure the BDP. The server may exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. This draft considers the BDP as the Bandwidth-Delay Product as estimated by the server and would include the buffering in the network.</t>
@@ -115,24 +122,14 @@
 		</section>
 		</section>
 
-
-		<section anchor="sec:motivation" title="Motivation">
-	
-			<t>There are cases where clients resume a session to post or to get a large document. In these cases, the congestion algorithms will require time to ramp up the packet rate. This document improves traffic delivery by allowing the connection to short-cut slow RTT-based processes by remembering previously used connection parameters. Candidate parameters are Round-Trip Time (RTT) and network Bottleneck Bandwidth (BB).</t>
-
-			<t>Previously stored parameters may not be relevant: (1) network conditions may change and using a previously estimated BB may cause congestion; (2) the client may convince a server to use a CWIN much larger than required.</t>
-
-			<t>This document proposes safety guidelines on how to safely apply to previously measured parameters to new connections along with security considerations. This applies to resumed connections, wheter 0-RTT connections are exploited or not. The document discusses implementation experience in QUIC.</t>
-			<t><xref target="subsec:rationale_jump"></xref> discusses solutions that can enable a safe increase of the transmission rate. These safety nets SHOULD be implemented when the transport parameters are used to increase the ingress initial transmission rate. <xref target="sec:implem"></xref> discusses ways of implementing this in QUIC.</t>
-		</section>
-
-		<section anchor="subsec:scope" title="Scope and structure of the document">
+			
+		<!--		<section anchor="subsec:scope" title="Scope and structure of the document">
 
 			<t> The following scenario is considered through the whole document:<list style="numbers">
 				<t>Sharing 1-RTT transport parameters for 0-RTT connections : <xref target="sec:implem"></xref> discusses ways of implementing this in QUIC.</t>
 				<t>Safely using previously measured transport parameters in 0-RTT connections: <xref target="subsec:rationale_jump"></xref> discusses solutions that can enable a safe increase of the transmission rate. These safety nets SHOULD be implemented when the transport parameters are used to increase the ingress initial transmission rate.</t>
 			</list></t>
-
+		-->
 			<!--
 			<t>The following design can result in the exploitation of the solution proposed in <xref target="sec:implem"></xref> and <xref target="subsec:rationale_jump"></xref>:<list style="symbols">
 					<t>Sharing 1-RTT transport parameters for 0-RTT connections:<list style="numbers">
@@ -156,21 +153,34 @@
 					could provide additional safety.</t>
 					</list></t>
 			</list></t>
-			-->
 		</section> 
+			-->
 
 		<section anchor="subsec:rationale_jump" title="Safe jump start">
 
 			<section title="Rationale behind the safety guidelines">
 
-				<t>The server should carefully exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. Previously measured BDP should not be used as-is to avoid congestion collapse: <list style="symbols">
-					<t>The bytes in flight parameter that could be recalled from previous connection may be higher than the number of bytes in the BDP such as defined in <xref target="RFC6349"></xref> since it may include bytes in buffers along the path.</t>
-					<t>Network conditions may vary between 1-RTT and 0-RTT connections.</t>
+				<t>The server should carefully exploit internal evaluations of the bytes in flight and minimum RTT to assess the BDP. Indeed, the bytes in flight parameter that could be recalled from previous connection may be higher than the number of bytes in the BDP such as defined in <xref target="RFC6349"></xref> since it may include bytes in buffers along the path.</t>
+				<t>Previously measured BDP should not be used as-is to avoid congestion collapse: <list style="symbols">
+					<t>Rationale #1: Network conditions may vary between 1-RTT and 0-RTT connections.</t>
+					<t>Rationale #2: Information sent by the client may not be relevant since they may try to convince servers in using CWIN higher than required which may induce congestion.</t>
 					</list></t>
-
 				<t>While safety recommendations are necessary, it seems important to note that CDNs currently exploit a very high Initial Window <xref target="TMA18"></xref>.</t>
 
 			</section> 
+	
+			<section title="Rationale #1: Variable network conditions">
+			<t>The server MUST check the validity of the BDP parameters received by a client.</t>
+			<t>The following events could make use of the BDP parameters inappropriate:<list style="symbols">
+<t>IP address changes: If the client changes its IP address, it may employ a different network to reconnect. The new path may not exhibit the same characteristics as the old one.</t>
+<t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
+<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the server can define and tune a lifetime parameter. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
+				</list></t>
+			</section>
+
+			<section title="Rationale #2: Malicious clients">
+			<t>The server MUST check the authenticity of the BDP parameters received by a client.</t>
+		</section>
 
 			<section anchor="safety_guide" title="Safety guidelines">
 <t>The proposed mechanisms SHOULD be limited by any rate-limitation mechanisms of QUIC, such as flow control mechanisms or amplification attacks prevention. In particular, the maximum number of packets that can be sent without acknowledgment needs to be chosen to avoid the creation and the increase of congestion to a congested network. Moreover, the extension should not be an opportunity for the current connection to be a vector of an amplification attack. The address validation process, used to prevent amplification attacks, SHOULD be considered <xref target="I-D.ietf-quic-transport"></xref>.</t>
@@ -285,15 +295,6 @@ BDP Frame {
 
 		</section>
 
-		<section title="Authenticity and validity of the BDP extension">
-			<t>The server MUST check the authenticity and validity of the received BDP extension.</t>
-			<t>The following events could make use of the BDP extension inappropriate:<list style="symbols">
-<t>IP address changes: If the client changes its IP address, it may employ a different network to reconnect. The new path may not exhibit the same characteristics as the old one.</t>
-<t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
-<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the server can tune the extension_lifetime parameter. Clients MUST NOT send a BDP frame if the timer has expired. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
-				</list></t>
-			</section>
-
 			<section anchor="sec:discuss_bdp_default" title="Discussion on BDP Frame extension and local storage of values">
 			<t>This section proposes a discussion on the advantages and drawbacks of both implementation options that are described in this draft.</t>
 			<section title="Security aspects">
@@ -311,10 +312,8 @@ BDP Frame {
 			</section>
 		</section>
 
-
 		</section>
 	
-
 		</section>
 
 		<section anchor="sec:discuss" title="Discussion">
