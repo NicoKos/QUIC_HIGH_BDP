@@ -170,25 +170,103 @@
 			</section> 
 	
 			<section title="Rationale #1: Variable network conditions">
-			<t>The server MUST check the validity of the BDP parameters received by a client.</t>
-			<t>The following events could make use of the BDP parameters inappropriate:<list style="symbols">
+				<t>The server MUST check the validity of the BDP parameters whether they are sent by a client or stored at the server. Indeed, the following events could make use of the BDP parameters inappropriate:<list style="symbols">
 <t>IP address changes: If the client changes its IP address, it may employ a different network to reconnect. The new path may not exhibit the same characteristics as the old one.</t>
-<t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t>
-<t>Lifetime of the extension: Based on experimental feedback and to reduce resource utilization at the client, the server can define and tune a lifetime parameter. This follows the idea of NewSessionTicket of TLS <xref target="RFC8446"></xref>.</t>
+	<!-- <t>Rate-limitation induced by QUIC: The proposed mechanisms SHOULD be limited by other rate-limitation mechanisms of QUIC, such as the address validation process that is used to prevent amplification attacks <xref target="I-D.ietf-quic-transport"></xref>.</t> -->
+	<t>Lifetime of the extension: If the network conditions change, e.g. the network was not congested when BDP parameters were evaluated but there is congestion for the next connection, the previously estimated parameters may not be valid.</t>
 				</list></t>
-			</section>
 
-			<section title="Rationale #2: Malicious clients">
-			<t>The server MUST check the authenticity of the BDP parameters received by a client.</t>
+					<t>There are different solutions for the variable network conditions:<list style="symbols">
+							<t>Rationale #1 - Solution #1 : Directly exploit the BDP parameters estimated from a previous connection.</t>
+							<t>Rationale #1 - Solution #2 : Implement a safety check to measure whether the remembered BDP parameters are relevant or if using them would not cause congestion in a congested betwork. </t>
+					</list></t>
+				<t><xref target="sec:safety_guide"></xref> describes various approaches for the Rationale #1 - Solution #2.</t>
 		</section>
 
-			<section anchor="safety_guide" title="Safety guidelines">
-<t>The proposed mechanisms SHOULD be limited by any rate-limitation mechanisms of QUIC, such as flow control mechanisms or amplification attacks prevention. In particular, the maximum number of packets that can be sent without acknowledgment needs to be chosen to avoid the creation and the increase of congestion to a congested network. Moreover, the extension should not be an opportunity for the current connection to be a vector of an amplification attack. The address validation process, used to prevent amplification attacks, SHOULD be considered <xref target="I-D.ietf-quic-transport"></xref>.</t>
+			<section title="Rationale #2: Malicious clients">
+				<t>The server MUST check the authenticity of the BDP parameters received by a client.</t>
 
+					<t>There are different solutions for malicious clients:<list style="symbols">
+						<t>Rationale #2 - Solution #1 : The server stores a local estimation of the BDP parameters.</t> 
+						<t>Rationale #2 - Solution #2 : The server sends the estimation of the BDP parameters to the client. The client resends the information when resuming a connection. The client can not read the BDP parameters. The BDP parameters are protected from edition by the client.</t>
+						<t>Rationale #2 - Solution #3 : The server sends the estimation of the BDP parameters to the client. The client resends the information when resuming a connection. The client can read the BDP parameters. The BDP parameters are protected from edition by the client.</t>
+					</list></t>
+					<t><xref target="sec:implem"></xref> describes various implementation approaches for each of these solutions using local storage (<xref target="sec:local_storage"></xref> for Rationale #2 - Solution #1), NEW_TOKEN Frame (<xref target="sec:using_new_token"></xref> for Rationale #2 - Solution #2), BDP extension frame (<xref target="sec:bdp_frame_section"></xref> for Rationale #2 - Solution #3).</t>
+
+		</section>
+
+		<section anchor="sec:discuss_bdp_default" title="Trade-off between the different solutions">
+			<t>This section proposes a discussion on the advantages and drawbacks of the different implementation options that are described in this section. While there are some discussions for the solutions regarding the Rationale #2, the server MUST consider the Rationale #1 - Solution #2 and avoid the Rationale #1 - Solution #1: the server MUST implement a safety check to measure whether the remembered BDP parameters are relevant or if using them would not cause congestion in a congested betwork.</t> 
+			<section title="Security aspects">
+				<t>The client may send information related to the BDP to the server with the BDP Frame extension using either Rationale #2 - Solution #2 or Rationale #2 - Solution #3. However, the server may not trust the client. Indeed, even if 0-RTT packets containing the BDP Frame are encrypted, a client may modify the values within the extension and encrypt the 0-RTT packet. Authentification mechanisms may not guarantee that the values are safe. The server may then need to store the BDP parameters as well.</t>
+				<t>A malicious client may modify the BDP parameters to convince the server to use a CWIN much larger than required. Using the algorithms proposed in <xref target="sec:safety_guide"></xref>, the server may reduce any intended harm. A supplementary check could be not to accept to use values that would be higher than those currently used by CDNs <xref target="TMA18"></xref>. Anyway, storing the BDP parameters locally at the server reduces the risks associated by allowing the client to transmit information related to the BDP of the network.</t>
+			</section>
+
+			<section title="Interoperability and use-cases">
+				<t>If the server ends up storing a resumption ticket for each client to protect against replay on a third party IP, it may as well store the IP address and BDP parameters of the client. In cases where the BDP Frame extension is exploited, the approach of storing the BDP parameters locally at the server can be used for cross-checking the BDP parameters sent by a client. Anyway the server could enable safe jump start but without the BDP Frame extension, the client does not have the choice of accepting it or not.</t>
+				<t>While storing locally values related to the BDP would help in improving the ingress for 0-RTT connections, not using a BDP Frame extension may reduce the interest of the approach where (1) the client knows the BDP estimations done at the server, (2) the client decides to accept or reject ingress optimization, (3) the client tunes application level requests.</t>
+			</section>
+
+			<section title="Summary">
+				<t>As a summary, the approach of local storage of values is more secure and the BDP Frame extension provides more information to the client and more interoperability. The <xref target="fig:summary"></xref> provides a summary of the advantages and drawbacks of each approach. </t>
+
+	<figure anchor="fig:summary" title="Comparing solutions">
+        <artwork>
++---------+-----------+----------------+---------------+-----------+
+|Rationale| Solution  |    Advantage   |    Drawback   |  Comment  |
++---------+-----------+----------------+---------------+-----------+
+|#1       |#1         |                |               |           |
+|Variable |Directly   |Ingress optim.  |Risks of adding|MUST NOT   | 
+|Network  |exploit BDP|                | congestion    |implement  |	
+|         +-----------+----------------+---------------+-----------+
+|         |#2         |                |               |           |
+|         |Implement  |Reduce risks of |Negative impact|MUST       |
+|         |safety     | adding         | on ingress    |implement  |
+|         |check      | congestion     | optimi.       |Section 3  |
++---------+-----------+----------------+---------------+-----------+
+|#2       |#1         |                |               |           |
+|Malicious|Local      |Enforced        |Client can not |	   |
+|client   |storage    | security       | decide to     |           |
+|         |           |                | reject        |           |
+|         |           |                |Limited        |           |
+|         |           |                | use-cases     |Section 4.2|
+|         +-----------+----------------+---------------+-----------+
+|         |#2         |                |               |           |
+|         |NEW_TOKEN  |Save resource   |Malicious      |           |
+|         |           | at server      | client may    |           |
+|         |           |Opaque token    | change token  |           |
+|         |           | protected      | even if       |           |
+|         |           |                | protected     |           |
+|         |           |                |Server may     |           |
+|         |           |                | not trust     |           |
+|         |           |                | client        |Section 4.3|
+|         +-----------+----------------+---------------+-----------+
+|         |#3         |                |               |           |
+|         |BDP        |Extended        |Malicious      |	   |
+|         |extension  | use-cases      | client may    |           |
+|         |           |Client can      | change BDP    |           |
+|         |           | read and decide| even if       |           |
+|         |           | to reject      | protected     |           |
+|         |           |BDP extension   |Server may     |           |
+|         |           | protected      | not trust     |           |
+|         |           |                | client        |Section 4.4|
++---------+-----------+----------------+---------------+-----------+
+	</artwork>
+        </figure>
+
+		</section>
+		</section>
+			</section>
+
+<section anchor="sec:safety_guide" title="Safety guidelines"> 
+	
 <t>The safety guidelines are designed to guarantee that the server does not add congestion to a congested network. The following mechanisms should help in fulfilling this objective:<list style="symbols">
 	<t>The server SHOULD compare the measured transport parameters of the 0-RTT connection with those of the 1-RTT connection;</t>
 	<t>The server MUST NOT send more than a recommended maximum initial window in the first transmission of data. This value could be based on <xref target="TMA18"></xref>.</t>
 </list></t>
+
+<t>The proposed mechanisms SHOULD be limited by any rate-limitation mechanisms of QUIC, such as flow control mechanisms or amplification attacks prevention. In particular, the maximum number of packets that can be sent without acknowledgment needs to be chosen to avoid the creation and the increase of congestion to a congested network. Moreover, the extension should not be an opportunity for the current connection to be a vector of an amplification attack. The address validation process, used to prevent amplification attacks, SHOULD be considered <xref target="I-D.ietf-quic-transport"></xref>.</t>
+
 
 <t>The following mechanisms could be implemented:<list style="symbols">
 	<t>Exploit a standard IW:<list style="numbers">
@@ -214,31 +292,28 @@
 </list></t>
 
 				<t>This follows the idea of <xref target="RFC4782"></xref>, <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref> and <xref target="CONEXT15"></xref>.</t>
-			</section>
-		</section>
-
+				</section>
 
 		<section anchor="sec:implem" title="Implementation considerations">
-			<section anchor="sec:bdp_frame" title="Rationale behind the choice of a BDP frame or local storage">
-		
-			<t>The client can read the values of the extension which constraints the implementation possibilities.<list style="symbols">
-				<t>Using NewSessionTickets messages of TLS: a solution could have been to add a 'bdp_metada' field in the NewSessionTickets that the client could read. The sole extension currently defined in TLS1.3 that can be seen by the client is max_early_data_size (see section 4.6.1 of <xref target="RFC8446"></xref>). However, in the general design of QUIC, TLS sessions are managed by the TLS stacks.</t>
-				<t>Using NEW_TOKEN frames: a solution could have been to send a token to the client through a NEW_TOKEN frame. The token is an opaque blob and the client can not read its content (see section 19.7 of <xref target="I-D.ietf-quic-transport"></xref>).</t>
-	</list></t>
+			<section anchor="sec:bdp_frame" title="Rationale behind the different implementation options">		
+				<t>Using NewSessionTickets messages of TLS is a solution that could have been envisionned. The idea would be to add a 'bdp_metada' field in the NewSessionTickets that the client could read. The sole extension currently defined in TLS1.3 that can be seen by the client is max_early_data_size (see section 4.6.1 of <xref target="RFC8446"></xref>). However, in the general design of QUIC, TLS sessions are managed by the TLS stacks.</t>
 
-	<t>This draft presents two distinct approaches: enable a local storage of BDP related values (see <xref target="sec:local_storage"></xref>) and a BDP Frame extension (see <xref target="sec:bdp_frame_section"></xref>). This draft also proposes a discussion on the advantages and drawbacks of both approaches.</t>
-
+				<t>This draft presents three distinct approaches: sending an opaque blob to the client that it may retransmit for future connection (see <xref target="sec:using_new_token"></xref>), enable a local storage of BDP related values (see <xref target="sec:local_storage"></xref>) and a BDP Frame extension (see <xref target="sec:bdp_frame_section"></xref>).</t>
 		</section>
 
-			<section anchor="sec:local_storage" title="Independent local storage of values">
+		<section anchor="sec:local_storage" title="Independent local storage of values">
 				<t>This approach lets both client and server remember their BDP parameters independently:<list style="symbols">
 	<t>During a 1RTT session, the client stores the client side RTT and CWIN together with the session resume ticket obtained from the server. The client also store the IP address of the server.</t>
 	<t>The server maintains a table of previously issued tickets, indexed by the same random ticket identifier that is used to guarantee uniqueness of the AEAD encryption. Old tokens are removed from the table using LRU logic. For each ticket identifier, the table holds the RTT and CWIN, and also the IP address of the client.</t>
 	</list></t>
 
 	<t>During the 0-RTT session, the nodes wait for the first RTT measurement from the peer's IP address to verify that the parameters have not changed. If the RTT matches expectation, the CWIN is set to the remembered value.</t>
-			</section>
-				
+		</section>
+			
+		<section anchor="sec:using_new_token" title="Using NEW_TOKEN frames">
+				<t>Using NEW_TOKEN frames, the server could send a token to the client through a NEW_TOKEN frame. The token is an opaque blob and the client can not read its content (see section 19.7 of <xref target="I-D.ietf-quic-transport"></xref>). The client sends the received token in the header of an Initial packet for future connection.</t>
+		</section>
+	
 			<section anchor="sec:bdp_frame_section" title="BDP Frame">
 
 				<t>This section proposes the exploitation of a new frame, BDP frame. The BDP frame MUST be contained in 0-RTT packets if sent by the client. The BDP frame MUST be contained in 1-RTT packets if sent by the server. The BDP frame MUST be considered in the congestion control and its data may not be limited by flow control limits. The server MAY send multiple BDP frames in both 1-RTT and 0-RTT connections. The client MUST NOT send BDP frames during 1-RTT connections.</t>
@@ -295,25 +370,7 @@ BDP Frame {
 
 		</section>
 
-			<section anchor="sec:discuss_bdp_default" title="Discussion on BDP Frame extension and local storage of values">
-			<t>This section proposes a discussion on the advantages and drawbacks of both implementation options that are described in this draft.</t>
-			<section title="Security aspects">
-				<t>The client may send information related to the BDP to the server with the BDP Frame extension. However, the server may not trust the client. Indeed, even if 0-RTT packets containing the BDP Frame are encrypted, a client may modify the values within the extension and ecrypt the 0-RTT packet. Authentification mechanisms may not guarantee that the values are safe. The server may then need to store the BDP parameters as well.</t>
-				<t>The server should then introduce safety guidelines, such as described in <xref target="subsec:rationale_jump"></xref>. Using these algorithms, the server may check that part of the information provided by the client are valid. Also, this would reduce the harms caused by a client that would have modified the BDP parameters. A supplementary check could be not to accept to use values that would be higher than those currently used by CDNs <xref target="TMA18"></xref>.</t>
-				<t>Anyway, storing the BDP parameters locally at the server reduces the risks associated by allowing the client to transmit information related to the BDP of the network.</t>
-			</section>
-
-			<section title="Interoperability and use-cases">
-				<t>If the server ends up storing a resumption ticket for each client to protect against replay on a third party IP, it may as well store the IP address and BDP parameters of the client. In cases where the BDP Frame extension is exploited, the approach of storing the BDP parameters locally at the server can be used for cross-checking the BDP parameters sent by a client. Anyway the server could enable safe jump start but without the BDP Frame extension, the client does not have the choice of accepting it or not.</t>
-				<t>While storing locally values related to the BDP would help in improving the ingress for 0-RTT connections, not using a BDP Frame extension may reduce the interest of the approach where (1) the client knows the BDP estimations done at the server, (2) the client decides to accept or reject ingress optimization, (3) the client tunes application level requests.</t>
-			</section>
-			<section title="Summary">
-			<t>As a summary, the approach of local storage of values is more secure and the BDP Frame extension provides more information to the client and more interoperability.</t>
-			</section>
 		</section>
-
-		</section>
-	
 		</section>
 
 		<section anchor="sec:discuss" title="Discussion">
@@ -339,8 +396,9 @@ BDP Frame {
 					connection.</t>
 			</section>
 
+			<!--
 			<section anchor="subsec:other_param_client_pov" title="The client point-of-view">
-				<t>The client can read the values of the
+				<t>The client can read the values of the 
 					extension. The client may wish to:
 					reject the extension; to accept and
 					adapt the resource and flow control
@@ -349,6 +407,7 @@ BDP Frame {
 					extension.</t>
 				<t>Clients MUST NOT send a BDP frame if the extension_lifetime has expired.</t>
 			</section>
+			--> 
 
 			<section anchor="sec:rationale" title="Other use-cases">
 	
@@ -384,7 +443,7 @@ BDP Frame {
 		</section>
 
 		<section anchor="sec:security" title="Security Considerations">
-			<t>Security considerations are discussed in <xref target="sec:discuss"></xref> and in <xref target="safety_guide"></xref>.</t>
+			<t>Security considerations are discussed in <xref target="sec:discuss"></xref> and in <xref target="sec:safety_guide"></xref>.</t>
 		</section>
 	</middle>
 
