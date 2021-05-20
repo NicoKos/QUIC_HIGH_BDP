@@ -38,16 +38,31 @@
 			</address>
 		</author>
 
-		<author fullname="Gorry Fairhurst" initials="G" surname="Fairhurst">
+		<author fullname="Godred Fairhurst" initials="G" surname="Fairhurst">
 			<organization>University of Aberdeen</organization>
-			<address>
+			<address>				
+				<postal>
+          			<street>Department of Engineering</street>
+          			<street>Fraser Noble Building</street>
+          			<city>Aberdeen</city>
+          			<code>AB24 3UE</code>
+          			<country>Scotland, UK</country>
+        			</postal>
+
 				<email>gorry@erg.abdn.ac.uk</email>
 			</address>
 		</author>
 	
 		<author fullname="Tom Jones" initials="T" surname="Jones">
 			<organization>University of Aberdeen</organization>
-			<address>
+			<address> 
+				<postal>
+          			<street>Department of Engineering</street>
+          			<street>Fraser Noble Building</street>
+          			<city>Aberdeen</city>
+          			<code>AB24 3UE</code>
+          			<country>Scotland, UK</country>
+        			</postal>
 				<email>tom@erg.abdn.ac.uk</email>
 			</address>
 		</author>
