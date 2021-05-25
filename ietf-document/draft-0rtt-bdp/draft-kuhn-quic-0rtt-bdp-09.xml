@@ -124,9 +124,11 @@
                 When clients resume a session to download a
                 large document the congestion algorithms will
                 require time to ramp up the packet rate. This
-                document improves traffic delivery by allowing
-                the connection to short-cut slow RTT-based
-                processes by remembering previously used
+                document specifies a method that can improve traffic
+                delivery for QUIC 0-RTT connections that allows a QUIC
+                connection to increase the cwnd growth, avoiding a
+                slow RTT-based process to grow connection
+                parameters. The methods remembers previously used
                 connection parameters. Candidate parameters are
                 Round-Trip Time (RTT) and network Bottleneck
                 Bandwidth (BB).
@@ -134,7 +136,7 @@
 
 		<t>
                 Previously stored parameters may not be
-                relevant: (1) network conditions may change and
+                relevant: (1) network conditions can change and
                 using a previously estimated BB may cause
                 congestion; (2) the client may convince a server
                 to use a CWIN much larger than required.
@@ -252,9 +254,10 @@
 				<t>
                                 IP address changes: If the
                                 client changes its IP address,
-                                it may employ a different
-                                network to reconnect. The new
-                                path may not exhibit the same
+                                it might employ a different
+                                network path when it reconnects. This
+                                new path
+                                does not necessarily exhibit the same
                                 characteristics as the old one.
 				</t>
 				<t>
@@ -353,7 +356,7 @@
 
 		<section anchor="sec:discuss_bdp_default" title="Trade-off between the different solutions">
 			<t>
-                        This section proposes a discussion on the
+                        This section provides a discussion of the
                         advantages and drawbacks of the different
                         implementation options that are described in
                         this section. While there are some discussions
@@ -377,24 +380,30 @@
                                 encrypted, a client may modify the
                                 values within the extension and encrypt
                                 the 0-RTT packet. Authentification
-                                mechanisms may not guarantee that the
-                                values are safe. The server may then
-                                need to store the BDP parameters as
-                                well.
+                                mechanisms might not guarantee that the
+                                values are safe. The server could then
+                                need to also store the BDP parameters.
 				</t>
 				<t>
                                 A malicious client may modify the BDP
-                                parameters to convince the server to use
-                                a CWIN much larger than required. Using
+                                parameters to convince the server to
+                                use a
+                                cwnd much larger than required. Using
                                 the algorithms proposed in 
                                 <xref target="sec:safety_guide"></xref>,
                                 the server may reduce any intended
-                                harm. A supplementary check could be not
-                                to accept to use values that would be
+                                harm and can check that part of the
+                                information provided by the client are
+                                valid. A supplementary check could be
+                                not to
+                                accept to use values that would be
                                 higher than those currently used by CDNs
-                                <xref target="TMA18"></xref>.
-                                Anyway, storing the BDP parameters
-                                locally at the server reduces the risks
+				<xref target="TMA18"></xref>.
+				</t>
+				<t>	
+				Storing the BDP parameters
+                                locally at the server reduces the
+                                risks
                                 associated by allowing the client to
                                 transmit information related to the BDP
                                 of the network.
@@ -403,17 +412,19 @@
 
 			<section title="Interoperability and use-cases">
 				<t>
-                                If the server ends up storing a
+                                If the server ends stores a
                                 resumption ticket for each client to
                                 protect against replay on a third party
-                                IP, it may as well store the IP address
-                                and BDP parameters of the client. In
-                                cases where the BDP Frame extension is
+                                IP, it could also store the IP address
+				and BDP parameters of the client.
+				</t>
+				<t>
+				In cases where the BDP Frame extension is
                                 exploited, the approach of storing the
                                 BDP parameters locally at the server can
                                 be used for cross-checking the BDP
-                                parameters sent by a client. Anyway the
-                                server could enable safe jump start but
+                                parameters sent by a client. The server 
+                                can anyway enable a safe jump start, but
                                 without the BDP Frame extension, the
                                 client does not have the choice of
                                 accepting it or not.
@@ -495,8 +506,9 @@
 	<section anchor="sec:safety_guide" title="Safety guidelines"> 
 		<t>
                 The safety guidelines are designed to guarantee that the
-                server does not add congestion to a congested network.
-                The following mechanisms should help in fulfilling this
+                server does not add excessive congestion to an already
+                congested network. The following
+                mechanisms should help in fulfilling this
                 objective:
                 <list style="symbols">
 			<t>
@@ -507,7 +519,9 @@
 			<t>
                         The server MUST NOT send more than a recommended
                         maximum initial window in the first transmission
-                        of data. This value could be based on 
+                        of data. This value could be based on a local
+                        understanding of the path characteristics and
+                        what is deployed in CDNs 
                         <xref target="TMA18"></xref>.
 			</t>
 		</list></t>
@@ -523,7 +537,7 @@
                 an opportunity for the current connection to be a vector
                 of an amplification attack. The address validation
                 process, used to prevent amplification attacks, SHOULD
-                be considered 
+                be performed 
                 <xref target="I-D.ietf-quic-transport"></xref>.
 		</t>
 
@@ -540,21 +554,26 @@
                                 congestion to a congested network;
 				</t>
 				<t>
-                                If the reception of IW is
-                                confirmed for the first RTT of data,
-                                and also the path is determined to be
-                                similar to that of a recent previous
-                                session (e.g., similar RTT), the
+                                If the reception of IW exhibits
+                                characteristics that resemble those of a
+                                recent previous session from the client
+                                (i.e., similar RTT and all the data was
+                                acknowledged), the
                                 method
-                                permits the sender to use the previous
-                                path information as an input to help
-                                determine a new safe rate;
+                                permits the sender to utilize the
+                                previous path information as an input to
+                                help rapidly determine a new safe rate; 
 				</t>
 				<t>
-                                Further safety could be provided by
-                                pacing the
-                                packets as a function of the estimated
-                                RTT.
+                                The sender needs to avoid a burst of
+                                packets being sent as a result of
+                                a step-increase in the congestion window
+                                <xref target="I-D.ietf-quic-transport"></xref>.
+                                Pacing the packets as a function of the
+                                estimated RTT
+                                can provide this additional safety
+                                during the period in which the cwnd is
+                                increased by the method.
 				</t>
 			</list></t>
 			<t>
@@ -596,7 +615,7 @@
 			<t>
                         Using NewSessionTickets messages of TLS is a
                         solution that could have been envisionned. The
-                        idea would be to add a 'bdp_metada' field in the
+                        idea would have been to add a 'bdp_metada' field in the
                         NewSessionTickets that the client could read.
                         The sole extension currently defined in TLS1.3
                         that can be seen by the client is
@@ -621,36 +640,59 @@
 
 		<section anchor="sec:local_storage" title="Independent local storage of values">
 			<t>
-                                This approach lets both client and server
-                                remember their BDP parameters independently:
+                                This approach independently lets both a client
+                                and a server
+                                remember their BDP parameters:
                                 <list style="symbols">
 				<t>
-                                During a 1RTT session, the client stores
-                                the client side RTT and CWIN together
-                                with the session resume ticket obtained
-                                from the server. The client also store
+                                During a 1-RTT session, the client
+                                stores
+                                the client-side RTT (as the saved_RTT)
+                                and cwnd (as the saved_cwnd) together
+                                with the session resume ticket
+                                obtained
+                                from the server. The client can also store
                                 the IP address of the server.
 				</t>
 				<t>
                                 The server maintains a table of
                                 previously issued tickets, indexed by
-                                the same random ticket identifier that
+                                the random ticket identifier that
                                 is used to guarantee uniqueness of the
-                                AEAD encryption. Old tokens are removed
-                                from the table using LRU logic. For each
+                                AEAD encryption. Old tokens are
+                                removed
+                                from the table using the Least Recently
+                                Used (LRU) logic. For each
                                 ticket identifier, the table holds the
-                                RTT and CWIN, and also the IP address of
+                                RTT and cwnd, and also the IP address of
                                 the client.
 				</t>
 				</list>
 			</t>
 
 			<t>
-                        During the 0-RTT session, the nodes wait for the
-                        first RTT measurement from the peer's IP address
-                        to verify that the parameters have not changed.
-                        If the RTT matches expectation, the CWIN is set
-                        to the remembered value.
+                        During the 0-RTT session, the endpoint wait for
+                        the first RTT measurement
+                        from the peer's IP address.
+                        This is used to verify that the RTT has not
+                        significantly changed from the saved_rtt, and
+                        hence is an indication that the BDP information
+                        applies to the path that is currently being
+                        used.
+			</t>
+
+			<t>
+                        If this RTT is confirmed, the endpoint also
+                        verifies that an initial window of data has been
+                        acknowledged without requiring retransmission.
+                        This second check is used to a path with
+                        signficant incipient congestion (i.e., where it
+                        would not be safe to update the cwnd based on
+                        the saved_cwnd). 
+                        In practice, this could be realised by a
+                        proportional increase in the cwnd, where the
+                        increase is
+                        (saved_cwnd/IW)*proportion_of_IW_currently-ACKed.
 			</t>
 		</section>
 			
@@ -686,7 +728,7 @@
 			<section anchor="sec:bdp_metadata" title="BDP Frame Format">
 			
 				<t>
-                                The BDP Frames are formatted as shown in
+                                A BDP Frame is formatted as shown in
                                 <xref target="fig:bdp_frame_format"></xref>.
 				</t>
 <figure anchor="fig:bdp_frame_format" title="BDP Frame Format">
@@ -700,7 +742,7 @@ BDP Frame {
 </artwork>
 </figure>
 				<t>
-                                The BDP Frames contain the following
+                                A BDP Frame contains the following
                                 fields: 
                                 	<list style="symbols">
 					<t>
@@ -712,7 +754,7 @@ BDP Frame {
                                         of NewSessionTicket of TLS 
                                         <xref target="RFC8446"></xref>.
 					This represents the validity
-                                        in time of the extension.
+                                        in time of this extension.
 					</t> 
 
 					<t>
@@ -725,12 +767,12 @@ BDP Frame {
                                         flight measured on the previous
                                         connection by
                                         the server.
-                                        Using the previous values of
+                                        The previous values of
                                         bytes_in_flight defined in 
                                         <xref
                                         target="I-D.ietf-quic-recovery"></xref>,
                                         recon_bytes_in_flight could be
-                                        determined.
+                                        used to determine this value.
 					</t>
 
 					<t>
@@ -739,7 +781,7 @@ BDP Frame {
                                         recon_min_rtt is a value in
                                         milliseconds that is encoded as
                                         a variable length integer.
-                                        Using
+                                        This could be set as 
                                         the min_rtt defined in 
                                         <xref
                                         target="I-D.ietf-quic-recovery"></xref>,
@@ -749,7 +791,7 @@ BDP Frame {
                                         decreasing RTT: the
                                         min_rtt that is reported here may not be the
                                         actual minimum RTT measured during the 1-RTT
-                                        connection, but still reflects the
+                                        connection, but usually reflects the
                                         characteristics 
                                         of the latency on the network.
 					</t>
@@ -769,7 +811,7 @@ BDP Frame {
                                 connection, the client indicates to the
                                 server that it wishes to receive BDP
                                 extension Frames for improving ingress
-                                of 0-RTT connection. Default value is 0.
+                                of 0-RTT connection. The default value is 0.
                                 Values strictly above 3 are invalid, and
                                 receipt of these values MUST be treated
                                 as a connection error of type
@@ -874,7 +916,7 @@ BDP Frame {
                                 <xref
                                 target="I-D.ietf-tcpm-2140bis"></xref>
                                 considers the sharing of transport
-                                parameters between connections
+                                parameters between TCP connections
                                 originating from the same host. The
                                 proposal in this document has the
                                 advantage of storing server-generated
