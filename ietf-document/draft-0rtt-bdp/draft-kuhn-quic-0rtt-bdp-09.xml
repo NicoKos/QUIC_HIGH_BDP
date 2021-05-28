@@ -128,7 +128,7 @@
                 delivery for QUIC 0-RTT connections that allows a QUIC
                 connection to increase the cwnd growth, avoiding a
                 slow RTT-based process to grow connection
-                parameters. This methods remembers previously used
+                parameters. This method remembers previously used
                 connection parameters. Candidate parameters are
                 the Round-Trip Time (RTT) and network Bottleneck
                 Bandwidth (BB).
