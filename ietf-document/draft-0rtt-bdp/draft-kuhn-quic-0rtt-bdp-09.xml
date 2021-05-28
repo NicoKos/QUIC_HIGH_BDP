@@ -115,38 +115,38 @@
 	<section anchor="sec:introduction" title="Introduction">
 		<t>
                 QUIC 0-RTT transport features currently
-                focuses on egress traffic optimization. This
+                focus on egress traffic optimization. This
                 draft proposes a QUIC extension
                 to improve the performance of ingress traffic. 
 		</t>
 		
 		<t>
                 When clients resume a session to download a
-                large document the congestion algorithms will
-                require time to ramp up the packet rate. This
+                large document, the congestion control algorithms will
+                require time to ramp-up the packet rate. This
                 document specifies a method that can improve traffic
                 delivery for QUIC 0-RTT connections that allows a QUIC
                 connection to increase the cwnd growth, avoiding a
                 slow RTT-based process to grow connection
-                parameters. The methods remembers previously used
+                parameters. This methods remembers previously used
                 connection parameters. Candidate parameters are
-                Round-Trip Time (RTT) and network Bottleneck
+                the Round-Trip Time (RTT) and network Bottleneck
                 Bandwidth (BB).
 		</t>
 
 		<t>
-                Previously stored parameters may not be
-                relevant: (1) network conditions can change and
-                using a previously estimated BB may cause
-                congestion; (2) the client may convince a server
+                Sometimes the previously stored parameters are not
+                relevant, e.g.: (1) network conditions can change where
+                using a previously estimated BB could increase
+                congestion; (2) a client could convince a server
                 to use a CWIN much larger than required.
 		</t>
 
 		<t>
                 This document proposes safety guidelines for how
                 to safely apply the previously measured
-                parameters to new connections along with
-                security considerations. This applies to resumed
+                parameters to new connections along with their
+                security considerations. This method applies to resumed
                 sessions, whether 0-RTT approach is exploited or
                 not. The document discusses implementation
                 experience in QUIC.
@@ -172,15 +172,15 @@
                		Bandwidth (BB), the Bandwidth-Delay Product
                 	(BDP) determines the Send and Received Socket
                 	buffer sizes required to achieve the maximum TCP
-                	Throughput." A QUIC connection may not reproduce
-                	exactly the procedure detailed in 
+                	Throughput." A QUIC connection might not exactly
+			reproduce the procedure detailed in 
                 	<xref target="RFC6349"></xref>
-                	to measure the BDP. The server may exploit
+                	to measure the BDP. The server can exploit
                 	internal evaluations of the bytes in flight and
                 	minimum RTT to assess the BDP. This draft
                 	considers the BDP as the Bandwidth-Delay Product
-                	as estimated by the server and would include the
-                	buffering in the network.
+                	as estimated by the server which includes all
+                	buffering along the network path.
 			</t>
 
 		</section>
@@ -218,27 +218,27 @@
 			</t>
 
 			<t>
-                        Previously measured BDP should not be used as-is
-                        to avoid congestion collapse: 
+                        The previously measured BDP should not be used as-is
+                        to avoid potential congestion collapse: 
                         <list style="symbols">
 				<t>
-                                Rationale #1: Network conditions may
+                                Rationale #1: Network conditions might
                                 vary between 2 consecutive connections.
 				</t>
 				<t>
                                 Rationale #2: Information sent by a
-                                malicious client may not be relevant
-                                since they may try to convince servers
-                                in using CWIN higher than required which
-                                may induce congestion.
+                                malicious client would not be relevant
+                                since this might try to convince servers
+                                to use a CWIN higher than required, which
+                                could increase congestion.
 				</t>
 			</list></t>
 			
 			<t>
                         While safety recommendations are necessary, it
-                        seems important to note that CDNs currently
-                        exploit a very high Initial Window 
-                        <xref target="TMA18"></xref>.
+                        seems important to note that some Content Delivery Networks
+			(CDNs) currently exploit a very high Initial Window (IW) 
+                        <xref target="TMA18"></xref> for a local path.
 			</t>
 
 		</section> 
@@ -246,29 +246,29 @@
 		<section title="Rationale #1: Variable network conditions">
 			<t>
                         The server MUST check the validity of
-                        the BDP parameters whether they are sent
+                        the BDP parameters, whether they are sent
                         by a client or stored at the server.
-                        Indeed, the following events could make
+                        Indeed, the following events make
                         use of the BDP parameters inappropriate:
                         <list style="symbols">
 				<t>
                                 IP address changes: If the
                                 client changes its IP address,
-                                it might employ a different
-                                network path when it reconnects. This
-                                new path
+                                the different address 
+				indicates a different
+                                network path. This new path
                                 does not necessarily exhibit the same
                                 characteristics as the old one.
 				</t>
 				<t>
                                 Lifetime of the extension: If
                                 the network conditions change,
-                                e.g. the network was not
+                                e.g., the path was not
                                 congested when BDP parameters
-                                were evaluated but there is
+                                were evaluated, but later the path experiences
                                 congestion for the next
                                 connection, the previously
-                                estimated parameters may not be
+                                estimated parameters would not be
                                 valid.
 				</t>
 			</list></t>
@@ -288,14 +288,14 @@
                                 Implement a safety check to
                                 measure whether the remembered
                                 BDP parameters are relevant or
-                                if using them would not cause
-                                congestion in a congested
-                                network. 
+                                check that this would not cause
+                                congestion over the
+                                path. 
 				</t>
 			</list></t>
 			<t>
                         <xref target="sec:safety_guide"></xref>
-                        describes various approaches for the
+                        describes various approaches for
                         Rationale #1 - Solution #2.
 			</t>
 		</section>
@@ -303,12 +303,12 @@
 		<section title="Rationale #2: Malicious clients">
 			<t>
                         The server MUST check the integrity of
-                        the BDP parameters received by a client.
+                        the BDP parameters received from a client.
 			</t>
 
 			<t>
-                        There are different solutions for
-                        malicious clients:
+                        There are different solutions to avoid
+			attacks by malicious clients:
                         <list style="symbols">
 				<t>
                                 Rationale #2 - Solution #1 : The
@@ -331,11 +331,11 @@
                                 server sends the estimation of
                                 the BDP parameters to the
                                 client. The information includes
-                                an integrity protection. The
+                                integrity protection. The
                                 client resends the information
                                 when resuming a connection. The
-                                client can read but can not
-                                modify the BDP parameters.
+                                client can read, but can not
+                                modify, the BDP parameters.
 				</t>
 			</list></t>
 			<t>
@@ -360,13 +360,13 @@
                         advantages and drawbacks of the different
                         implementation options that are described in
                         this section. While there are some discussions
-                        for the solutions regarding the Rationale #2,
-                        the server MUST consider the Rationale #1 -
-                        Solution #2 and avoid the Rationale #1 -
+                        for the solutions regarding Rationale #2,
+                        the server MUST consider Rationale #1 -
+                        Solution #2 and avoid Rationale #1 -
                         Solution #1: the server MUST implement a safety
                         check to measure whether the remembered BDP
-                        parameters are relevant or if using them would
-                        not cause congestion in a congested network.
+                        parameters are relevant or check that use would
+                        not cause congestion over the path.
 			</t> 
 			<section title="Security aspects">
 				<t>
@@ -377,7 +377,7 @@
                                 Solution #3. However, the server may not
                                 trust the client. Indeed, even if 0-RTT
                                 packets containing the BDP Frame are
-                                encrypted, a client may modify the
+                                encrypted, a client could modify the
                                 values within the extension and encrypt
                                 the 0-RTT packet. Authentification
                                 mechanisms might not guarantee that the
@@ -385,7 +385,7 @@
                                 need to also store the BDP parameters.
 				</t>
 				<t>
-                                A malicious client may modify the BDP
+                                A malicious client might modify the BDP
                                 parameters to convince the server to
                                 use a
                                 cwnd much larger than required. Using
@@ -394,35 +394,35 @@
                                 the server may reduce any intended
                                 harm and can check that part of the
                                 information provided by the client are
-                                valid. A supplementary check could be
-                                not to
-                                accept to use values that would be
+                                valid. A supplementary check could
+                                decide not to
+                                use values that would be
                                 higher than those currently used by CDNs
 				<xref target="TMA18"></xref>.
 				</t>
 				<t>	
 				Storing the BDP parameters
                                 locally at the server reduces the
-                                risks
-                                associated by allowing the client to
+                                associated risks
+                                by allowing the client to
                                 transmit information related to the BDP
-                                of the network.
+                                of the path.
 				</t>
 			</section>
 
 			<section title="Interoperability and use-cases">
 				<t>
-                                If the server ends stores a
+                                If the server stores a
                                 resumption ticket for each client to
                                 protect against replay on a third party
                                 IP, it could also store the IP address
 				and BDP parameters of the client.
 				</t>
 				<t>
-				In cases where the BDP Frame extension is
+				In as case where the BDP Frame extension is
                                 exploited, the approach of storing the
                                 BDP parameters locally at the server can
-                                be used for cross-checking the BDP
+                                provide a cross-check of the BDP
                                 parameters sent by a client. The server 
                                 can anyway enable a safe jump start, but
                                 without the BDP Frame extension, the
@@ -430,7 +430,7 @@
                                 accepting it or not.
 				</t>
 				<t>
-                                While storing locally values related to
+                                While storing local values related to
                                 the BDP would help in improving the
                                 ingress for 0-RTT connections, not using
                                 a BDP Frame extension may reduce the
@@ -505,9 +505,9 @@
 
 	<section anchor="sec:safety_guide" title="Safety guidelines"> 
 		<t>
-                The safety guidelines are designed to guarantee that the
-                server does not add excessive congestion to an already
-                congested network. The following
+                The safety guidelines are designed to avoid a
+                server adding excessive congestion to an already
+                congested path. The following
                 mechanisms should help in fulfilling this
                 objective:
                 <list style="symbols">
@@ -518,7 +518,7 @@
 			</t>
 			<t>
                         The server MUST NOT send more than a recommended
-                        maximum initial window in the first transmission
+                        maximum IW in the first transmission
                         of data. This value could be based on a local
                         understanding of the path characteristics and
                         what is deployed in CDNs 
@@ -532,8 +532,8 @@
                 mechanisms or amplification attacks prevention. In
                 particular, the maximum number of packets that can be
                 sent without acknowledgment needs to be chosen to avoid
-                the creation and the increase of congestion to a
-                congested network. Moreover, the extension should not be
+                the creation and the increase of congestion for the
+		path. Moreover, this extension should not be
                 an opportunity for the current connection to be a vector
                 of an amplification attack. The address validation
                 process, used to prevent amplification attacks, SHOULD
@@ -548,10 +548,10 @@
 			Exploit a standard IW:<list style="numbers">
 				<t>
                                 The server sends the first data packet
-                                using a standard initial window - this
+                                using the IW - this
                                 can be considered a safe starting point
                                 for an unknown path, which avoids adding
-                                congestion to a congested network;
+                                congestion to the path;
 				</t>
 				<t>
                                 If the reception of IW exhibits
@@ -584,11 +584,10 @@
                                 interpacket transmission time is
                                 determined by the minimum between (1)
                                 the ratio between the current maximum
-                                message size (MSS) used for packets and
-                                the bottleneck throughput (2) a tunable
-                                safety margin that avoids sending more
-                                than a recommended maximum initial
-                                window;
+                                message size (MSS) for packets and
+                                the bottleneck throughput (2), a tunable
+                                safety margin avoids sending more
+                                than a recommended maximum IW;
 				</t>
 				<t>
                                 The server estimates an IW based on the
@@ -685,7 +684,7 @@
                         If this RTT is confirmed, the endpoint also
                         verifies that an initial window of data has been
                         acknowledged without requiring retransmission.
-                        This second check is used to a path with
+                        This second check is used to detect a path with
                         signficant incipient congestion (i.e., where it
                         would not be safe to update the cwnd based on
                         the saved_cwnd). 
@@ -748,7 +747,7 @@ BDP Frame {
 					<t>
                                         Lifetime (extension_lifetime):
                                         The extension_lifetime is a
-                                        value in milliseconds that is
+                                        value in milliseconds,
                                         encoded as a variable length
                                         integer. This follows the idea
                                         of NewSessionTicket of TLS 
@@ -761,7 +760,7 @@ BDP Frame {
                                         Reconnection Bytes in Flight
                                         (recon_bytes_in_flight): The
                                         recon_bytes_in_flight is a value
-                                        in bytes that is encoded as a
+                                        in bytes, encoded as a
                                         variable length integer. The
                                         bytes in
                                         flight measured on the previous
@@ -779,21 +778,21 @@ BDP Frame {
                                         Reconnection Minimum RTT
                                         (recon_min_rtt): The
                                         recon_min_rtt is a value in
-                                        milliseconds that is encoded as
+                                        milliseconds, encoded as
                                         a variable length integer.
-                                        This could be set as 
+                                        This could be set to 
                                         the min_rtt defined in 
                                         <xref
                                         target="I-D.ietf-quic-recovery"></xref>,
                                         recon_min_rtt can be set to
                                         min_rtt. The min_rtt
-                                        parameter may not track a
+                                        parameter might not track a
                                         decreasing RTT: the
-                                        min_rtt that is reported here may not be the
+                                        min_rtt that is reported here might not be the
                                         actual minimum RTT measured during the 1-RTT
                                         connection, but usually reflects the
                                         characteristics 
-                                        of the latency on the network.
+                                        of the path latency.
 					</t>
 					</list>
 				</t>
