@@ -132,9 +132,11 @@
 		<list style="numbers">
 			<t>
                         During a previous session,
-                        current RTT (current_rtt) and CWND
-                        (current_cwnd) are
-                        stored as saved_rtt and saved_cwnd;
+                        current RTT (current_rtt), CWND
+                        (current_cwnd) and client's current IP
+                        (current_client_ip) are
+                        stored as saved_rtt, saved_cwnd and
+                        saved_client_ip;
 			</t>
 			<t>
                         When resuming a session,
@@ -193,10 +195,10 @@
                                 <xref target="RFC6928"></xref>);
 				</t>
 				<t> 
-				current_IW: Current Initial window;
+				current_iw: Current Initial window;
 				</t>
 				<t> 
-                                recom_IW: Recommended Initial window -
+                                recom_iw: Recommended Initial window -
                                 it seems important to
                                 note that some Content Delivery
                                 Networks (CDNs) currently
@@ -227,6 +229,18 @@
 				<t>
                                 saved_rtt: RTT preserved from a previous
                                 connection.
+				</t>
+				<t>
+				client_ip : IP address of the client
+				</t>
+				<t>
+                                current_client_ip : Current IP address
+                                of the client
+				</t>
+				<t>
+                                saved_client_ip : IP address of the
+                                client preserved from a previous
+                                connection;
 				</t>
 				<t>
                                 remembered BDP parameters: combination
@@ -311,7 +325,9 @@
                         <list style="symbols">
 				<t>
                                 IP address changes: If the
-                                client changes its IP address,
+                                client changes its IP address (i.e.
+                                saved_client_ip is different from
+                                current_client_ip),
                                 the different address 
 				indicates a different
                                 network path. This new path
@@ -494,7 +510,8 @@
                                 resumption ticket for each client to
                                 protect against replay on a third
                                 party IP,
-                                it could also store the IP address
+                                it could also store the IP address (i.e.
+                                saved_client_ip)
                                 and BDP parameters (i.e. saved_rtt and
                                 saved_cwnd) of the previous session of
                                 the client.
@@ -614,7 +631,7 @@
 			</t>
 			<t>
                         The server MUST NOT send more than a recommended
-                        maximum IW (recom_IW) in the first transmission
+                        maximum IW (recom_iw) in the first transmission
                         of data. This value could be based on a local
                         understanding of the path characteristics and
                         what is deployed in CDNs 
@@ -653,7 +670,7 @@
                                 If the reception of IW exhibits
                                 characteristics that resemble those of a
                                 recent previous session from the client
-                                (i.e., current_rtt 
+                                (i.e. current_rtt 
 				<![CDATA[<]]>
                                 1.2*saved_rtt and all the data was
                                 acknowledged), the
@@ -688,13 +705,13 @@
                                 saved_cwnd and saved_rtt.
                                 A tunable
                                 safety margin might be introduced to avoid sending
-                                more than a recommended maximum IW (recom_IW):
+                                more than a recommended maximum IW (recom_iw):
 					<list style="symbols">
 					<t>
-					current_IW = min(recom_IW,saved_cwnd)
+					current_iw = min(recom_iw,saved_cwnd)
 					</t>
 					<t>
-					ITT = MSS/(current_IW/saved_rtt)
+					ITT = MSS/(current_iw/saved_rtt)
 					</t>
 					</list>
 				</t>
@@ -775,8 +792,8 @@
                                 from the table using the Least Recently
                                 Used (LRU) logic. For each
                                 ticket identifier, the table holds the
-                                RTT and CWND, and also the IP address of
-                                the client.
+                                RTT and CWND (i.e. saved_rtt and saved_cwnd), and also the IP address of
+                                the client (i.e. saved_client_ip).
 				</t>
 				</list>
 			</t>
@@ -799,7 +816,7 @@
                         verifies that an initial window of data has been
                         acknowledged without requiring retransmission.
                         This second check is used to detect a path with
-                        signficant incipient congestion (i.e., where it
+                        signficant incipient congestion (i.e. where it
                         would not be safe to update the CWND based on
                         the saved_cwnd). 
                         In practice, this could be realised by a
@@ -851,6 +868,7 @@ BDP Frame {
   Lifetime (i),
   Saved CWND (i),
   Saved RTT (i),
+  Saved IP,
 }
 </artwork>
 </figure>
@@ -907,6 +925,15 @@ BDP Frame {
                                         connection, but usually reflects the
                                         characteristics 
                                         of the path latency.
+					</t>
+					<t>
+                                        Saved IP (saved_client_ip) : The
+                                        saved_client_ip could be set to
+                                        the IP address of the client. 
+                                        The IP address of the client can be
+                                        encoded as the preferred_address
+                                        parameter 
+                                        <xref target="RFC9000"></xref>.
 					</t>
 					</list>
 				</t>
