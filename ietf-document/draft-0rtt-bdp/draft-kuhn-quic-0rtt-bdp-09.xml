@@ -189,7 +189,8 @@
 			<t>
 			<list style="symbols">
 				<t> 
-				IW: Initial window (e.g. from the standard);
+                                IW: Initial window (e.g. from 
+                                <xref target="RFC6928"></xref>);
 				</t>
 				<t> 
 				current_IW: Current Initial window;
@@ -236,20 +237,22 @@
 	
 			<t>
                 	<xref target="RFC6349"></xref>
-                	defines the BDP as follows: "Derived from
-                	Round-Trip Time (RTT) and network Bottleneck
-               		Bandwidth (BB), the Bandwidth-Delay Product
-                	(BDP) determines the Send and Received Socket
-                	buffer sizes required to achieve the maximum TCP
-                	Throughput." A QUIC connection might not exactly
-			reproduce the procedure detailed in 
-                	<xref target="RFC6349"></xref>
-                	to measure the BDP. The server can exploit
-                	internal evaluations of the CWND and the
-                	to assess the BDP. This draft
-                	considers the BDP as the Bandwidth-Delay Product
-                	as estimated by the server which includes all
-                	buffering along the network path.
+                        defines the BDP as follows: "Derived from
+                        Round-Trip Time (RTT) and network Bottleneck
+                        Bandwidth (BB), the Bandwidth-Delay Product
+                        (BDP) determines the Send and Received Socket
+                        buffer sizes required to achieve the maximum
+                        TCP Throughput."
+                        This draft considers the
+                        Bandwidth-Delay Product (BDP)
+                        as estimated by the server which includes all
+                        buffering along the network path.
+                        A QUIC connection might not exactly
+                        reproduce the procedure detailed in 
+                        <xref target="RFC6349"></xref>
+                        to measure the BDP. The server can exploit
+                        internal evaluations of the CWND and the
+                        to assess the BDP. 
 			</t>
 
 
@@ -281,8 +284,9 @@
                         to avoid potential congestion collapse: 
                         <list style="symbols">
 				<t>
-                                Rationale #1: Network conditions might
-                                vary between 2 consecutive sessions.
+                                Rationale #1: An Internet method needs
+                                to be robust to network conditions that
+                                can differ between sessions.
 				</t>
 				<t>
                                 Rationale #2: Information sent by a
@@ -552,7 +556,7 @@
 |client   |storage    | security       | decide to     |           |
 |         |           |                | reject        |           |
 |         |           |                |Malicious      |           |
-|         |           |                | server may    |           |
+|         |           |                | server could  |           |
 |         |           |                | fill client's |           |
 |         |           |                | buffer        |           |
 |         |           |                |Limited        |           |
@@ -565,7 +569,7 @@
 |         |           | protected      | even if       |           |
 |         |           |                | protected     |           |
 |         |           |                |Malicious      |           |
-|         |           |                | server may    |           |
+|         |           |                | server could  |           |
 |         |           |                | fill client's |           |
 |         |           |                | buffer        |           |
 |         |           |                |Server may not |           |
@@ -1083,6 +1087,7 @@ BDP Frame {
 			<?rfc include="reference.RFC.2119.xml"?>
 			<?rfc include="reference.RFC.4782.xml"?>
 			<?rfc include="reference.RFC.6349.xml"?>
+			<?rfc include="reference.RFC.6928.xml"?>
 			<?rfc include="reference.RFC.8174.xml"?>
 			<?rfc include="reference.RFC.8446.xml"?>
 			<?rfc include="reference.I-D.ietf-tcpm-2140bis.xml"?>
