@@ -246,6 +246,19 @@
                                 remembered BDP parameters: combination
                                 of saved_rtt and saved_cwnd.
 				</t>
+				<t>
+				ITT : Interpacket Transmission Time
+				</t>
+				<t>
+				MSS : Maximum Message Size
+				</t>
+				<t>
+                                AEAD : Authenticated Encryption with
+                                Associated Data
+				</t>
+				<t>
+				LRU : Least Recently Used 
+				</t>
 			</list>
 			</t>
 	
@@ -471,7 +484,7 @@
                                 encrypted, a client could modify the
                                 values within the extension and
                                 encrypt
-                                the 0-RTT packet. Authentification
+                                the 0-RTT packet. Authentication
                                 mechanisms might not guarantee that
                                 the
                                 values are safe. The server could then
@@ -566,7 +579,7 @@
 |         |#2         |                |               |           |
 |         |Implement  |Reduce risks of |Negative impact|MUST       |
 |         |safety     | adding         | on ingress    |implement  |
-|         |check      | congestion     | optimi.       |Section 3  |
+|         |check      | congestion     | optim.        |Section 3  |
 +---------+-----------+----------------+---------------+-----------+
 |#2       |#1         |                |               |           |
 |Malicious|Local      |Enforced        |Client can not |	   |
@@ -699,8 +712,8 @@
                                 using saved_rtt and saved_cwnd. The
                                 Interpacket Transmission Time (ITT) is
                                 determined by
-                                the ratio between the current maximum
-                                message size (MSS) for packets and
+                                the ratio between the current Maximum
+                                Message Size (MSS) for packets and
                                 the ratio between the
                                 saved_cwnd and saved_rtt.
                                 A tunable
@@ -743,7 +756,7 @@
 		<section anchor="sec:bdp_frame" title="Rationale behind the different implementation options">
 			<t>
                         Using NewSessionTickets messages of TLS is a
-                        solution that could have been envisionned. The
+                        solution that could have been envisioned. The
                         idea would have been to add a 'bdp_metada' field in the
                         NewSessionTickets that the client could read.
                         The sole extension currently defined in TLS1.3
@@ -787,7 +800,7 @@
                                 previously issued tickets, indexed by
                                 the random ticket identifier that
                                 is used to guarantee uniqueness of the
-                                AEAD encryption. Old tokens are
+                                Authenticated Encryption with Associated Data (AEAD) encryption. Old tokens are
                                 removed
                                 from the table using the Least Recently
                                 Used (LRU) logic. For each
@@ -816,10 +829,10 @@
                         verifies that an initial window of data has been
                         acknowledged without requiring retransmission.
                         This second check is used to detect a path with
-                        signficant incipient congestion (i.e. where it
+                        significant incipient congestion (i.e. where it
                         would not be safe to update the CWND based on
                         the saved_cwnd). 
-                        In practice, this could be realised by a
+                        In practice, this could be realized by a
                         proportional increase in the CWND, where the
                         increase is
                         (saved_cwnd/IW)*proportion_of_IW_currently-ACKed.
@@ -1151,8 +1164,8 @@ BDP Frame {
 				<seriesInfo name="ACM CoNEXT" value=""/>
 			</reference>
 		</references>
-		<section anchor="appendix-numerical" title="Example">
+		<!-- <section anchor="appendix-numerical" title="Example">
 			<t> TBD </t>
-		</section>
+		</section> -->
 	</back>
 </rfc>
