@@ -132,18 +132,18 @@
 		<list style="numbers">
 			<t>
                         During a previous session,
-                        current RTT (current_rtt), CWND
-                        (current_cwnd) and client's current IP
+                        current RTT (current_rtt), bottleneck bandwidth
+                        (current_bb) and client's current IP
                         (current_client_ip) are
-                        stored as saved_rtt, saved_cwnd and
+                        stored as saved_rtt, saved_bb and
                         saved_client_ip;
 			</t>
 			<t>
                         When resuming a session,
                         the server might set the
                         current_rtt and the
-                        current_cwnd to the
-                        saved_rtt and saved_cwnd of a previous
+                        current_bb to the
+                        saved_rtt and saved_bb of a previous
                         connection.
 			</t>
 		</list>
@@ -163,7 +163,7 @@
 		<t>
                 Sometimes the parameters of a previous session are not
                 relevant, e.g.: (1) network conditions can change where
-                using a previously computed CWND could increase
+                using a previously estimated bottleneck bandwidth could increase
                 congestion; (2) a client could convince a server
                 to use a CWND much larger than required.
 		</t>
@@ -214,10 +214,10 @@
                                 server (bytes allowed in flight by CC);
 				</t>
 				<t>
-				current_cwnd : Current congestion window;
+				current_bb : Current estimated bottleneck bandwidth;
 				</t>
 				<t>
-                                saved_cwnd: Congestion window preserved
+                                saved_bb: Estimated bottleneck bandwidth preserved
                                 from a previous connection;
 				</t>
 				<t>
@@ -244,7 +244,7 @@
 				</t>
 				<t>
                                 remembered BDP parameters: combination
-                                of saved_rtt and saved_cwnd.
+                                of saved_rtt and saved_bb.
 				</t>
 				<t>
 				ITT : Interpacket Transmission Time
@@ -278,7 +278,7 @@
                         reproduce the procedure detailed in 
                         <xref target="RFC6349"></xref>
                         to measure the BDP. The server can exploit
-                        internal evaluations of the CWND and the
+                        internal evaluations of the Bottleneck Bandwidth and the
                         to assess the BDP. 
 			</t>
 
@@ -306,7 +306,7 @@
 		<section title="Rationale behind the safety guidelines">
 
 			<t>
-                        The previously measured saved_rtt and saved_cwnd
+                        The previously measured saved_rtt and saved_bb
                         should not be used as-is
                         to avoid potential congestion collapse: 
                         <list style="symbols">
@@ -330,7 +330,7 @@
 		<section title="Rationale #1: Variable network conditions">
 			<t>
                         The server MUST check the validity of
-                        the saved_rtt and saved_cwnd parameters, whether
+                        the saved_rtt and saved_bb parameters, whether
                         they are sent by a
                         client or stored at the server.
                         Indeed, the following events make
@@ -366,8 +366,8 @@
                         <list style="symbols">
 				<t>
                                 Rationale #1 - Solution #1 :
-                                When resuming a session, set the current_cwnd
-                                and current_rtt to the saved_cwnd and saved_rtt
+                                When resuming a session, set the current_bb
+                                and current_rtt to the saved_bb and saved_rtt
                                 parameters estimated from a previous connection.
 				</t>
 				<t>
@@ -375,14 +375,14 @@
                                 When resuming a session, implement a
                                 safety
                                 check to measure whether using the
-                                saved_cwnd
+                                saved_bb
                                 and saved_rtt parameters would not
                                 cause
                                 congestion over the path. In this case,
                                 the
-                                current_cwnd and current_rtt might not
+                                current_bb and current_rtt might not
                                 be set
-                                directly to the saved_cwnd and
+                                directly to the saved_bb and
                                 saved_rtt: the
                                 server might wait for the completion of
                                 the safety check before
@@ -399,7 +399,7 @@
 		<section title="Rationale #2: Malicious clients">
 			<t>
                         The server MUST check the integrity of
-                        the saved_rtt and saved_cwnd parameters received
+                        the saved_rtt and saved_bb parameters received
                         from a client.
 			</t>
 
@@ -410,32 +410,32 @@
 				<t>
                                 Rationale #2 - Solution #1 : The
                                 server stores a local estimation
-                                of the CWND and RTT parameters as
-                                saved_cwnd and saved_rtt.
+                                of the bottleneck bandwidth and RTT parameters as
+                                saved_bb and saved_rtt.
 				</t> 
 				<t>
                                 Rationale #2 - Solution #2 : The
                                 server sends the estimation of
-                                the CWND and RTT parameters to the
-                                client as saved_cwnd and saved_rtt. The
+                                the bottleneck bandwidth and RTT parameters to the
+                                client as saved_bb and saved_rtt. The
                                 information is
                                 encrypted by the server. The
                                 client resends the information
                                 when resuming a connection. The
                                 client can neither read nor
-                                modify the saved_rtt and saved_cwnd
+                                modify the saved_rtt and saved_bb
                                 parameters.
 				</t>
 				<t>
                                 Rationale #2 - Solution #3 : The
                                 server sends the estimation of
-                                the saved_rtt and saved_cwnd parameters to the
+                                the saved_rtt and saved_bb parameters to the
                                 client. The information includes
                                 integrity protection. The
                                 client resends the information
                                 when resuming a connection. The
                                 client can read, but can not
-                                modify, the saved_rtt and saved_cwnd parameters.
+                                modify, the saved_rtt and saved_bb parameters.
 				</t>
 			</list></t>
 			<t>
@@ -466,14 +466,14 @@
                         Solution #1: the server MUST implement a
                         safety check to measure
                         whether the remembered BDP
-                        parameters (i.e. saved_rtt and saved_cwnd) are
+                        parameters (i.e. saved_rtt and saved_bb) are
                         relevant or check that their usage would
                         not cause congestion over the path.
 			</t> 
 			<section title="Security aspects">
 				<t>
                                 The client may send information related
-                                to the saved_rtt and saved_cwnd to the
+                                to the saved_rtt and saved_bb to the
                                 server with the BDP
                                 Frame extension using either Rationale
                                 #2 - Solution #2 or Rationale #2 -
@@ -489,10 +489,10 @@
                                 the
                                 values are safe. The server could then
                                 need to also store the saved_rtt and
-                                saved_cwnd parameters.
+                                saved_bb parameters.
 				</t>
 				<t>
-                                A malicious client might modify the saved_cwnd
+                                A malicious client might modify the saved_bb
                                 parameter to convince the server to
                                 use a
                                 CWND much larger than required. Using
@@ -526,7 +526,7 @@
                                 it could also store the IP address (i.e.
                                 saved_client_ip)
                                 and BDP parameters (i.e. saved_rtt and
-                                saved_cwnd) of the previous session of
+                                saved_bb) of the previous session of
                                 the client.
 				</t>
 				<t>
@@ -638,7 +638,7 @@
                         the 1-RTT connection (in particular saved_rtt);
 			</t>
 			<t>
-                        The server SHOULD NOT consider the saved_cwnd
+                        The server SHOULD NOT consider the saved_bb
                         parameter if there is any loss of packet during
                         the first transmission of data;
 			</t>
@@ -689,8 +689,8 @@
                                 acknowledged), the
                                 method permits
                                 the sender to consider the
-                                saved_cwnd as an input to
-                                adapt current_cwnd and help rapidly determine a
+                                saved_bb as an input to
+                                adapt current_bb and help rapidly determine a
                                 new safe rate; 
 				</t>
 				<t>
@@ -709,19 +709,19 @@
 			Identify a relevant pacing rhythm:<list style="symbols">
 				<t>
                                 The server estimates the pacing rhythm
-                                using saved_rtt and saved_cwnd. The
+                                using saved_rtt and saved_bb. The
                                 Interpacket Transmission Time (ITT) is
                                 determined by
                                 the ratio between the current Maximum
                                 Message Size (MSS) for packets and
                                 the ratio between the
-                                saved_cwnd and saved_rtt.
+                                saved_bb and saved_rtt.
                                 A tunable
                                 safety margin might be introduced to avoid sending
                                 more than a recommended maximum IW (recom_iw):
 					<list style="symbols">
 					<t>
-					current_iw = min(recom_iw,saved_cwnd)
+					current_iw = min(recom_iw,saved_bb)
 					</t>
 					<t>
 					ITT = MSS/(current_iw/saved_rtt)
@@ -790,7 +790,7 @@
                                 During a 1-RTT session, the endpoint
                                 stores
                                 the RTT (as the saved_rtt)
-                                and CWND (as the saved_cwnd) together
+                                and bottleneck bandwidth (as the saved_bb) together
                                 with the session resume ticket.
                                 The client can also store
                                 the IP address of the server.
@@ -805,7 +805,7 @@
                                 from the table using the Least Recently
                                 Used (LRU) logic. For each
                                 ticket identifier, the table holds the
-                                RTT and CWND (i.e. saved_rtt and saved_cwnd), and also the IP address of
+                                RTT and bottleneck bandwidth (i.e. saved_rtt and saved_bb), and also the IP address of
                                 the client (i.e. saved_client_ip).
 				</t>
 				</list>
@@ -831,11 +831,11 @@
                         This second check is used to detect a path with
                         significant incipient congestion (i.e. where it
                         would not be safe to update the CWND based on
-                        the saved_cwnd). 
+                        the saved_bb). 
                         In practice, this could be realized by a
                         proportional increase in the CWND, where the
                         increase is
-                        (saved_cwnd/IW)*proportion_of_IW_currently-ACKed.
+                        (saved_bb/IW)*proportion_of_IW_currently-ACKed.
 			</t>
 		</section>
 			
@@ -879,7 +879,7 @@
 BDP Frame {
   Type (i) = 0xXXX,
   Lifetime (i),
-  Saved CWND (i),
+  Saved BB (i),
   Saved RTT (i),
   Saved IP length (i),
   Saved IP (...)
@@ -903,15 +903,15 @@ BDP Frame {
 					</t> 
 
 					<t>
-                                        Saved CWND
-                                        (saved_cwnd): The
-                                        saved_cwnd is a value
+                                        Saved BB
+                                        (saved_bb): The
+                                        saved_bb is a value
                                         in bytes, encoded as a
                                         variable length integer. The
-                                        bandwidth estimated 
+                                        bottleneck bandwidth estimated 
                                         on the previous
                                         connection by
-					the server (or CWND).
+					the server.
 					Using 
                                         the previous values of
                                         bytes_in_flight defined in 
