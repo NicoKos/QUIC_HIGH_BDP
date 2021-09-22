@@ -908,16 +908,16 @@ BDP Frame {
                                         saved_cwnd is a value
                                         in bytes, encoded as a
                                         variable length integer. The
-                                        bytes in
-                                        flight measured on the previous
+                                        bandwidth estimated 
+                                        on the previous
                                         connection by
-                                        the server (or CWND).
-                                        The previous values of
+					the server (or CWND).
+					Using 
+                                        the previous values of
                                         bytes_in_flight defined in 
                                         <xref
-                                        target="RFC9002"></xref>,
-                                        recon_bytes_in_flight could be
-                                        used to determine this value.
+                                        target="RFC9002"></xref>
+					can result in overshoot and is not advised.
 					</t>
 
 					<t>
