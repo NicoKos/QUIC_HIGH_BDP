@@ -119,7 +119,16 @@
                 draft proposes a QUIC extension
                 to improve the performance of ingress traffic. 
 		</t>
-		
+
+		<t>
+                <xref target="RFC9000"></xref>
+                mentions that "Generally, implementations are advised to
+		be cautious when using previous values on a new path."
+		This draft proposes a discussion on how using previous values 
+		can be achieved in a interoperable manner and how it can 
+		be done safely.
+		</t>
+	
 		<t>
                 When clients resume a session to download a
                 large document, the congestion control algorithms will
