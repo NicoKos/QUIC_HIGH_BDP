@@ -345,7 +345,10 @@
 				indicates a different
                                 network path. This new path
                                 does not necessarily exhibit the same
-                                characteristics as the old one.
+				characteristics as the old one.
+                                If the server changes its IP address after a
+                                migration, it may not be safe to exploit
+                                previously estimated parameters.
 				</t>
 				<t>
                                 Lifetime of the extension: If
@@ -655,7 +658,7 @@
 		<t>
                 The proposed mechanisms SHOULD be limited by any
                 rate-limitation mechanisms of QUIC, such as flow control
-                mechanisms or amplification attacks prevention. In
+                mechanisms or amplification attacks prevention. In particular, it may be necessary to issue proactive MAX_DATA frames to increase the flow control limits of the connection. In
                 particular, the maximum number of packets that can be
                 sent without acknowledgment needs to be chosen to avoid
                 the creation and the increase of congestion for the
