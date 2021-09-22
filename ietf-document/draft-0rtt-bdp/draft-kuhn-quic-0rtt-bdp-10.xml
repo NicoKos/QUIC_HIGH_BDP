@@ -881,7 +881,8 @@ BDP Frame {
   Lifetime (i),
   Saved CWND (i),
   Saved RTT (i),
-  Saved IP,
+  Saved IP length (i),
+  Saved IP (...)
 }
 </artwork>
 </figure>
@@ -940,13 +941,14 @@ BDP Frame {
                                         of the path latency.
 					</t>
 					<t>
+					Saved IP length (saved_ip_lenght) : The 
+					length of the IP address set to either 4
+					(IPv4) or 16 (IPv6).
+					</t>
+					<t>
                                         Saved IP (saved_client_ip) : The
                                         saved_client_ip could be set to
-                                        the IP address of the client. 
-                                        The IP address of the client can be
-                                        encoded as the preferred_address
-                                        parameter 
-                                        <xref target="RFC9000"></xref>.
+                                        the IP address of the client.
 					</t>
 					</list>
 				</t>
