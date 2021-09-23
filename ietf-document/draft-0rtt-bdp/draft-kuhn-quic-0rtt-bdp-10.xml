@@ -291,6 +291,17 @@
                         to assess the BDP. 
 			</t>
 
+ 			<t>
+                        This document refers to the saved_bb and
+                        current_bb for the previously estimated
+                        bottleneck bandwidth. This value may be easily
+                        reached for protocols suc as BBR. Other
+                        protocols, such as CUBIC or RENO, may estimate
+                        this value by exploiting the congestion window
+                        and the RTT.
+ 			</t>
+
+
 
 		</section>
 
@@ -370,6 +381,19 @@
                                 estimated parameters would not be
                                 valid.
 				</t>
+				<t>
+                                Relevance of the BB estimation: The
+                                bottleneck bandwidth estimation may
+                                occur just at the end of the slow start.
+                                There are cases where the congestion
+                                window at the end of slow start is
+                                significantly larger than the value on
+                                which the connection converges after a
+                                few rounds. Directly exploiting such
+                                value for the bottleneck bandwith
+                                estimation may be inappropriate.
+ 				</t>
+
 			</list></t>
 
 			<t>
@@ -660,7 +684,14 @@
                         of data. This value could be based on a local
                         understanding of the path characteristics and
                         what is deployed in CDNs 
-                        <xref target="TMA18"></xref>.
+			<xref target="TMA18"></xref>.
+			</t>
+			<t>
+			The server SHOULD NOT store and/or send
+                        information related to the previously
+                        estimated bottleneck
+                        bandwidth (saved_bb) if this estimation has not
+                        been computed after some rounds.
 			</t>
 		</list></t>
 
