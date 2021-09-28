@@ -298,7 +298,9 @@
                         reached for protocols suc as BBR. Other
                         protocols, such as CUBIC or RENO, may estimate
                         this value by exploiting the congestion window
-                        and the RTT.
+                        and the RTT. This approach may result in over
+			estimating the bottleneck bandwidth and should 
+			be considered with caution.
  			</t>
 
 
@@ -382,11 +384,10 @@
                                 valid.
 				</t>
 				<t>
-                                Relevance of the BB estimation: The
-                                bottleneck bandwidth estimation may
-                                occur just at the end of the slow start.
+                                Relevance of the BB estimation: 
                                 There are cases where the congestion
-                                window at the end of slow start is
+                                window is exploited to assess the bottleneck bandwidth. 
+				However, at the end of slow start its value may be
                                 significantly larger than the value on
                                 which the connection converges after a
                                 few rounds. Directly exploiting such
