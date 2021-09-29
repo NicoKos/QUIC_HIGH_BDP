@@ -778,6 +778,25 @@
                                 slow-start mechanism.
 				</t>
 			</list></t>
+			<t>
+                        Tune slow-start mechanisms. After transport
+                        parameters are set to previously estimated
+                        bottleneck bandwidth, if slow-start mechanisms
+                        continue, important packets overshoot may be
+                        transmitted from the server. This can occur even
+                        if the
+                        safety check described in this section is
+                        implemented.<list style="symbols">
+				<t>
+                                For NewReno and CUBIC, it is recommended to
+                                exit slow-start and enter in congestion
+				avoidance phase.
+				</t>
+				<t>
+                                For BBR, it is recommended to move to
+                                the "probe bandwidth" state. 
+				</t>
+			</list></t>
 		</list></t>
 
 		<t>
