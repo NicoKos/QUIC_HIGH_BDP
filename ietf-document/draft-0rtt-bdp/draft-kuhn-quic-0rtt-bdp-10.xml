@@ -900,6 +900,17 @@
                         increase is
                         (saved_bb/IW)*proportion_of_IW_currently-ACKed.
 			</t>
+
+			<t>
+                        This solution does not allow the client to
+                        refuse the exploitation of the BDP parameters.
+                        If the server does not want to store the metrics
+                        from previous connections, an equivalent of the
+                        tcp_no_metrics_save for QUIC may be necessary.
+                        This option could be negociable so that a client
+                        can refuse the exploitation of previous
+                        sessions.
+			</t>
 		</section>
 			
 		<section anchor="sec:using_new_token" title="Using NEW_TOKEN frames">
