@@ -932,9 +932,8 @@
                         If the server does not want to store the metrics
                         from previous connections, an equivalent of the
                         tcp_no_metrics_save for QUIC may be necessary.
-                        This option could be negociable so that a client
-                        can refuse the exploitation of previous
-                        sessions.
+                        This option could be negociated that alows a client
+                        to choose whether to use the saved information.
 			</t>
 		</section>
 			
@@ -1028,18 +1027,15 @@ BDP Frame {
                                         milliseconds, encoded as
                                         a variable length integer.
                                         This could be set to 
-                                        the min_rtt defined in 
-                                        <xref
-                                        target="RFC9002"></xref>,
+                                        the minimum RTT (min_rtt). The
                                         saved_rtt can be set to
-                                        min_rtt. The min_rtt
-                                        parameter might not track a
-                                        decreasing RTT: the
-                                        min_rtt that is reported here might not be the
+                                        min_rtt.  NOTE: The min_rtt defined in 
+                                        <xref
+                                        target="RFC9002"></xref>, does not track a
+                                        decreasing RTT: therefore
+                                        min_rtt reported might be larger than the
                                         actual minimum RTT measured during the 1-RTT
-                                        connection, but usually reflects the
-                                        characteristics 
-                                        of the path latency.
+                                        connection.
 					</t>
 					<t>
 					Saved IP length (saved_ip_length) : The 
