@@ -164,8 +164,8 @@
 		The current version of this draft considers several 
 		possible solutions: (1) the saved
                 parameters are stored at the server; they are not sent to the client; (2) the saved
-                parameters are sent to the client in encrypted form; although the client is unable to
-                read the parameters can include this encrypted parameters in a subsequent request to the server; 
+                parameters are sent to the client as an encrypted opaque blob; although the client is unable to
+                read the parameters can include this opaque blob in a subsequent request to the server; 
 		(3) the saved parameters are sent to the
                 client and the client is notified of their value, but the parameters also include
 		a cryptographic integrity check; the client 
@@ -176,7 +176,7 @@
 			
 		<t>
                 There are several cases where the parameters of a previous session are not
-                appropiate. These include:
+                appropriate. These include:
 		<list>
 		<t> (1) the network conditions have changed and the current capacity is
                 less than the previously estimated bottleneck bandwidth. Using the saved
@@ -184,8 +184,8 @@
 		<t> (2) the network path has changed and the new path is
                 different. Using the saved congestion control state could increase congestion.
 		This case might be accompanied by a change in the RTT or IP address. </t>
-		<t> (3) a client uses parameters that are no longer appropiate, e.g.,
-		to intentionally try to use a CWND larger than appropiate.
+		<t> (3) a client uses parameters that are no longer appropriate, e.g.,
+		to intentionally try to use a CWND larger than appropriate.
 		</t>
 
 		<t>
@@ -229,8 +229,8 @@
 				BDP: defined below;
 				</t>
 				<t>
-                                CWND: the ncongestion window used by
-                                server (number of bytes allowed in flight by the CC);
+                                CWND: the congestion window used by
+                                server (nmaximum number of bytes allowed in flight by the CC);
 				</t>
 				<t>
 				current_bb : Current estimated bottleneck bandwidth;
@@ -349,7 +349,7 @@
                                 Rationale #2: Information sent by a
                                 malicious client is not relevant.
                                 A client could try to convince a server
-                                to use a CWND higher than appropiate, to
+                                to use a CWND higher than appropriate, to
 				gain an unfair share of capacity for itself or to
 				induce congestion for other flows.
 				</t>
@@ -396,7 +396,7 @@
 				information is temporal. Frequent
 				connections to the same IP address
 				are likely to track changes, but long-term use
-                                of previous values are not appropiate.
+                                of previous values are not appropriate.
 				</t>
 				<t>
                                 BB over estimation: 
@@ -493,7 +493,7 @@
                                 client to read, but not
                                 modify, the saved_rtt and saved_bb parameters.
 				This might enable a client to decide whether the new parameters
-				are appropiate, based on client-side information about the
+				are appropriate, based on client-side information about the
 				network conidtions or connectivity.
 				</t>
 			</list></t>
@@ -554,7 +554,7 @@
                                 A malicious client might modify the saved_bb
                                 parameter to convince the server to
                                 use a larger
-                                CWND than appropiate. Using
+                                CWND than appropriate. Using
                                 the algorithms proposed in 
                                 <xref target="sec:safety_guide"></xref>,
                                 the server may reduce any intended
@@ -642,8 +642,8 @@
 |         |check      | congestion     | optim.        |Section 3  |
 +---------+-----------+----------------+---------------+-----------+
 |#2       |#1         |                |               |           |
-|Malicious|Local      |Enforced        |Client can not |	   |
-|client   |storage    | security       | decide to     |           |
+|Malicious|Local      |Enforced        |Client unable  |	   |
+|client   |storage    | security       | to decide to  |           |
 |         |           |                | reject        |           |
 |         |           |                |Malicious      |           |
 |         |           |                | server could  |           |
@@ -654,7 +654,7 @@
 |         +-----------+----------------+---------------+-----------+
 |         |#2         |                |               |           |
 |         |NEW_TOKEN  |Save resource   |Malicious      |           |
-|         |           | at server      | client may    |           |
+|         |           | at server      | client could  |           |
 |         |           |Opaque token    | change token  |           |
 |         |           | protected      | even if       |           |
 |         |           |                | protected     |           |
@@ -667,7 +667,7 @@
 |         +-----------+----------------+---------------+-----------+
 |         |#3         |                |               |           |
 |         |BDP        |Extended        |Malicious      |	   |
-|         |extension  | use-cases      | client may    |           |
+|         |extension  | use-cases      | client could  |           |
 |         |           |Save resource   | change BDP    |           |
 |         |           | at server      | even if       |           |
 |         |           |Client can      | protected     |           |
@@ -906,7 +906,7 @@
                         This is used to verify that the current_rtt has not
                         significantly changed from the saved_rtt, and
                         hence is an indication that the BDP information
-                        is appropiate to the path that is currently being
+                        is appropriate to the path that is currently being
                         used.
 			</t>
 
