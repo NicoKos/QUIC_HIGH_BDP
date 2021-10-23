@@ -572,7 +572,9 @@
                                 associated risks
                                 by allowing the client to
                                 transmit information related to the BDP
-                                of the path.
+                                of the path in the case of a malicious client
+				trying to break the encryption mechanism that 
+				it had received. 
 				</t>
 			</section>
 
