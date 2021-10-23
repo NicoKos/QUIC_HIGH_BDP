@@ -185,8 +185,8 @@
                 different. Using the saved congestion control state could increase congestion.
 		This case might be accompanied by a change in the RTT or IP address. </t>
 		<t> (3) a client uses parameters that are no longer appropriate, e.g.,
-		to intentionally try to use a CWND larger than appropriate.
-		</t>
+		to intentionally try to use a CWND larger than appropriate.</t>
+		</list></t>
 
 		<t>
 		This document:
@@ -215,33 +215,33 @@
                                 <xref target="RFC6928"></xref>);
 				</t>
 				<t> 
-				current_iw: Current Initial Window;
+				current_iw: Current Initial Window
 				</t>
 				<t> 
-                                recom_iw: Recommended Initial Window;
+                                recom_iw: Recommended Initial Window
 				</t>
 				<t>
-				BDP: defined below;
+				BDP: defined below
 				</t>
 				<t>
                                 CWND: the congestion window used by
-                                server (nmaximum number of bytes allowed in flight by the CC);
+                                server (maximum number of bytes allowed in flight by the CC)
 				</t>
 				<t>
-				current_bb : Current estimated bottleneck bandwidth;
+				current_bb : Current estimated bottleneck bandwidth
 				</t>
 				<t>
                                 saved_bb: Estimated bottleneck bandwidth preserved
-                                from a previous connection;
+                                from a previous connection
 				</t>
 				<t>
-				RTT: Round-Trip Time;
+				RTT: Round-Trip Time
 				</t>
 				<t>
-				current_rtt: Current RTT;
+				current_rtt: Current RTT
 				</t>
 				<t>
-                                saved_rtt: RTT preserved from a previous connection.
+                                saved_rtt: RTT preserved from a previous connection
 				</t>
 				<t>
 				client_ip : IP address of the client
@@ -251,11 +251,11 @@
 				</t>
 				<t>
                                 saved_client_ip : IP address of the
-                                client preserved from a previous connection;
+                                client preserved from a previous connection
 				</t>
 				<t>
                                 remembered BDP parameters: a combination
-                                of saved_rtt and saved_bb.
+                                of saved_rtt and saved_bb
 				</t>
 				<t>
 				ITT : Interpacket Transmission Time
@@ -285,7 +285,8 @@
                         estimated by a server that includes all
                         buffering along the network path. In that sense, 
 			the BDP estimated is related to the amount of 
-			bytes in flight.</t> 
+			bytes in flight.
+			</t> 
                         
 			<t>
 			A QUIC connection might not
@@ -731,7 +732,7 @@
                 sent without acknowledgment needs to be chosen to avoid
                 the creation and the increase of congestion for the
 			path.</t>
-		<T>This extension should not provide 
+		<t>This extension should not provide 
                 an opportunity for the current connection to be a vector
                 of an amplification attack. The address validation
                 process, used to prevent amplification attacks, SHOULD
@@ -833,13 +834,15 @@
                 <xref target="I-D.irtf-iccrg-sallantin-initial-spreading"></xref>
                 and <xref target="CONEXT15"></xref>.
 		</t>
-	
+		
+		<!--
 		<t>
                 While safety recommendations are necessary, it
                 seems important to note that some Content Delivery Networks
 		(CDNs) can exploit a high Initial Window (IW) 
                 <xref target="TMA18"></xref> for a local path.
 		</t>
+		-->
 
 	</section>
 
@@ -1238,8 +1241,8 @@ BDP Frame {
 		</references>
 			
 		<references title="Informative References">
-			<!--
 			<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
+			<!--
 			<reference anchor="TMA18">
 				<front>
 					<title>Demystifying TCP Initial Window Configurations of Content Distribution Networks</title>
@@ -1251,7 +1254,7 @@ BDP Frame {
 				</front>
 				<seriesInfo name="2018 Network Traffic Measurement and Analysis Conference (TMA)" value=""/>
 			</reference>
-			--> 
+			-->
 			<reference anchor="CONEXT15">
 				<front>
 					<title>Halfback: Running Short Flows Quickly and Safely</title>
