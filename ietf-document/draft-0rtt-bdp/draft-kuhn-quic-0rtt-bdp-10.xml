@@ -546,9 +546,13 @@
                                 the 0-RTT packet. Authentication
                                 mechanisms might not guarantee that
                                 the
-                                values are safe. The server could then
-                                need to also store the saved_rtt and
-                                saved_bb parameters.
+                                values are safe. 
+				It is not an easy operation for a client
+				to modify authenticated or encrypted data
+				without this being detected by a server.
+				Modification could be realized by malicious clients.
+				One way to avoid this is for a server to also 
+				store the saved_rtt and saved_bb parameters.
 				</t>
 				<t>
                                 A malicious client might modify the saved_bb
