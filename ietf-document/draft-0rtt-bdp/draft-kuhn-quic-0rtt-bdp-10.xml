@@ -547,12 +547,12 @@
                                 mechanisms might not guarantee that
                                 the
                                 values are safe. 
-				The modification of authenticated or encrypted
-				data from the client is not an easy operation
-				but could be realized by malicious clients.
-				The server could then
-                                need to also store the saved_rtt and
-                                saved_bb parameters.
+				It is not an easy operation for a client
+				to modify authenticated or encrypted data
+				without this being detected by a server.
+				This could be realized by malicious clients.
+				One way to avoid this is for a server to also 
+				store the saved_rtt and saved_bb parameters.
 				</t>
 				<t>
                                 A malicious client might modify the saved_bb
