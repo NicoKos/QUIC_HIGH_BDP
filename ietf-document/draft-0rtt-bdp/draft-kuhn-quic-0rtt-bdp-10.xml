@@ -218,12 +218,7 @@
 				current_iw: Current Initial Window;
 				</t>
 				<t> 
-                                recom_iw: Recommended Initial Window -
-				Note: a Content Delivery
-                                Networks (CDNs) might
-                                exploit a higher Initial Window (IW)
-                                <xref target="TMA18"></xref>
-                                when using a local path;
+                                recom_iw: Recommended Initial Window;
 				</t>
 				<t>
 				BDP: defined below;
@@ -568,11 +563,7 @@
                                 the server may reduce any intended
                                 harm and can check that part of the
                                 information provided by the client are
-                                valid. A supplementary check might
-                                decide not to
-                                use values that would be
-                                higher than those currently used by CDNs
-				<xref target="TMA18"></xref>.
+                                valid. 
 				</t>
 				<t>	
 				Storing the BDP parameters
@@ -717,7 +708,9 @@
                         The server MUST NOT send more than the recommended
                         maximum IW (recom_iw) in the first transmission
                         of data. This value could be based on a local
-                        understanding of the path characteristics.
+                        understanding of the path characteristics. Knowing 
+			the congestion status of the network in closed environments
+			may help in increasing the recommended maximum IW.
 			</t>
 			<t>
 			The server SHOULD NOT store and/or send
@@ -1245,7 +1238,7 @@ BDP Frame {
 		</references>
 			
 		<references title="Informative References">
-		
+			<!--
 			<?rfc include="reference.I-D.irtf-iccrg-sallantin-initial-spreading.xml"?>
 			<reference anchor="TMA18">
 				<front>
@@ -1258,6 +1251,7 @@ BDP Frame {
 				</front>
 				<seriesInfo name="2018 Network Traffic Measurement and Analysis Conference (TMA)" value=""/>
 			</reference>
+			--> 
 			<reference anchor="CONEXT15">
 				<front>
 					<title>Halfback: Running Short Flows Quickly and Safely</title>
