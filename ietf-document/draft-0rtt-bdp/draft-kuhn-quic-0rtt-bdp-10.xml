@@ -287,9 +287,13 @@
                         buffer sizes required to achieve the maximum
                         TCP Throughput."
                         This draft considers the BDP
-                        estimated by q server that includes all
-                        buffering along the network path.
-                        A QUIC connection might not
+                        estimated by a server that includes all
+                        buffering along the network path. In that sense, 
+			the BDP estimated is related to the amount of 
+			bytes in flight.</t> 
+                        
+			<t>
+			A QUIC connection might not
                         reproduce the procedure detailed in 
                         <xref target="RFC6349"></xref>
                         to measure the BDP. A server might be able to exploit
@@ -713,8 +717,8 @@
 			The server SHOULD NOT store and/or send
                         information related to the previously
                         estimated bottleneck
-                        bandwidth (saved_bb), if this estimation has not
-                        been computed after some rounds.
+			bandwidth (saved_bb) (see <xref target="sec:terms_def"></xref> for more details on bottleneck bandwidth definition), if this estimation has not
+                        been computed after some rounds during the 1-RTT connection. At least, the 1-RTT connection should have reached the congestion avoidance phase. 
 			</t>
 		</list></t>
 
